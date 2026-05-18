@@ -60,12 +60,12 @@ const contactLimiter = rateLimit({
 // ─── Brevo SMTP transporter ───────────────────────────────────────────────────
 // Brevo SMTP host: smtp-relay.brevo.com  port: 587  (STARTTLS)
 const transporter = nodemailer.createTransport({
-  host: 'smtp-relay.sendinblue.com', // Brevo (el cert sigue en el dominio sendinblue)
+  host: 'smtp-relay.sendinblue.com', // cert válido (Brevo mantiene este dominio)
   port: 587,
   secure: false,          // STARTTLS
   auth: {
-    user: BREVO_USER,     // tu email de cuenta Brevo
-    pass: BREVO_SMTP_KEY, // SMTP key (Settings → SMTP & API → SMTP)
+    user: BREVO_USER,     // login SMTP de Brevo: a95bda001@smtp-brevo.com
+    pass: BREVO_SMTP_KEY, // SMTP key de Brevo
   },
   pool: true,
   maxConnections: 2,
