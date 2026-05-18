@@ -13,6 +13,10 @@ const NOTIFY_TO = import.meta.env.VITE_NOTIFY_TO || 'lcrisantosi7@gmail.com'
 const SENDER_EMAIL = import.meta.env.VITE_SENDER_EMAIL || 'a95bda001@smtp-brevo.com'
 const MAX_MSG_LEN = 2000
 
+if (!BREVO_API_KEY || BREVO_API_KEY === 'PEGA_AQUI_TU_API_KEY') {
+  console.error('[Contact] VITE_BREVO_API_KEY no configurada — los emails no se enviarán.')
+}
+
 // ─── Static data ─────────────────────────────────────────────────────────────
 const CONTACT_INFO = [
   {
@@ -105,9 +109,14 @@ const Contact = () => {
         html: buildNotificationHtml(cleanName, cleanEmail, cleanMessage),
       })
 
+      // Brevo devuelve 201 en éxito, cualquier otro código es error
       if (!res.ok) {
-        const data = await res.json().catch(() => ({}))
-        throw new Error(data.message || `Error Brevo (${res.status})`)
+        let errMsg = `Error Brevo (${res.status})`
+        try {
+          const data = await res.json()
+          errMsg = data.message || data.error || errMsg
+        } catch { /* body vacío */ }
+        throw new Error(errMsg)
       }
 
       // 2. Confirmación al remitente — no bloqueante
@@ -326,9 +335,9 @@ const Contact = () => {
                     type="submit"
                     disabled={isDisabled}
                     className={`w-full py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-2 transition-all duration-300 disabled:cursor-not-allowed ${status === 'success' ? 'bg-emerald-500 text-zinc-950'
-                        : status === 'error' ? 'bg-red-500/20 border border-red-500/40 text-red-400'
-                          : status === 'loading' ? 'bg-zinc-800 text-zinc-400'
-                            : 'bg-white text-zinc-950 hover:bg-zinc-100 active:scale-[0.98]'
+                      : status === 'error' ? 'bg-red-500/20 border border-red-500/40 text-red-400'
+                        : status === 'loading' ? 'bg-zinc-800 text-zinc-400'
+                          : 'bg-white text-zinc-950 hover:bg-zinc-100 active:scale-[0.98]'
                       }`}
                   >
                     {status === 'loading' && <><Loader2 size={20} className="animate-spin shrink-0" /> Enviando...</>}
