@@ -1,0 +1,23 @@
+# Robots.txt para mi-portafolio
+# Guía para motores de búsqueda
+
+User-agent: *
+Allow: /
+Allow: /about
+Allow: /experience
+Allow: /skills
+Allow: /projects
+Allow: /services
+Allow: /contact
+
+# Desallowed paths (si existen)
+Disallow: /admin
+Disallow: /private
+Disallow: /*.json$
+Disallow: /api/
+
+# Sitemap
+Sitemap: https://mi-portafolio-khaki-two.vercel.app/sitemap.xml
+
+# Crawl delay (opcional, para respetar recursos del servidor)
+Crawl-delay: 1
