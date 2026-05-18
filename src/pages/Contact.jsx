@@ -1,16 +1,17 @@
-import React, { useState, useRef, useEffect } from 'react'
+import React, { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Mail, MapPin, Send, Linkedin, Github,
-  CheckCircle2, Loader2, Terminal, Wifi,
+  CheckCircle2, Loader2, Terminal,
 } from 'lucide-react'
 import SEO from '../components/SEO'
+import { buildNotificationHtml, buildConfirmationHtml } from '../lib/emailTemplates'
 
 // ─── Config ───────────────────────────────────────────────────────────────────
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'https://produccion-abril.onrender.com'
-const MAX_MESSAGE_LENGTH = 2000   // must match server-side sanitize limit
-const WAKE_INTERVAL_MS = 10_000
-const MAX_WAKE_ATTEMPTS = 12      // ~2 min
+const BREVO_API_KEY = import.meta.env.VITE_BREVO_API_KEY
+const NOTIFY_TO = import.meta.env.VITE_NOTIFY_TO || 'lcrisantosi7@gmail.com'
+const SENDER_EMAIL = import.meta.env.VITE_SENDER_EMAIL || 'a95bda001@smtp-brevo.com'
+const MAX_MSG_LEN = 2000
 
 // ─── Static data ─────────────────────────────────────────────────────────────
 const CONTACT_INFO = [
@@ -34,107 +35,111 @@ const SOCIAL_LINKS = [
   { name: 'GitHub', icon: Github, url: 'https://github.com/lcrisantosi7-cris/' },
 ]
 
+// ─── Brevo API helper ─────────────────────────────────────────────────────────
+const sendViaBrevo = ({ to, subject, html }) =>
+  fetch('https://api.brevo.com/v3/smtp/email', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'api-key': BREVO_API_KEY,
+    },
+    body: JSON.stringify({
+      sender: { name: 'LC.dev', email: SENDER_EMAIL },
+      to: [{ email: to }],
+      subject,
+      htmlContent: html,
+    }),
+  })
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+const isValidEmail = (email) =>
+  /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(String(email).trim())
+
+const sanitize = (str) =>
+  String(str)
+    .replace(/<[^>]*>/g, '')
+    .replace(/[\r\n]{3,}/g, '\n\n')
+    .trim()
+    .slice(0, MAX_MSG_LEN)
+
 // ─── Component ────────────────────────────────────────────────────────────────
 const Contact = () => {
   const [formState, setFormState] = useState({ name: '', email: '', message: '' })
-  const [status, setStatus] = useState('idle')   // idle | loading | success | error
+  const [status, setStatus] = useState('idle') // idle | loading | success | error
   const [errorMessage, setErrorMessage] = useState('')
   const [focusedField, setFocusedField] = useState(null)
-  const [serverReady, setServerReady] = useState(false)
-  const [wakingUp, setWakingUp] = useState(false)
 
-  const wakeAttempts = useRef(0)
-  const intervalRef = useRef(null)
-
-  // ── Server wake-up polling ─────────────────────────────────────────────────
-  useEffect(() => {
-    const ping = async () => {
-      try {
-        const res = await fetch(`${BACKEND_URL}/health`)
-        if (res.ok) {
-          setServerReady(true)
-          setWakingUp(false)
-          clearInterval(intervalRef.current)
-        } else {
-          setWakingUp(true)
-        }
-      } catch {
-        setWakingUp(true)
-        wakeAttempts.current += 1
-        if (wakeAttempts.current >= MAX_WAKE_ATTEMPTS) {
-          clearInterval(intervalRef.current)
-          setWakingUp(false)
-        }
-      }
-    }
-
-    ping()
-    intervalRef.current = setInterval(ping, WAKE_INTERVAL_MS)
-    return () => clearInterval(intervalRef.current)
-  }, [])
-
-  // ── Form field helper ──────────────────────────────────────────────────────
   const updateField = (field) => (e) =>
     setFormState((prev) => ({ ...prev, [field]: e.target.value }))
 
-  // ── Submit ─────────────────────────────────────────────────────────────────
   const handleSubmit = async (e) => {
     e.preventDefault()
     if (status === 'loading' || status === 'success') return
 
+    // Client-side validation
+    if (!formState.name || !formState.email || !formState.message) {
+      setErrorMessage('Todos los campos son obligatorios.')
+      setStatus('error')
+      setTimeout(() => setStatus('idle'), 4000)
+      return
+    }
+    if (!isValidEmail(formState.email)) {
+      setErrorMessage('El correo electrónico no es válido.')
+      setStatus('error')
+      setTimeout(() => setStatus('idle'), 4000)
+      return
+    }
+
     setStatus('loading')
     setErrorMessage('')
 
+    const cleanName = sanitize(formState.name)
+    const cleanEmail = sanitize(formState.email)
+    const cleanMessage = sanitize(formState.message)
+
     try {
-      const res = await fetch(`${BACKEND_URL}/api/contact`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formState),
+      // 1. Notificación a ti — bloqueante
+      const res = await sendViaBrevo({
+        to: NOTIFY_TO,
+        subject: `Nuevo mensaje de ${cleanName}`,
+        html: buildNotificationHtml(cleanName, cleanEmail, cleanMessage),
       })
 
-      // Safely parse JSON — server may return empty body on crash/502
-      let data = {}
-      try { data = await res.json() } catch { /* empty body, keep default */ }
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}))
+        throw new Error(data.message || `Error Brevo (${res.status})`)
+      }
 
-      if (!res.ok) throw new Error(data.error || `Error del servidor (${res.status})`)
+      // 2. Confirmación al remitente — no bloqueante
+      sendViaBrevo({
+        to: cleanEmail,
+        subject: `¡Gracias por escribirme, ${cleanName}!`,
+        html: buildConfirmationHtml(cleanName),
+      }).catch(() => {/* silencioso */ })
 
       setStatus('success')
       setFormState({ name: '', email: '', message: '' })
-      setTimeout(() => setStatus('idle'), 4000)
+      setTimeout(() => setStatus('idle'), 5000)
+
     } catch (err) {
-      const msg =
-        err.message === 'Failed to fetch'
-          ? 'No se pudo conectar al servidor. Espera unos segundos e intenta de nuevo.'
-          : err.message
-      setErrorMessage(msg)
+      setErrorMessage(
+        err.message.includes('Failed to fetch')
+          ? 'Sin conexión. Verifica tu internet e intenta de nuevo.'
+          : err.message || 'No se pudo enviar. Intenta de nuevo.'
+      )
       setStatus('error')
       setTimeout(() => setStatus('idle'), 6000)
     }
   }
 
-  // ── Derived ────────────────────────────────────────────────────────────────
-  const charsLeft = MAX_MESSAGE_LENGTH - formState.message.length
+  const charsLeft = MAX_MSG_LEN - formState.message.length
   const isDisabled = status === 'loading' || status === 'success'
-  const serverStatus = serverReady ? 'ready' : wakingUp ? 'waking' : 'offline'
 
-  const SERVER_LABEL = {
-    ready: 'servidor listo',
-    waking: 'despertando...',
-    offline: 'sin conexión',
-  }
-  const SERVER_COLOR = {
-    ready: 'text-emerald-500',
-    waking: 'text-amber-400',
-    offline: 'text-zinc-500',
-  }
-
-  // ── Field label (floating) helper ──────────────────────────────────────────
   const floatLabel = (field) =>
     focusedField === field || formState[field]
       ? '-top-2.5 bg-zinc-900 px-2 text-xs text-emerald-500 font-bold'
       : 'top-3.5 text-zinc-500'
 
-  // ── Render ─────────────────────────────────────────────────────────────────
   return (
     <>
       <SEO
@@ -145,18 +150,14 @@ const Contact = () => {
       />
       <div className="min-h-screen bg-zinc-950 py-24 px-6 relative overflow-hidden flex items-center justify-center">
 
-        {/* Background ambience */}
+        {/* Background */}
         <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
           <div className="absolute top-[20%] right-[10%] w-96 h-96 bg-emerald-500/8 rounded-full blur-[100px]" />
           <div className="absolute bottom-[20%] left-[10%] w-96 h-96 bg-blue-600/8 rounded-full blur-[100px]" />
-          {/* FONDO: líneas cruzadas sutiles — diferente a otras páginas */}
           <div
             className="absolute inset-0 opacity-[0.04]"
             style={{
-              backgroundImage: `
-                linear-gradient(30deg, #6ee7b7 1px, transparent 1px),
-                linear-gradient(-30deg, #6ee7b7 1px, transparent 1px)
-              `,
+              backgroundImage: `linear-gradient(30deg,#6ee7b7 1px,transparent 1px),linear-gradient(-30deg,#6ee7b7 1px,transparent 1px)`,
               backgroundSize: '60px 60px',
             }}
           />
@@ -165,14 +166,13 @@ const Contact = () => {
         <div className="max-w-6xl w-full mx-auto relative z-10">
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-24 items-start">
 
-            {/* ── Left column ──────────────────────────────────────────────── */}
+            {/* ── Columna izquierda ── */}
             <motion.div
               initial={{ opacity: 0, x: -50 }}
               whileInView={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6 }}
             >
               <div className="mb-12">
-                {/* Status badge */}
                 <div className="inline-flex items-center gap-2 px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 rounded-full mb-6">
                   <span className="relative flex h-2 w-2">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
@@ -196,7 +196,6 @@ const Contact = () => {
                 </p>
               </div>
 
-              {/* Contact cards */}
               <div className="space-y-4 mb-12">
                 {CONTACT_INFO.map((info) => (
                   <div
@@ -217,7 +216,6 @@ const Contact = () => {
                 ))}
               </div>
 
-              {/* Social links */}
               <div className="flex gap-4">
                 {SOCIAL_LINKS.map((social) => (
                   <a
@@ -234,7 +232,7 @@ const Contact = () => {
               </div>
             </motion.div>
 
-            {/* ── Right column: Form ────────────────────────────────────────── */}
+            {/* ── Columna derecha: Formulario ── */}
             <motion.div
               initial={{ opacity: 0, x: 50 }}
               whileInView={{ opacity: 1, x: 0 }}
@@ -245,32 +243,15 @@ const Contact = () => {
 
               <div className="bg-zinc-900/80 backdrop-blur-xl border border-zinc-800 p-8 md:p-10 rounded-3xl shadow-2xl relative overflow-hidden">
 
-                {/* Form header */}
-                <div className="flex items-center justify-between mb-8 pb-8 border-b border-zinc-800">
-                  <div className="flex items-center gap-3">
-                    <Terminal className="text-emerald-500 shrink-0" size={24} />
-                    <h3 className="text-xl font-bold text-white">Enviar Mensaje</h3>
-                  </div>
-
-                  {/* Server status */}
-                  <div
-                    className="flex items-center gap-1.5"
-                    title={SERVER_LABEL[serverStatus]}
-                  >
-                    {serverStatus === 'waking'
-                      ? <Loader2 size={14} className="text-amber-400 animate-spin" />
-                      : <Wifi size={14} className={serverStatus === 'ready' ? 'text-emerald-500' : 'text-zinc-600'} />
-                    }
-                    <span className={`text-xs font-mono ${SERVER_COLOR[serverStatus]}`}>
-                      {SERVER_LABEL[serverStatus]}
-                    </span>
-                  </div>
+                {/* Header del form */}
+                <div className="flex items-center gap-3 mb-8 pb-8 border-b border-zinc-800">
+                  <Terminal className="text-emerald-500 shrink-0" size={24} />
+                  <h3 className="text-xl font-bold text-white">Enviar Mensaje</h3>
                 </div>
 
-                {/* Form */}
                 <form onSubmit={handleSubmit} className="space-y-6" noValidate>
 
-                  {/* Name */}
+                  {/* Nombre */}
                   <div className="relative">
                     <label
                       htmlFor="contact-name"
@@ -314,7 +295,7 @@ const Contact = () => {
                     />
                   </div>
 
-                  {/* Message */}
+                  {/* Mensaje */}
                   <div className="relative">
                     <label
                       htmlFor="contact-message"
@@ -326,7 +307,7 @@ const Contact = () => {
                       id="contact-message"
                       rows={4}
                       required
-                      maxLength={MAX_MESSAGE_LENGTH}
+                      maxLength={MAX_MSG_LEN}
                       value={formState.message}
                       onChange={updateField('message')}
                       onFocus={() => setFocusedField('message')}
@@ -340,7 +321,7 @@ const Contact = () => {
                     )}
                   </div>
 
-                  {/* Submit */}
+                  {/* Botón enviar */}
                   <button
                     type="submit"
                     disabled={isDisabled}
@@ -356,7 +337,7 @@ const Contact = () => {
                     {status === 'idle' && <><Send size={18} className="shrink-0" /> Enviar Propuesta</>}
                   </button>
 
-                  {/* Error message */}
+                  {/* Mensaje de error */}
                   <AnimatePresence>
                     {status === 'error' && errorMessage && (
                       <motion.p
@@ -371,7 +352,7 @@ const Contact = () => {
                   </AnimatePresence>
                 </form>
 
-                {/* Success overlay */}
+                {/* Overlay de éxito */}
                 <AnimatePresence>
                   {status === 'success' && (
                     <motion.div
