@@ -36,7 +36,7 @@ const About = () => {
       <SEO
         title="Sobre Luis Crisanto | Ingeniero de Sistemas en Formación"
         description="Conoce mi trayectoria académica, habilidades técnicas en Node.js, MySQL, React y AWS. Especialista en arquitectura backend y desarrollo Full Stack."
-        canonical="https://mi-portafolio-khaki-two.vercel.app/about"
+        canonical="https://luis-crisanto.vercel.app/about"
         keywords="Luis Crisanto, Sobre mí, Ingeniero de Sistemas, Trayectoria académica, Skills técnicos, Node.js, MySQL, React, AWS"
       />
 

@@ -129,7 +129,7 @@ const Services = () => {
       <SEO
         title="Servicios | Luis Crisanto - Soluciones de Software"
         description="Servicios de desarrollo: Arquitectura Backend, Ingeniería de Datos, Full Stack, Cloud & DevOps, Consultoría de Software y Optimización."
-        canonical="https://mi-portafolio-khaki-two.vercel.app/services"
+        canonical="https://luis-crisanto.vercel.app/services"
         keywords="Servicios, Desarrollo Backend, Full Stack, Cloud, DevOps, Consultoría, Arquitectura de Software, APIs REST"
       />
       <div className="min-h-screen bg-zinc-950 py-24 px-6 relative overflow-hidden">
@@ -284,12 +284,6 @@ const Services = () => {
                     <ArrowRight className="w-4 h-4" />
                   </button>
                 </Link>
-                <a href="https://wa.me/51943759634" target="_blank" rel="noopener noreferrer" className="flex-1">
-                  <button className="w-full px-6 py-3.5 bg-emerald-800/50 border border-emerald-400/30 text-white font-bold rounded-xl hover:bg-emerald-800 transition-colors flex items-center justify-center gap-2">
-                    WhatsApp
-                    <MessageSquare className="w-4 h-4" />
-                  </button>
-                </a>
               </div>
             </div>
 

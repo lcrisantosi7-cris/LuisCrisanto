@@ -55,7 +55,7 @@ const Skills = () => {
       <SEO
         title="Habilidades Técnicas | Luis Crisanto - Stack Tecnológico"
         description="Mis habilidades: Node.js, PHP, React, MySQL, AWS, Docker, Git. Backend, Frontend, Bases de Datos y DevOps. Nivel de dominio por tecnología."
-        canonical="https://mi-portafolio-khaki-two.vercel.app/skills"
+        canonical="https://luis-crisanto.vercel.app/"
         keywords="Habilidades, Skills, Node.js, PHP, React, MySQL, AWS, Docker, Frontend, Backend, DevOps, Programación"
       />
       <div className="min-h-screen bg-zinc-950 py-28 px-6 relative overflow-hidden">

@@ -84,7 +84,7 @@ const Experience = () => {
       <SEO
         title="Experiencia y Formación | Luis Crisanto - Ingeniero de Sistemas"
         description="Mi trayectoria académica en Ingeniería de Sistemas: 6 ciclos completados, 116+ créditos, 8+ proyectos. Roadmap de formación profesional."
-        canonical="https://mi-portafolio-khaki-two.vercel.app/experience"
+        canonical="https://luis-crisanto.vercel.app/experience"
         keywords="Experiencia, Formación, Ingeniería de Sistemas, Educación, Universidad César Vallejo, Trayectoria académica"
       />
       <div className="min-h-screen bg-zinc-950 py-28 px-6 relative overflow-hidden">

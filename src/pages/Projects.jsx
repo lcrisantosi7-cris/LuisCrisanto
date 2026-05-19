@@ -135,7 +135,7 @@ const Projects = () => {
       <SEO
         title="Proyectos | Luis Crisanto - Portfolio de Desarrollo"
         description="Explora mis proyectos de ingeniería de software: APIs REST, sistemas de gestión escolar, microservicios, dashboards y arquitecturas backend escalables."
-        canonical="https://mi-portafolio-khaki-two.vercel.app/projects"
+        canonical="https://luis-crisanto.vercel.app/projects"
         keywords="Proyectos, Portfolio, APIs REST, Microservicios, Full Stack, Backend, Node.js, PHP, React, Sistemas de Gestión"
       />
       <div className="min-h-screen bg-zinc-950 py-28 px-6 relative overflow-hidden">

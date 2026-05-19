@@ -4,8 +4,8 @@ import { Helmet } from 'react-helmet-async'
 export const SEO = ({ 
   title = 'Luis Crisanto | Software Engineer & Full Stack Developer',
   description = 'Ingeniero de Sistemas especializado en desarrollo Full Stack. Experto en Node.js, Spring Boot y soluciones Cloud (AWS). Creando software escalable y eficiente.',
-  canonical = 'https://mi-portafolio-khaki-two.vercel.app/',
-  ogImage = 'https://mi-portafolio-khaki-two.vercel.app/og-preview.png',
+  canonical = 'https://luis-crisanto.vercel.app/',
+  ogImage = 'https://luis-crisanto.vercel.app/og-preview.png',
   ogType = 'website',
   keywords = 'Luis Crisanto, Software Engineer, Full Stack Developer, Node.js, Spring Boot, React, AWS'
 }) => {

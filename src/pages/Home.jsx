@@ -24,7 +24,7 @@ const Home = () => {
       <SEO
         title="Luis Crisanto | Ingeniero de Sistemas & Desarrollador Full Stack"
         description="Especialista en arquitectura backend, Node.js, Spring Boot y AWS. Diseño de sistemas escalables y soluciones tecnológicas de alto impacto."
-        canonical="https://mi-portafolio-khaki-two.vercel.app/"
+        canonical="https://luis-crisanto.vercel.app/"
         keywords="Luis Crisanto, Ingeniero de Sistemas, Full Stack Developer, Node.js, Spring Boot, React, AWS, Backend, Arquitectura de Sistemas"
       />
       <div className="min-h-screen bg-zinc-950 relative overflow-hidden flex items-center justify-center px-6 pt-20">
