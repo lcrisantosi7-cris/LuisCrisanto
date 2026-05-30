@@ -79,7 +79,7 @@ const About = () => {
                 <div className="absolute -inset-1 bg-gradient-to-br from-emerald-500/40 to-teal-500/20 rounded-2xl blur-sm opacity-60 group-hover:opacity-100 transition-opacity" />
                 <div className="relative w-40 h-40 lg:w-48 lg:h-48 rounded-2xl overflow-hidden border-2 border-emerald-500/30 bg-zinc-900">
                   <img
-                    src="/informalCV.png"
+                    src="/informalCV.webp"
                     alt="Luis Crisanto — Ingeniero de Sistemas"
                     className="w-full h-full object-cover"
                     onError={(e) => {

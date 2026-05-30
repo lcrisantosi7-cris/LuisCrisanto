@@ -149,7 +149,7 @@ const Home = () => {
 
                 <div className="relative w-56 h-56 md:w-64 md:h-64 lg:w-72 lg:h-72 rounded-3xl overflow-hidden border border-emerald-500/20 bg-zinc-900 shadow-2xl">
                   <img
-                    src="/informalCV.png"
+                    src="/informalCV.webp"
                     alt="Luis Crisanto — Ingeniero de Sistemas"
                     className="w-full h-full object-cover"
                     onError={(e) => {
