@@ -1,3 +1,4 @@
+
 import { ArrowRight, Terminal, ExternalLink } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
@@ -9,19 +10,37 @@ const container = {
   hidden: { opacity: 0 },
   visible: { opacity: 1, transition: { staggerChildren: 0.12 } },
 }
+
 const up = {
   hidden: { y: 28, opacity: 0 },
-  visible: { y: 0, opacity: 1, transition: { duration: 0.6, ease: 'easeOut' } },
+  visible: {
+    y: 0,
+    opacity: 1,
+    transition: { duration: 0.6, ease: 'easeOut' },
+  },
 }
 
 // ── Stack de tecnologías ─────────────────────────────────────────────────────
-const STACK = ['Node.js', 'PHP', 'FastAPI', 'React', 'MySQL', 'Python', 'Docker', 'AWS']
+const STACK = [
+  'Node.js',
+  'Python',
+  'FastAPI',
+  'PHP',
+  'React',
+  'MySQL',
+  'Docker',
+  'AWS',
+  'REST APIs',
+  'WebSocket',
+]
+
 
 // ── Proyecto estrella ────────────────────────────────────────────────────────
 const STAR_PROJECT = {
   label: 'Proyecto destacado',
   title: 'RetailVision Analytics',
-  description: 'Detección de personas en tiempo real con YOLOv8, mapas de calor y métricas de afluencia para múltiples cámaras.',
+  description:
+  'Sistema de analítica en tiempo real con procesamiento de video, APIs, WebSockets y métricas de afluencia para múltiples cámaras.',
   tags: ['FastAPI', 'YOLOv8', 'React', 'WebSocket'],
   github: 'https://github.com/lcrisantosi7-cris/retailvision-analytics',
   demo: null,
@@ -32,11 +51,12 @@ export default function Home() {
   return (
     <>
       <SEO
-        title="Luis Crisanto | Ingeniero de Sistemas & Desarrollador Full Stack"
-        description="Especialista en arquitectura backend, Node.js, FastAPI y Python. Diseño de sistemas escalables y soluciones tecnológicas de alto impacto."
+        title="Luis Crisanto | Backend, Software Architecture & Cloud"
+        description="Ingeniero de Sistemas enfocado en backend, arquitectura de software y cloud computing. Construyo APIs, sistemas escalables y soluciones web."
         canonical="https://luis-crisanto.vercel.app/"
-        keywords="Luis Crisanto, Ingeniero de Sistemas, Full Stack Developer, Node.js, FastAPI, React, Python, Backend, Lima"
+        keywords="Luis Crisanto, Ingeniero de Sistemas, Backend Developer, Software Architecture, Cloud Computing, AWS, Node.js, FastAPI, Python, React"
       />
+
 
       {/* ── Sidebar redes sociales — solo desktop ── */}
       <SocialSidebar />
@@ -60,6 +80,7 @@ export default function Home() {
               'linear-gradient(to bottom, rgba(13,11,20,0.55) 0%, rgba(13,11,20,0.75) 50%, #0d0b14 100%)',
           }}
         />
+
         {/* Overlay lateral izquierda — refuerza la legibilidad del texto */}
         <div
           className="absolute inset-0 z-10 pointer-events-none hidden lg:block"
@@ -88,7 +109,10 @@ export default function Home() {
             <div className="flex-1 text-center lg:text-left order-2 lg:order-1 w-full">
 
               {/* Badge "Disponible" */}
-              <motion.div variants={up} className="flex justify-center lg:justify-start mb-6">
+              <motion.div
+                variants={up}
+                className="flex justify-center lg:justify-start mb-6"
+              >
                 <div
                   className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full backdrop-blur-md"
                   style={{
@@ -106,6 +130,7 @@ export default function Home() {
                       style={{ backgroundColor: '#FC8F54' }}
                     />
                   </span>
+
                   <span
                     className="font-mono text-[10px] uppercase tracking-[0.25em]"
                     style={{ color: '#ffb388' }}
@@ -121,7 +146,7 @@ export default function Home() {
                 className="font-mono text-xs uppercase tracking-[0.3em] mb-3"
                 style={{ color: 'rgba(255,255,255,0.35)' }}
               >
-                Ingeniero de Sistemas · 7mo Ciclo · UCV · Lima
+                Ingeniero · Arquitectura de Software · Cloud
               </motion.p>
 
               {/* Título principal */}
@@ -134,9 +159,13 @@ export default function Home() {
                 }}
               >
                 <span className="sr-only">
-                  Luis Crisanto — Ingeniero de Sistemas y Desarrollador Full Stack en Lima, Perú
+                  Luis Crisanto — Ingeniero de Sistemas enfocado en backend, arquitectura de software y cloud computing
                 </span>
-                <span className="block text-white" aria-hidden>LUIS</span>
+
+                <span className="block text-white" aria-hidden>
+                  LUIS
+                </span>
+
                 <span
                   aria-hidden
                   className="block text-transparent bg-clip-text"
@@ -150,15 +179,18 @@ export default function Home() {
               </motion.h1>
 
               {/* Descripción — copy humano, directo */}
-              <motion.p
-                variants={up}
-                className="text-base sm:text-lg leading-relaxed mb-8 max-w-xl mx-auto lg:mx-0"
-                style={{ color: 'rgba(255,255,255,0.55)' }}
-              >
-                Construyo el backend que hace funcionar las cosas.{' '}
-                <span className="text-white font-medium">APIs, sistemas y arquitecturas</span>{' '}
-                que escalan — desde Lima para el mundo.
-              </motion.p>
+<motion.p
+  variants={up}
+  className="text-base sm:text-lg leading-relaxed mb-8 max-w-xl mx-auto lg:mx-0"
+  style={{ color: 'rgba(255,255,255,0.55)' }}
+>
+  Diseño sistemas que escalan.{' '}
+  <span className="text-white font-medium">
+    Construyo backends robustos y arquitecturas cloud
+  </span>{' '}
+  pensadas para crecer.
+</motion.p>
+
 
               {/* CTA Buttons */}
               <motion.div
@@ -169,9 +201,12 @@ export default function Home() {
                   <button
                     className="w-full group px-7 py-3.5 font-bold rounded-xl transition-all duration-300
                                flex items-center justify-center gap-2 active:scale-95 text-white"
-                    style={{ background: 'linear-gradient(90deg, #FC8F54, #F5525B)' }}
+                    style={{
+                      background: 'linear-gradient(90deg, #FC8F54, #F5525B)',
+                    }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.boxShadow = '0 0 32px rgba(252,143,84,0.45)'
+                      e.currentTarget.style.boxShadow =
+                        '0 0 32px rgba(252,143,84,0.45)'
                       e.currentTarget.style.transform = 'scale(1.03)'
                     }}
                     onMouseLeave={(e) => {
@@ -194,24 +229,33 @@ export default function Home() {
                       color: 'rgba(255,255,255,0.8)',
                     }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.borderColor = 'rgba(104,103,210,0.55)'
+                      e.currentTarget.style.borderColor =
+                        'rgba(104,103,210,0.55)'
                       e.currentTarget.style.color = '#fff'
                       e.currentTarget.style.transform = 'scale(1.03)'
                     }}
                     onMouseLeave={(e) => {
-                      e.currentTarget.style.borderColor = 'rgba(255,255,255,0.18)'
-                      e.currentTarget.style.color = 'rgba(255,255,255,0.8)'
+                      e.currentTarget.style.borderColor =
+                        'rgba(255,255,255,0.18)'
+                      e.currentTarget.style.color =
+                        'rgba(255,255,255,0.8)'
                       e.currentTarget.style.transform = 'scale(1)'
                     }}
                   >
-                    <Terminal className="w-4 h-4" style={{ color: '#6867D2' }} />
+                    <Terminal
+                      className="w-4 h-4"
+                      style={{ color: '#6867D2' }}
+                    />
                     Ver proyectos
                   </button>
                 </Link>
               </motion.div>
 
               {/* Redes sociales — solo móvil */}
-              <motion.div variants={up} className="flex justify-center lg:hidden mb-6">
+              <motion.div
+                variants={up}
+                className="flex justify-center lg:hidden mb-6"
+              >
                 <SocialRow size={18} />
               </motion.div>
 
@@ -226,12 +270,16 @@ export default function Home() {
                       backdropFilter: 'blur(12px)',
                     }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.borderColor = 'rgba(252,143,84,0.45)'
-                      e.currentTarget.style.background = 'rgba(13,11,20,0.85)'
+                      e.currentTarget.style.borderColor =
+                        'rgba(252,143,84,0.45)'
+                      e.currentTarget.style.background =
+                        'rgba(13,11,20,0.85)'
                     }}
                     onMouseLeave={(e) => {
-                      e.currentTarget.style.borderColor = 'rgba(252,143,84,0.18)'
-                      e.currentTarget.style.background = 'rgba(13,11,20,0.7)'
+                      e.currentTarget.style.borderColor =
+                        'rgba(252,143,84,0.18)'
+                      e.currentTarget.style.background =
+                        'rgba(13,11,20,0.7)'
                     }}
                   >
                     {/* Header de la card */}
@@ -242,6 +290,7 @@ export default function Home() {
                       >
                         {STAR_PROJECT.label}
                       </span>
+
                       <ExternalLink
                         size={13}
                         className="opacity-0 group-hover:opacity-100 transition-opacity"
@@ -250,9 +299,7 @@ export default function Home() {
                     </div>
 
                     {/* Título */}
-                    <p
-                      className="font-bold text-sm text-white mb-1 group-hover:text-white transition-colors"
-                    >
+                    <p className="font-bold text-sm text-white mb-1 group-hover:text-white transition-colors">
                       {STAR_PROJECT.title}
                     </p>
 
@@ -281,6 +328,7 @@ export default function Home() {
                           </span>
                         ))}
                       </div>
+
                       {STAR_PROJECT.github && (
                         <a
                           href={STAR_PROJECT.github}
@@ -288,8 +336,13 @@ export default function Home() {
                           rel="noopener noreferrer"
                           className="text-[10px] font-mono transition-colors"
                           style={{ color: 'rgba(255,255,255,0.25)' }}
-                          onMouseEnter={(e) => { e.currentTarget.style.color = '#FC8F54' }}
-                          onMouseLeave={(e) => { e.currentTarget.style.color = 'rgba(255,255,255,0.25)' }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.color = '#FC8F54'
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.color =
+                              'rgba(255,255,255,0.25)'
+                          }}
                           onClick={(e) => e.stopPropagation()}
                         >
                           GitHub →
@@ -299,7 +352,6 @@ export default function Home() {
                   </div>
                 </Link>
               </motion.div>
-
             </div>
 
             {/* ── COLUMNA DERECHA: Foto ──────────────────────────────── */}
@@ -308,6 +360,7 @@ export default function Home() {
               className="flex-shrink-0 flex flex-col items-center order-1 lg:order-2"
             >
               <div className="relative group">
+
                 {/* Glow de fondo */}
                 <div
                   className="absolute -inset-4 rounded-3xl blur-2xl opacity-40
@@ -317,6 +370,7 @@ export default function Home() {
                       'radial-gradient(ellipse, rgba(252,143,84,0.5) 0%, rgba(245,82,91,0.2) 55%, transparent 75%)',
                   }}
                 />
+
                 {/* Anillo decorativo */}
                 <div
                   className="absolute -inset-0.5 rounded-3xl pointer-events-none"
@@ -353,11 +407,13 @@ export default function Home() {
                       className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75"
                       style={{ backgroundColor: '#FC8F54' }}
                     />
+
                     <span
                       className="relative inline-flex rounded-full h-1.5 w-1.5"
                       style={{ backgroundColor: '#FC8F54' }}
                     />
                   </span>
+
                   <span
                     className="text-[9px] font-mono font-bold uppercase tracking-wider"
                     style={{ color: '#ffb388' }}
@@ -367,7 +423,6 @@ export default function Home() {
                 </div>
               </div>
             </motion.div>
-
           </div>
         </motion.div>
       </section>
@@ -391,15 +446,17 @@ export default function Home() {
               {[
                 { value: '8+', label: 'Proyectos' },
                 { value: '37+', label: 'Cursos' },
-                { value: '07', label: 'Ciclo académico' },
+                { value: '∞', label: 'Aprendizaje constante' },
               ].map((s, i, arr) => (
-                <div key={s.label} className="flex items-center gap-8 sm:gap-12">
+                <div
+                  key={s.label}
+                  className="flex items-center gap-8 sm:gap-12"
+                >
                   <div>
-                    <p
-                      className="text-3xl font-black text-white font-mono leading-none mb-0.5"
-                    >
+                    <p className="text-3xl font-black text-white font-mono leading-none mb-0.5">
                       {s.value}
                     </p>
+
                     <p
                       className="text-[10px] uppercase tracking-widest"
                       style={{ color: 'rgba(255,255,255,0.3)' }}
@@ -407,8 +464,14 @@ export default function Home() {
                       {s.label}
                     </p>
                   </div>
+
                   {i < arr.length - 1 && (
-                    <div className="w-px h-8" style={{ background: 'rgba(255,255,255,0.08)' }} />
+                    <div
+                      className="w-px h-8"
+                      style={{
+                        background: 'rgba(255,255,255,0.08)',
+                      }}
+                    />
                   )}
                 </div>
               ))}
@@ -422,6 +485,7 @@ export default function Home() {
               >
                 Stack
               </p>
+
               <div className="flex flex-wrap gap-2">
                 {STACK.map((tech) => (
                   <span
@@ -434,14 +498,20 @@ export default function Home() {
                       color: 'rgba(255,255,255,0.35)',
                     }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.color = 'rgba(255,179,136,0.9)'
-                      e.currentTarget.style.borderColor = 'rgba(252,143,84,0.3)'
-                      e.currentTarget.style.background = 'rgba(252,143,84,0.06)'
+                      e.currentTarget.style.color =
+                        'rgba(255,179,136,0.9)'
+                      e.currentTarget.style.borderColor =
+                        'rgba(252,143,84,0.3)'
+                      e.currentTarget.style.background =
+                        'rgba(252,143,84,0.06)'
                     }}
                     onMouseLeave={(e) => {
-                      e.currentTarget.style.color = 'rgba(255,255,255,0.35)'
-                      e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)'
-                      e.currentTarget.style.background = 'rgba(255,255,255,0.04)'
+                      e.currentTarget.style.color =
+                        'rgba(255,255,255,0.35)'
+                      e.currentTarget.style.borderColor =
+                        'rgba(255,255,255,0.08)'
+                      e.currentTarget.style.background =
+                        'rgba(255,255,255,0.04)'
                     }}
                   >
                     {tech}
