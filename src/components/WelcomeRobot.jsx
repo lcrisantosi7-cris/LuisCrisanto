@@ -12,27 +12,27 @@ const HappyRobotSVG = () => (
       transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
     >
       {/* Cabeza */}
-      <rect x="60" y="40" width="80" height="70" rx="10" fill="#18181b" stroke="#10b981" strokeWidth="2" />
+      <rect x="60" y="40" width="80" height="70" rx="10" fill="#18181b" stroke="#8b5cf6" strokeWidth="2" />
 
       {/* Ojos (Parpadeo feliz) */}
       <motion.g
         animate={{ scaleY: [1, 0.1, 1] }}
         transition={{ repeat: Infinity, duration: 3, repeatDelay: 3.5 }}
       >
-        <circle cx="85" cy="70" r="8" fill="#10b981" />
-        <circle cx="115" cy="70" r="8" fill="#10b981" />
+        <circle cx="85" cy="70" r="8" fill="#8b5cf6" />
+        <circle cx="115" cy="70" r="8" fill="#8b5cf6" />
         {/* Brillo en los ojos */}
         <circle cx="88" cy="67" r="2.5" fill="white" />
         <circle cx="118" cy="67" r="2.5" fill="white" />
       </motion.g>
 
       {/* Boca (Sonrisa) */}
-      <path d="M85 95 Q100 105 115 95" stroke="#10b981" strokeWidth="3" strokeLinecap="round" />
+      <path d="M85 95 Q100 105 115 95" stroke="#8b5cf6" strokeWidth="3" strokeLinecap="round" />
 
       {/* Antena */}
       <line x1="100" y1="40" x2="100" y2="20" stroke="#71717a" strokeWidth="2" />
       <motion.circle
-        cx="100" cy="15" r="4" fill="#10b981"
+        cx="100" cy="15" r="4" fill="#8b5cf6"
         animate={{ opacity: [0.5, 1, 0.5] }}
         transition={{ repeat: Infinity, duration: 2 }}
       />
@@ -60,13 +60,13 @@ const HappyRobotSVG = () => (
     >
       <path d="M130 130 L150 110" stroke="#71717a" strokeWidth="4" strokeLinecap="round" />
       {/* Mano */}
-      <circle cx="152" cy="108" r="5" fill="#10b981" />
+      <circle cx="152" cy="108" r="5" fill="#8b5cf6" />
     </motion.g>
 
     {/* Detalle del pecho (Logo LC) */}
     <rect x="90" y="135" width="20" height="15" rx="2" stroke="#3f3f46" strokeWidth="1" />
     <motion.rect
-      x="92" y="137" width="16" height="11" rx="1" fill="#10b981"
+      x="92" y="137" width="16" height="11" rx="1" fill="#8b5cf6"
       animate={{ opacity: [0.3, 0.6, 0.3] }}
       transition={{ repeat: Infinity, duration: 3 }}
     />
@@ -77,7 +77,7 @@ const HappyRobotSVG = () => (
       cy="185"
       rx="30"
       ry="4"
-      fill="#10b981"
+      fill="#8b5cf6"
       opacity="0.2"
       animate={{ opacity: [0.1, 0.3, 0.1], rx: [25, 35, 25] }}
       transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
@@ -154,7 +154,7 @@ const WelcomeRobot = () => {
               <div className="bg-zinc-900/90 backdrop-blur-md border border-zinc-700 text-white px-4 py-2 rounded-2xl rounded-br-none shadow-xl flex items-center gap-2 min-w-[150px] max-w-[210px]">
                 {messageIndex === 0
                   ? <Sparkles size={14} className="text-yellow-400 shrink-0" />
-                  : <MessageCircle size={14} className="text-emerald-400 shrink-0" />
+                  : <MessageCircle size={14} className="shrink-0" style={{ color: '#FC8F54' }} />
                 }
                 <span className="text-sm font-medium">{messages[messageIndex]}</span>
               </div>
@@ -179,7 +179,8 @@ const WelcomeRobot = () => {
             onClick={() => setMessageIndex(prev => (prev + 1) % messages.length)}
           >
             {/* Efecto Glow detrás del robot */}
-            <div className="absolute inset-0 bg-emerald-500/20 blur-3xl rounded-full -z-10" />
+            <div className="absolute inset-0 blur-3xl rounded-full -z-10"
+              style={{ background: 'rgba(252,143,84,0.18)' }} />
             <HappyRobotSVG />
           </motion.div>
 

@@ -14,7 +14,7 @@ import NotFound from './pages/NotFound'
 
 function App() {
   return (
-    <div className="min-h-screen bg-zinc-900 text-white">
+    <div className="min-h-screen bg-zinc-950 text-white">
       <Header />
       <WelcomeRobot />
       <main className="pt-20">

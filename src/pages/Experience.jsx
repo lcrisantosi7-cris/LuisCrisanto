@@ -1,228 +1,646 @@
-import React from 'react'
+import React, { useState } from 'react'
 import {
-  Calendar, GraduationCap, BookOpen, Award,
   Terminal, Cpu, Network, Database, Globe,
-  Code2, Briefcase, Zap, Layers
+  Code2, Layers, Zap, ArrowRight, BookOpen,
+  Briefcase, Award, ChevronDown
 } from 'lucide-react'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import SEO from '../components/SEO'
 
+// ── Variantes ───────────────────────────────────────────────────────────────
+const container = {
+  hidden:  { opacity: 0 },
+  visible: { opacity: 1, transition: { staggerChildren: 0.08 } },
+}
+const up = {
+  hidden:  { y: 24, opacity: 0 },
+  visible: { y: 0, opacity: 1, transition: { duration: 0.55, ease: 'easeOut' } },
+}
+
+// ── Datos de ciclos ─────────────────────────────────────────────────────────
+// Cada ciclo tiene `img`: coloca ahí una foto real tuya de esa época/proyecto.
+// Si aún no tienes foto, pon null y mostrará el color de fondo.
+const cycles = [
+  {
+    cycle: 'I',
+    label: 'Fundamentos',
+    year: '2022-1',
+    courses: ['Introducción a Sistemas', 'Lógica de Programación', 'Cálculo General'],
+    icon: Terminal,
+    img: '/cycles/cycle-1.jpg',   // foto: primer día de clases, libros, campus
+    color: '#6867D2',
+    done: true,
+  },
+  {
+    cycle: 'II',
+    label: 'Algoritmia',
+    year: '2022-2',
+    courses: ['Metodologías de Programación', 'Pensamiento Sistémico', 'Cálculo I'],
+    icon: Code2,
+    img: '/cycles/cycle-2.jpg',   // foto: cuaderno con pseudocódigo, diagrama de flujo a mano
+    color: '#6867D2',
+    done: true,
+  },
+  {
+    cycle: 'III',
+    label: 'Estructuras & HW',
+    year: '2023-1',
+    courses: ['Estructura de Datos', 'Circuitos Digitales', 'Cálculo II'],
+    icon: Cpu,
+    img: '/cycles/cycle-3.jpg',   // foto: placa de circuito, lab de hardware
+    color: '#5546AD',
+    done: true,
+  },
+  {
+    cycle: 'IV',
+    label: 'Análisis & Diseño',
+    year: '2023-2',
+    courses: ['POO Avanzado', 'Análisis de Sistemas', 'Modelado de Datos I'],
+    icon: Layers,
+    img: '/cycles/cycle-4.jpg',   // foto: diagrama UML en pizarrón, whiteboard
+    color: '#5546AD',
+    done: true,
+  },
+  {
+    cycle: 'V',
+    label: 'Arquitectura SW',
+    year: '2024-1',
+    courses: ['Ingeniería de Software', 'Arquitectura Empresarial', 'Gestión de Datos II'],
+    icon: Database,
+    img: '/cycles/cycle-5.jpg',   // foto: tu laptop con un esquema de base de datos abierto
+    color: '#FC8F54',
+    done: true,
+  },
+  {
+    cycle: 'VI',
+    label: 'Web & Redes',
+    year: '2024-2',
+    courses: ['Ingeniería Web Fullstack', 'Networking Avanzado', 'Gestión de TI'],
+    icon: Network,
+    img: '/cycles/cycle-6.jpg',   // foto: monitor con código React, terminal abierta
+    color: '#FC8F54',
+    done: true,
+  },
+  {
+    cycle: 'VII',
+    label: 'Cloud & Distribuidos',
+    year: '2025-1',
+    courses: ['Arquitectura Cloud (AWS)', 'Sistemas Distribuidos', 'Seguridad Informática'],
+    icon: Globe,
+    img: '/cycles/cycle-7.jpg',   // foto: tu setup actual, laptop, café, lo que sea real
+    color: '#F5525B',
+    done: false,
+    current: true,
+  },
+]
+
+// ── Datos de skills por categoría ───────────────────────────────────────────
+const skillGroups = [
+  {
+    category: 'Frontend',
+    icon: '💻',
+    img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ7kVwY6E3UkmCgzAWgtGomGiRCMrGr8ZeYqsWeQUCCgEcPTwYvWzjBTEZljwOScmdW0PuSYcVD5CWmP8WEY5MS_0g9ISItFLhQNXgDMx9XSw&s=10',   // foto: browser abierto con tu portafolio o un proyecto
+    items: [
+      { name: 'React',       level: 75 },
+      { name: 'Vue.js',      level: 55 },
+      { name: 'Tailwind',    level: 80 },
+      { name: 'JavaScript',  level: 78 },
+    ],
+    accent: '#6867D2',
+  },
+  {
+    category: 'Backend',
+    icon: '⚙️',
+    img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ7kVwY6E3UkmCgzAWgtGomGiRCMrGr8ZeYqsWeQUCCgEcPTwYvWzjBTEZljwOScmdW0PuSYcVD5CWmP8WEY5MS_0g9ISItFLhQNXgDMx9XSw&s=10',    // foto: terminal con Node.js / FastAPI corriendo
+    items: [
+      { name: 'Node.js',    level: 75 },
+      { name: 'PHP/Laravel',level: 82 },
+      { name: 'FastAPI',    level: 68 },
+      { name: 'Python',     level: 70 },
+    ],
+    accent: '#FC8F54',
+  },
+  {
+    category: 'Datos & DB',
+    icon: '🗄',
+    img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ7kVwY6E3UkmCgzAWgtGomGiRCMrGr8ZeYqsWeQUCCgEcPTwYvWzjBTEZljwOScmdW0PuSYcVD5CWmP8WEY5MS_0g9ISItFLhQNXgDMx9XSw&s=10',   // foto: DBeaver o MySQL Workbench en pantalla
+    items: [
+      { name: 'MySQL',        level: 88 },
+      { name: 'SQL Server',   level: 80 },
+      { name: 'PostgreSQL',   level: 55 },
+      { name: 'MongoDB',      level: 45 },
+    ],
+    accent: '#5546AD',
+  },
+  {
+    category: 'DevOps & Cloud',
+    icon: '☁️',
+    img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ7kVwY6E3UkmCgzAWgtGomGiRCMrGr8ZeYqsWeQUCCgEcPTwYvWzjBTEZljwOScmdW0PuSYcVD5CWmP8WEY5MS_0g9ISItFLhQNXgDMx9XSw&s=10',     // foto: dashboard de Vercel/Render/AWS en pantalla
+    items: [
+      { name: 'Git / GitHub', level: 85 },
+      { name: 'Docker',       level: 50 },
+      { name: 'Vercel/Render',level: 70 },
+      { name: 'AWS (EC2/S3)', level: 38 },
+    ],
+    accent: '#F5525B',
+  },
+]
+
+// ── Componente principal ────────────────────────────────────────────────────
 const Experience = () => {
-  // Datos estructurados con iconos profesionales
-  const cycles = [
-    {
-      cycle: 'Ciclo I',
-      label: 'Fundamentos de Ingeniería',
-      courses: ['Introducción a Sistemas', 'Lógica de Programación', 'Cáculo General'],
-      icon: Terminal,
-      year: '2022-1'
-    },
-    {
-      cycle: 'Ciclo II',
-      label: 'Algoritmia & Lógica',
-      courses: ['Metodologías de Programación', 'Pensamiento Sistémico', 'Cálculo I'],
-      icon: Code2,
-      year: '2022-2'
-    },
-    {
-      cycle: 'Ciclo III',
-      label: 'Estructuras & Hardware',
-      courses: ['Estructura de Datos', 'Circuitos Digitales', 'Cálculo II'],
-      icon: Cpu,
-      year: '2023-1'
-    },
-    {
-      cycle: 'Ciclo IV',
-      label: 'Análisis & Diseño',
-      courses: ['POO Avanzado', 'Análisis de Sistemas', 'Modelado de Datos I'],
-      icon: Layers,
-      year: '2023-2'
-    },
-    {
-      cycle: 'Ciclo V',
-      label: 'Arquitectura de Software',
-      courses: ['Ingeniería de Software', 'Arquitectura Empresarial', 'Gestión de Datos II'],
-      icon: Database,
-      year: '2024-1'
-    },
-    {
-      cycle: 'Ciclo VI',
-      label: 'Desarrollo Web & Redes',
-      courses: ['Ingeniería Web Fullstack', 'Networking Avanzado', 'Gestión de TI'],
-      icon: Network,
-      year: '2024-2'
-    },
-    {
-      cycle: 'Ciclo VII',
-      label: 'Sistemas Distribuidos & Cloud',
-      courses: ['Arquitectura Cloud (AWS)', 'Sistemas Distribuidos', 'Seguridad Informática'],
-      icon: Globe,
-      current: true,
-      year: '2025-1'
-    }
-  ]
-
-  const achievements = [
-    { title: 'Proyectos', value: '8+', icon: Briefcase },
-    { title: 'Créditos Aprobados', value: '116+', icon: BookOpen },
-    { title: 'Promedio Ponderado', value: 'Top 10', icon: Award }
-  ]
-
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: { opacity: 1, transition: { staggerChildren: 0.2 } }
-  }
-
-  const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: { y: 0, opacity: 1, transition: { duration: 0.5 } }
-  }
+  const [openCycle, setOpenCycle] = useState(null)
+  const completedCount = cycles.filter((c) => c.done).length
 
   return (
     <>
       <SEO
-        title="Experiencia y Formación | Luis Crisanto - Ingeniero de Sistemas"
-        description="Mi trayectoria académica en Ingeniería de Sistemas: 6 ciclos completados, 116+ créditos, 8+ proyectos. Roadmap de formación profesional."
+        title="Experiencia y Formación | Luis Crisanto"
+        description="Trayectoria académica en Ingeniería de Sistemas: 7 ciclos, 116+ créditos, 8+ proyectos deployados."
         canonical="https://luis-crisanto.vercel.app/experience"
-        keywords="Experiencia, Formación, Ingeniería de Sistemas, Educación, Universidad César Vallejo, Trayectoria académica"
+        keywords="Experiencia, Formación, Ingeniería de Sistemas, UCV, Trayectoria académica"
       />
-      <div className="min-h-screen bg-zinc-950 py-28 px-6 relative overflow-hidden">
-        {/* FONDO: líneas diagonales — diferente a otras páginas */}
+
+      <div
+        className="min-h-screen relative overflow-hidden pt-28 pb-24"
+        style={{ background: '#0d0b14' }}
+      >
+
+        {/* ── FONDO: patrón diagonal sutil en paleta índigo ─────────────── */}
         <div
-          className="absolute inset-0 z-0 opacity-[0.04]"
+          className="absolute inset-0 z-0"
           style={{
             backgroundImage: `repeating-linear-gradient(
-              -45deg,
-              #6ee7b7 0px,
-              #6ee7b7 1px,
+              -55deg,
+              rgba(104,103,210,0.04) 0px,
+              rgba(104,103,210,0.04) 1px,
               transparent 1px,
-              transparent 40px
-            )`
+              transparent 44px
+            )`,
           }}
         />
-        <div className="absolute top-[10%] right-[5%] w-[450px] h-[450px] bg-emerald-500/6 rounded-full blur-[130px] pointer-events-none" />
-        <div className="absolute bottom-[10%] left-[5%] w-[350px] h-[350px] bg-violet-600/5 rounded-full blur-[110px] pointer-events-none" />
+        {/* Bloom naranja arriba-derecha */}
+        <div
+          className="absolute top-[-5%] right-[-5%] w-[550px] h-[550px] rounded-full pointer-events-none blur-[150px]"
+          style={{ background: 'rgba(252,143,84,0.07)' }}
+        />
+        {/* Bloom índigo abajo-izquierda */}
+        <div
+          className="absolute bottom-0 left-0 w-[500px] h-[500px] rounded-full pointer-events-none blur-[140px]"
+          style={{ background: 'rgba(85,70,173,0.07)' }}
+        />
 
         <motion.div
-          variants={containerVariants}
+          variants={container}
           initial="hidden"
           animate="visible"
-          className="max-w-6xl mx-auto relative z-10"
+          className="relative z-10 max-w-6xl mx-auto px-6"
         >
-          {/* HEADER SECTION */}
-          <div className="text-center mb-20">
-            <motion.div variants={itemVariants} className="inline-flex items-center gap-2 px-4 py-1.5 bg-emerald-500/10 border border-emerald-500/20 rounded-full mb-6">
-              <span className="flex h-2 w-2 relative">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-              </span>
-              <span className="text-emerald-400 font-mono text-[10px] uppercase tracking-widest">
+
+          {/* ══════════════════════════════════════════════════════════════
+              ENCABEZADO
+          ══════════════════════════════════════════════════════════════ */}
+          <motion.div variants={up} className="mb-20">
+            <div className="flex items-center gap-3 mb-5">
+              <div className="h-px w-10" style={{ background: '#FC8F54' }} />
+              <span
+                className="font-mono text-[10px] uppercase tracking-[0.35em]"
+                style={{ color: 'rgba(252,143,84,0.7)' }}
+              >
                 Roadmap Académico
               </span>
-            </motion.div>
+            </div>
+            <h1
+              className="font-black tracking-tighter leading-[0.88] mb-4"
+              style={{
+                fontFamily: "'Poppins', sans-serif",
+                fontSize: 'clamp(3rem, 9vw, 7rem)',
+              }}
+            >
+              <span className="block text-white">FORMACIÓN</span>
+              <span
+                className="block text-transparent bg-clip-text"
+                style={{
+                  backgroundImage: 'linear-gradient(90deg, #FC8F54 0%, #F5525B 45%, #6867D2 100%)',
+                }}
+              >
+                & SKILLS
+              </span>
+            </h1>
+            <p className="text-lg max-w-lg" style={{ color: 'rgba(255,255,255,0.4)' }}>
+              Mi evolución técnica ciclo a ciclo — desde lógica de programación hasta
+              sistemas distribuidos en la nube.
+            </p>
+          </motion.div>
 
-            <motion.h1 variants={itemVariants} className="text-5xl md:text-6xl font-black text-white mb-6 tracking-tight">
-              Experiencia & <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-emerald-600">Formación</span>
-            </motion.h1>
-
-            <motion.p variants={itemVariants} className="text-zinc-400 max-w-xl mx-auto text-lg">
-              Mi evolución técnica a través de la Ingeniería de Sistemas, desde los fundamentos lógicos hasta arquitecturas complejas.
-            </motion.p>
-          </div>
-
-          {/* KPI CARDS (Achievements) */}
-          <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-24">
-            {achievements.map((item, idx) => (
-              <div key={idx} className="bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 p-6 rounded-2xl flex items-center gap-5 hover:border-emerald-500/30 hover:shadow-[0_0_30px_rgba(16,185,129,0.05)] transition-all group">
-                <div className="p-3 bg-zinc-800/80 rounded-xl group-hover:bg-emerald-500/10 transition-colors shrink-0">
-                  <item.icon className="w-8 h-8 text-zinc-400 group-hover:text-emerald-400 transition-colors" />
-                </div>
+          {/* ══════════════════════════════════════════════════════════════
+              KPI ROW
+          ══════════════════════════════════════════════════════════════ */}
+          <motion.div variants={up} className="flex flex-wrap gap-6 mb-16">
+            {[
+              { v: '8+',  l: 'Proyectos',          icon: <Briefcase size={15} /> },
+              { v: '116+',l: 'Créditos aprobados', icon: <BookOpen  size={15} /> },
+              { v: 'Top 10%', l: 'Promedio',        icon: <Award    size={15} /> },
+            ].map((k) => (
+              <div
+                key={k.l}
+                className="flex items-center gap-4 px-6 py-4 rounded-2xl backdrop-blur-sm"
+                style={{
+                  background: 'rgba(255,255,255,0.03)',
+                  border:     '1px solid rgba(255,255,255,0.07)',
+                }}
+              >
+                <div style={{ color: '#FC8F54' }}>{k.icon}</div>
                 <div>
-                  <p className="text-3xl font-black text-white mb-1 group-hover:text-emerald-400 transition-colors font-mono">{item.value}</p>
-                  <p className="text-xs text-zinc-500 uppercase tracking-wider font-semibold">{item.title}</p>
+                  <p className="text-2xl font-black text-white font-mono leading-none">{k.v}</p>
+                  <p
+                    className="text-[9px] uppercase tracking-widest mt-0.5"
+                    style={{ color: 'rgba(255,255,255,0.3)' }}
+                  >
+                    {k.l}
+                  </p>
                 </div>
               </div>
             ))}
+
+            {/* Barra de progreso académico global */}
+            <div
+              className="flex-1 min-w-[220px] px-6 py-4 rounded-2xl backdrop-blur-sm flex flex-col justify-center gap-2"
+              style={{
+                background: 'rgba(255,255,255,0.03)',
+                border:     '1px solid rgba(255,255,255,0.07)',
+              }}
+            >
+              <div className="flex justify-between items-center">
+                <span
+                  className="text-[9px] uppercase tracking-widest font-mono"
+                  style={{ color: 'rgba(255,255,255,0.3)' }}
+                >
+                  Progreso académico
+                </span>
+                <span className="text-sm font-black text-white font-mono">
+                  {completedCount}/{cycles.length}
+                </span>
+              </div>
+              <div
+                className="h-1.5 w-full rounded-full overflow-hidden"
+                style={{ background: 'rgba(255,255,255,0.06)' }}
+              >
+                <motion.div
+                  className="h-full rounded-full"
+                  style={{
+                    background: 'linear-gradient(90deg, #FC8F54, #F5525B, #6867D2)',
+                  }}
+                  initial={{ width: 0 }}
+                  animate={{ width: `${(completedCount / cycles.length) * 100}%` }}
+                  transition={{ duration: 1.2, ease: 'easeOut', delay: 0.4 }}
+                />
+              </div>
+              <div className="flex gap-1 mt-1">
+                {cycles.map((c) => (
+                  <div
+                    key={c.cycle}
+                    className="flex-1 h-1 rounded-sm"
+                    style={{
+                      background: c.current
+                        ? '#F5525B'
+                        : c.done
+                        ? 'rgba(104,103,210,0.6)'
+                        : 'rgba(255,255,255,0.06)',
+                    }}
+                  />
+                ))}
+              </div>
+            </div>
           </motion.div>
 
-          {/* TIMELINE PRINCIPAL */}
-          <div className="relative">
-            {/* Línea Central Vertical */}
-            <div className="hidden md:block absolute left-1/2 transform -translate-x-1/2 w-[2px] h-full bg-zinc-800/50">
-              <div className="absolute top-0 left-0 w-full h-1/2 bg-gradient-to-b from-emerald-500 to-transparent opacity-50"></div>
-            </div>
+          {/* ══════════════════════════════════════════════════════════════
+              GRID DE CICLOS  — tarjetas con imagen de fondo
+          ══════════════════════════════════════════════════════════════ */}
+          <motion.div variants={up} className="mb-24">
+            <h2
+              className="text-xs font-bold uppercase tracking-[0.3em] mb-8 flex items-center gap-3"
+              style={{ color: 'rgba(255,255,255,0.3)' }}
+            >
+              <span className="h-px w-8" style={{ background: '#6867D2' }} />
+              Ciclos académicos · UCV Ingeniería de Sistemas
+            </h2>
 
-            <div className="space-y-16">
-              {cycles.map((item, index) => (
-                <motion.div
-                  key={index}
-                  variants={itemVariants}
-                  className={`relative flex flex-col md:flex-row items-center w-full ${index % 2 === 0 ? '' : 'md:flex-row-reverse'
-                    }`}
-                >
-                  {/* 1. DATA LATERAL (Fecha/Label) */}
-                  <div className={`w-full md:w-1/2 mb-6 md:mb-0 flex flex-col ${index % 2 === 0 ? 'md:pr-16 md:items-end md:text-right' : 'md:pl-16 md:items-start md:text-left'
-                    }`}>
-                    <div className="inline-block">
-                      <span className="text-emerald-500 font-mono text-sm font-bold mb-1 block">{item.year}</span>
-                      <h3 className={`text-2xl font-bold text-white ${item.current ? 'text-emerald-400' : ''}`}>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+              {cycles.map((item, i) => {
+                const Icon = item.icon
+                const isOpen = openCycle === i
+                return (
+                  <motion.div
+                    key={i}
+                    variants={up}
+                    className="relative overflow-hidden rounded-2xl cursor-pointer group"
+                    style={{
+                      border: item.current
+                        ? '1px solid rgba(245,82,91,0.5)'
+                        : '1px solid rgba(255,255,255,0.07)',
+                      minHeight: '160px',
+                    }}
+                    onClick={() => setOpenCycle(isOpen ? null : i)}
+                    whileHover={{ y: -3 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    {/* Imagen de fondo del ciclo */}
+                    {item.img && (
+                      <img
+                        src={item.img}
+                        alt={`Ciclo ${item.cycle}`}
+                        className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                        style={{ opacity: 0.18 }}
+                      />
+                    )}
+
+                    {/* Overlay degradado */}
+                    <div
+                      className="absolute inset-0"
+                      style={{
+                        background: item.current
+                          ? `linear-gradient(135deg, rgba(245,82,91,0.15), rgba(13,11,20,0.85))`
+                          : `linear-gradient(135deg, rgba(${item.done ? '104,103,210' : '13,11,20'},0.1), rgba(13,11,20,0.88))`,
+                      }}
+                    />
+
+                    {/* Glow del ciclo actual */}
+                    {item.current && (
+                      <div
+                        className="absolute -inset-1 rounded-2xl blur-xl pointer-events-none"
+                        style={{ background: 'rgba(245,82,91,0.12)' }}
+                      />
+                    )}
+
+                    {/* Contenido */}
+                    <div className="relative p-5 flex flex-col h-full min-h-[160px]">
+                      {/* Número de ciclo grande como watermark */}
+                      <span
+                        className="absolute top-3 right-4 font-black font-mono leading-none select-none pointer-events-none"
+                        style={{
+                          fontSize: '3.5rem',
+                          color: item.current ? 'rgba(245,82,91,0.12)' : 'rgba(104,103,210,0.1)',
+                        }}
+                      >
                         {item.cycle}
-                      </h3>
-                      <p className="text-zinc-500 text-sm uppercase tracking-wider font-medium mt-1">{item.label}</p>
-                    </div>
-                  </div>
-
-                  {/* 2. ICONO CENTRAL (Connector) */}
-                  <div className="absolute left-1/2 transform -translate-x-1/2 flex items-center justify-center z-10 hidden md:flex">
-                    <div className={`w-12 h-12 rounded-full border-4 flex items-center justify-center bg-zinc-950 transition-all duration-300 ${item.current
-                      ? 'border-emerald-500 shadow-[0_0_20px_rgba(16,185,129,0.4)] scale-110'
-                      : 'border-zinc-800 hover:border-zinc-600'
-                      }`}>
-                      <item.icon size={20} className={item.current ? 'text-emerald-400' : 'text-zinc-600'} />
-                    </div>
-                  </div>
-
-                  {/* 3. CARD DE CONTENIDO */}
-                  <div className={`w-full md:w-1/2 flex ${index % 2 === 0 ? 'md:pl-16 justify-start' : 'md:pr-16 justify-end'
-                    }`}>
-                    <div className={`relative w-full p-6 rounded-2xl border transition-all duration-300 hover:-translate-y-1 ${item.current
-                      ? 'bg-zinc-900/80 border-emerald-500/50 shadow-lg shadow-emerald-500/5'
-                      : 'bg-zinc-900/30 border-zinc-800 hover:border-zinc-600 hover:bg-zinc-900'
-                      }`}>
+                      </span>
 
                       {/* Badge "En curso" */}
                       {item.current && (
-                        <div className="absolute -top-3 -right-3 px-3 py-1 bg-emerald-500 text-zinc-950 text-[10px] font-bold uppercase rounded-full shadow-lg">
-                          En Progreso
-                        </div>
+                        <span
+                          className="self-start text-[8px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full mb-3"
+                          style={{
+                            background: 'rgba(245,82,91,0.2)',
+                            border:     '1px solid rgba(245,82,91,0.4)',
+                            color:      '#F5525B',
+                          }}
+                        >
+                          En progreso
+                        </span>
                       )}
 
-                      <div className="space-y-3">
-                        {item.courses.map((course, idx) => (
-                          <div key={idx} className="flex items-center gap-3 group/item">
-                            <Zap size={14} className={`mt-0.5 transition-colors ${item.current ? 'text-emerald-500' : 'text-zinc-700 group-hover/item:text-emerald-500'}`} />
-                            <span className="text-zinc-300 text-sm font-medium group-hover/item:text-white transition-colors">
-                              {course}
+                      {/* Ícono + ciclo */}
+                      <div className="flex items-center gap-2 mb-2 mt-auto">
+                        <div
+                          className="p-1.5 rounded-lg"
+                          style={{
+                            background: `${item.color}18`,
+                            border:     `1px solid ${item.color}30`,
+                          }}
+                        >
+                          <Icon size={14} style={{ color: item.color }} />
+                        </div>
+                        <span
+                          className="font-mono text-[10px] uppercase tracking-widest"
+                          style={{ color: `${item.color}90` }}
+                        >
+                          {item.year}
+                        </span>
+                      </div>
+
+                      <p
+                        className="font-bold text-sm leading-tight mb-0.5"
+                        style={{ color: item.current ? '#fff' : 'rgba(255,255,255,0.8)' }}
+                      >
+                        Ciclo {item.cycle}
+                      </p>
+                      <p
+                        className="text-[10px] uppercase tracking-wider"
+                        style={{ color: 'rgba(255,255,255,0.3)' }}
+                      >
+                        {item.label}
+                      </p>
+
+                      {/* Chevron toggle */}
+                      <ChevronDown
+                        size={14}
+                        className="mt-2 transition-transform duration-300"
+                        style={{
+                          color: 'rgba(255,255,255,0.25)',
+                          transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+                        }}
+                      />
+                    </div>
+
+                    {/* Panel expandible con cursos */}
+                    <AnimatePresence>
+                      {isOpen && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: 'auto', opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          transition={{ duration: 0.3 }}
+                          className="overflow-hidden"
+                          style={{
+                            borderTop: `1px solid ${item.color}25`,
+                            background: 'rgba(13,11,20,0.92)',
+                          }}
+                        >
+                          <div className="p-4 space-y-2">
+                            {item.courses.map((course, ci) => (
+                              <div key={ci} className="flex items-start gap-2">
+                                <Zap
+                                  size={11}
+                                  className="mt-0.5 shrink-0"
+                                  style={{ color: item.color }}
+                                />
+                                <span
+                                  className="text-xs leading-snug"
+                                  style={{ color: 'rgba(255,255,255,0.6)' }}
+                                >
+                                  {course}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </motion.div>
+                )
+              })}
+            </div>
+            <p
+              className="text-[10px] font-mono mt-4"
+              style={{ color: 'rgba(255,255,255,0.2)' }}
+            >
+              * Haz clic en cada ciclo para ver los cursos
+            </p>
+          </motion.div>
+
+          {/* ══════════════════════════════════════════════════════════════
+              SKILLS POR CATEGORÍA — cards con imagen de fondo
+          ══════════════════════════════════════════════════════════════ */}
+          <motion.div variants={up} className="mb-24">
+            <h2
+              className="text-xs font-bold uppercase tracking-[0.3em] mb-8 flex items-center gap-3"
+              style={{ color: 'rgba(255,255,255,0.3)' }}
+            >
+              <span className="h-px w-8" style={{ background: '#FC8F54' }} />
+              Nivel técnico actual
+            </h2>
+
+            <div className="grid sm:grid-cols-2 gap-5">
+              {skillGroups.map((group) => (
+                <motion.div
+                  key={group.category}
+                  variants={up}
+                  className="relative overflow-hidden rounded-2xl"
+                  style={{
+                    background: 'rgba(255,255,255,0.025)',
+                    border:     `1px solid ${group.accent}20`,
+                  }}
+                >
+                  {/* Imagen de fondo de la categoría */}
+                  {group.img && (
+                    <img
+                      src={group.img}
+                      alt={group.category}
+                      className="absolute inset-0 w-full h-full object-cover"
+                      style={{ opacity: 0.07, filter: 'saturate(0.5)' }}
+                    />
+                  )}
+
+                  <div
+                    className="absolute inset-0 pointer-events-none"
+                    style={{
+                      background: `linear-gradient(135deg, ${group.accent}08 0%, transparent 60%)`,
+                    }}
+                  />
+
+                  <div className="relative p-6">
+                    {/* Header de categoría */}
+                    <div className="flex items-center gap-3 mb-6">
+                      <div
+                        className="w-9 h-9 rounded-xl flex items-center justify-center text-lg"
+                        style={{
+                          background: `${group.accent}15`,
+                          border:     `1px solid ${group.accent}30`,
+                        }}
+                      >
+                        {group.icon}
+                      </div>
+                      <div>
+                        <p
+                          className="font-bold text-sm text-white"
+                        >
+                          {group.category}
+                        </p>
+                        <p
+                          className="text-[9px] uppercase tracking-widest"
+                          style={{ color: 'rgba(255,255,255,0.25)' }}
+                        >
+                          {group.items.length} tecnologías
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Items con barra */}
+                    <div className="space-y-4">
+                      {group.items.map((skill) => (
+                        <div key={skill.name}>
+                          <div className="flex justify-between items-center mb-1.5">
+                            <span
+                              className="text-xs font-medium"
+                              style={{ color: 'rgba(255,255,255,0.7)' }}
+                            >
+                              {skill.name}
+                            </span>
+                            <span
+                              className="font-mono text-[10px]"
+                              style={{ color: `${group.accent}90` }}
+                            >
+                              {skill.level}%
                             </span>
                           </div>
-                        ))}
-                      </div>
+                          {/* Track */}
+                          <div
+                            className="h-1 w-full rounded-full overflow-hidden"
+                            style={{ background: 'rgba(255,255,255,0.06)' }}
+                          >
+                            <motion.div
+                              className="h-full rounded-full"
+                              style={{
+                                background: `linear-gradient(90deg, ${group.accent}, ${group.accent}60)`,
+                              }}
+                              initial={{ width: 0 }}
+                              whileInView={{ width: `${skill.level}%` }}
+                              viewport={{ once: true }}
+                              transition={{ duration: 0.9, ease: 'easeOut', delay: 0.1 }}
+                            />
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 </motion.div>
               ))}
             </div>
-          </div>
+          </motion.div>
 
-          {/* FINAL CTA */}
-          <motion.div variants={itemVariants} className="text-center mt-24">
+          {/* ══════════════════════════════════════════════════════════════
+              CTA FINAL
+          ══════════════════════════════════════════════════════════════ */}
+          <motion.div
+            variants={up}
+            className="flex flex-col sm:flex-row items-center justify-between gap-6 p-8 rounded-3xl"
+            style={{
+              background: 'rgba(252,143,84,0.04)',
+              border:     '1px solid rgba(252,143,84,0.15)',
+            }}
+          >
+            <div>
+              <p
+                className="font-mono text-[10px] uppercase tracking-widest mb-1"
+                style={{ color: 'rgba(252,143,84,0.6)' }}
+              >
+                ¿Quieres ver el resultado?
+              </p>
+              <p className="text-xl font-bold text-white">
+                Revisa mis proyectos deployados
+              </p>
+            </div>
             <Link to="/projects">
-              <button className="group relative px-8 py-4 bg-transparent border border-zinc-700 hover:border-emerald-500 text-zinc-300 hover:text-emerald-400 font-bold rounded-xl transition-all overflow-hidden">
-                <span className="relative z-10 flex items-center gap-2">
-                  Ver Portafolio de Código <Globe size={18} />
-                </span>
-                <div className="absolute inset-0 bg-emerald-500/5 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
+              <button
+                className="group flex items-center gap-2 px-7 py-3.5 font-bold rounded-xl
+                           transition-all duration-300 hover:scale-[1.04] active:scale-95 whitespace-nowrap"
+                style={{
+                  background: 'linear-gradient(90deg, #FC8F54, #F5525B)',
+                  color:      '#fff',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.boxShadow = '0 0 24px rgba(252,143,84,0.35)'
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.boxShadow = 'none'
+                }}
+              >
+                Ver Proyectos
+                <ArrowRight
+                  size={16}
+                  className="group-hover:translate-x-1 transition-transform"
+                />
               </button>
             </Link>
           </motion.div>

@@ -11,21 +11,21 @@ const BrokenRobot = () => (
       animate={{ y: [-5, 5, -5] }}
       transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
     >
-      <rect x="60" y="40" width="80" height="70" rx="10" fill="#27272a" stroke="#10b981" strokeWidth="2" />
+      <rect x="60" y="40" width="80" height="70" rx="10" fill="#27272a" stroke="#8b5cf6" strokeWidth="2" />
       {/* Ojos */}
       <circle cx="85" cy="75" r="8" fill="#ef4444" /> {/* Ojo rojo (error) */}
       <motion.g
         animate={{ opacity: [1, 0.2, 1] }}
         transition={{ repeat: Infinity, duration: 0.2, repeatDelay: 3 }}
       >
-        <circle cx="115" cy="75" r="8" fill="#10b981" /> {/* Ojo verde (funcionando mal) */}
+        <circle cx="115" cy="75" r="8" fill="#8b5cf6" /> {/* Ojo verde (funcionando mal) */}
       </motion.g>
       {/* Boca */}
       <rect x="85" y="95" width="30" height="4" rx="2" fill="#71717a" />
       
       {/* Antena */}
       <line x1="100" y1="40" x2="100" y2="20" stroke="#71717a" strokeWidth="2" />
-      <circle cx="100" cy="15" r="4" fill="#10b981" />
+      <circle cx="100" cy="15" r="4" fill="#8b5cf6" />
       
       {/* Chispas (Sparks) */}
       <motion.path
@@ -72,7 +72,7 @@ const BrokenRobot = () => (
       cy="190"
       rx="40"
       ry="5"
-      fill="#10b981"
+      fill="#8b5cf6"
       animate={{ opacity: [0.1, 0.3, 0.1], rx: [35, 45, 35] }}
       transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
     />
@@ -113,7 +113,7 @@ const NotFound = () => {
     <div className="min-h-screen bg-zinc-950 flex flex-col items-center justify-center p-6 relative overflow-hidden">
       
       {/* Fondo Matrix Sutil */}
-      <div className="absolute inset-0 z-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'linear-gradient(0deg, transparent 24%, #10b981 25%, #10b981 26%, transparent 27%, transparent 74%, #10b981 75%, #10b981 76%, transparent 77%, transparent), linear-gradient(90deg, transparent 24%, #10b981 25%, #10b981 26%, transparent 27%, transparent 74%, #10b981 75%, #10b981 76%, transparent 77%, transparent)', backgroundSize: '50px 50px' }}></div>
+      <div className="absolute inset-0 z-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'linear-gradient(0deg, transparent 24%, #8b5cf6 25%, #8b5cf6 26%, transparent 27%, transparent 74%, #8b5cf6 75%, #8b5cf6 76%, transparent 77%, transparent), linear-gradient(90deg, transparent 24%, #8b5cf6 25%, #8b5cf6 26%, transparent 27%, transparent 74%, #8b5cf6 75%, #8b5cf6 76%, transparent 77%, transparent)', backgroundSize: '50px 50px' }}></div>
 
       <div className="relative z-10 max-w-2xl w-full text-center">
         

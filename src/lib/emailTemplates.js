@@ -3,8 +3,8 @@
  * Diseño premium dark — compatible Gmail / Outlook / Apple Mail.
  */
 
-const E = '#10b981'  // emerald-500
-const ED = '#059669'  // emerald-600
+const E = '#8b5cf6'  // emerald-500
+const ED = '#7c3aed'  // emerald-600
 const BG = '#09090b'  // zinc-950
 const C = '#111113'  // card bg
 const URL = 'https://luis-crisanto.vercel.app'
@@ -54,7 +54,7 @@ export const buildNotificationHtml = (name, email, message) => {
     <tr><td style="padding:36px 40px 28px;border-bottom:1px solid #1e1e22;">
       <table width="100%" cellpadding="0" cellspacing="0"><tr>
         <td width="60" style="vertical-align:top;padding-right:18px;">
-          <div style="width:56px;height:56px;background:linear-gradient(135deg,#0d2a1e,#1a4a30);border:1px solid #1a4a30;border-radius:16px;text-align:center;line-height:56px;font-size:24px;font-weight:800;color:${E};">
+          <div style="width:56px;height:56px;background:linear-gradient(135deg,#1e1b4b,#312e81);border:1px solid #312e81;border-radius:16px;text-align:center;line-height:56px;font-size:24px;font-weight:800;color:${E};">
             ${name.charAt(0).toUpperCase()}
           </div>
         </td>
@@ -135,7 +135,7 @@ export const buildConfirmationHtml = (name) => `<!DOCTYPE html>
     <!-- HERO -->
     <tr><td style="padding:48px 40px 36px;border-bottom:1px solid #1e1e22;text-align:center;">
       <!-- Check icon -->
-      <div style="width:68px;height:68px;background:linear-gradient(135deg,#0d2a1e,#1a4a30);border:1px solid #1a4a30;border-radius:50%;text-align:center;line-height:68px;font-size:30px;margin:0 auto 28px;color:${E};">&#10003;</div>
+      <div style="width:68px;height:68px;background:linear-gradient(135deg,#1e1b4b,#312e81);border:1px solid #312e81;border-radius:50%;text-align:center;line-height:68px;font-size:30px;margin:0 auto 28px;color:${E};">&#10003;</div>
       <h1 style="margin:0 0 16px;font-size:30px;font-weight:800;color:#fff;letter-spacing:-0.5px;line-height:1.2;">
         ¡Gracias por escribirme,<br/>${name}!
       </h1>
@@ -187,7 +187,7 @@ export const buildConfirmationHtml = (name) => `<!DOCTYPE html>
     <tr><td style="padding:28px 40px;">
       <table cellpadding="0" cellspacing="0"><tr>
         <td style="vertical-align:middle;padding-right:16px;">
-          <div style="width:48px;height:48px;background:linear-gradient(135deg,#0d2a1e,#1a4a30);border:1px solid #1a4a30;border-radius:14px;text-align:center;line-height:48px;font-size:18px;font-weight:800;color:${E};">LC</div>
+          <div style="width:48px;height:48px;background:linear-gradient(135deg,#1e1b4b,#312e81);border:1px solid #312e81;border-radius:14px;text-align:center;line-height:48px;font-size:18px;font-weight:800;color:${E};">LC</div>
         </td>
         <td style="vertical-align:middle;">
           <p style="margin:0 0 3px;font-size:15px;font-weight:700;color:#fff;">Luis Crisanto</p>

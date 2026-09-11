@@ -2,43 +2,77 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Configuración base */
+/* ── Paleta "Painted Clouds" ─────────────────────────────────────────────────
+   Naranja cálido #FC8F54 como acento principal
+   Índigo profundo #5546AD / #2C3D95 como estructura
+   Coral #F5525B para highlights y CTAs de impacto
+   Lavanda #6867D2 para textos de acento y bordes suaves               */
+:root {
+  --accent: #fc8f54; /* naranja — botones, activos               */
+  --accent-dim: #e67a3f; /* naranja oscuro — hover                   */
+  --accent-lit: #ffb388; /* naranja claro — glow, selección          */
+  --accent-glow: rgba(252, 143, 84, 0.15);
+  --accent-dot: #6867d2; /* lavanda — patrones SVG, decoración       */
+  --coral: #f5525b; /* coral — CTAs secundarios, badges         */
+  --indigo-deep: #2c3d95; /* azul índigo profundo                     */
+  --indigo-mid: #5546ad; /* índigo medio                             */
+  --indigo-soft: #6867d2; /* lavanda/violeta                          */
+  --bg-card: #1e1a24; /* fondo de cards                           */
+}
+
+/* ── Base ────────────────────────────────────────────────────────────────── */
 @layer base {
   * {
     @apply border-border;
   }
 
   body {
-    @apply bg-zinc-900 text-white;
-    font-family: "Inter", "Plus Jakarta Sans", sans-serif;
+    @apply bg-zinc-950 text-white;
+    font-family: "Inter", system-ui, sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    /* Sutil tinte índigo en el fondo global */
+    background-color: #0d0b14;
+  }
+
+  /* Poppins solo en headings */
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: "Poppins", "Inter", sans-serif;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
   }
 }
 
-/* Scrollbar personalizado */
+/* ── Scrollbar ───────────────────────────────────────────────────────────── */
 ::-webkit-scrollbar {
-  width: 10px;
+  width: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #27272a;
+  background: #0d0b14;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #3f3f46;
-  border-radius: 5px;
+  background: var(--indigo-mid);
+  border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #34d399;
+  background: var(--accent);
 }
 
-/* Firefox scrollbar */
 * {
   scrollbar-width: thin;
-  scrollbar-color: #3f3f46 #27272a;
+  scrollbar-color: #5546ad #0d0b14;
 }
 
-/* Animaciones personalizadas adicionales */
+/* ── Animaciones ─────────────────────────────────────────────────────────── */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -70,66 +104,133 @@
   }
 }
 
+/* Glow pulsante para el acento naranja */
+@keyframes glow-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 8px 0 rgba(252, 143, 84, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 22px 4px rgba(252, 143, 84, 0.55);
+  }
+}
+
 .animate-fade-in {
   animation: fadeIn 0.8s ease-out;
 }
-
 .animate-float {
   animation: float 6s ease-in-out infinite;
 }
-
 .animate-float-delayed {
   animation: float-delayed 8s ease-in-out infinite;
 }
+.animate-glow {
+  animation: glow-pulse 2.5s ease-in-out infinite;
+}
 
-/* Utilidades personalizadas */
+/* ── Utilities ───────────────────────────────────────────────────────────── */
 @layer utilities {
+  /* Gradiente naranja → lavanda — para textos de hero */
   .text-gradient {
-    @apply text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-emerald-600;
+    @apply text-transparent bg-clip-text;
+    background-image: linear-gradient(90deg, #fc8f54, #6867d2);
+  }
+
+  /* Variante coral para secciones especiales */
+  .text-gradient-coral {
+    @apply text-transparent bg-clip-text;
+    background-image: linear-gradient(90deg, #f5525b, #fc8f54);
   }
 
   .glass-effect {
-    @apply bg-zinc-800/50 backdrop-blur-md border border-zinc-700;
+    background: rgba(85, 70, 173, 0.08);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(104, 103, 210, 0.2);
   }
 }
 
-/* Componentes personalizados */
+/* ── Components ──────────────────────────────────────────────────────────── */
 @layer components {
+  /* Botón principal — naranja cálido */
   .btn-primary {
-    @apply px-8 py-3 bg-emerald-400 text-zinc-900 font-bold rounded-lg 
-           hover:bg-emerald-500 transition-all duration-300 
-           transform hover:scale-105 active:scale-95;
+    @apply px-8 py-3 font-semibold rounded-lg transition-all duration-300 transform hover:scale-105 active:scale-95;
+    background-color: var(--accent);
+    color: #fff;
+  }
+  .btn-primary:hover {
+    background-color: var(--accent-dim);
+    box-shadow: 0 0 18px rgba(252, 143, 84, 0.4);
   }
 
+  /* Botón secundario — borde naranja */
   .btn-secondary {
-    @apply px-8 py-3 border-2 border-emerald-400 text-emerald-400 
-           font-bold rounded-lg hover:bg-emerald-400/10 transition-all;
+    @apply px-8 py-3 font-semibold rounded-lg transition-all duration-300;
+    border: 2px solid var(--accent);
+    color: var(--accent-lit);
+  }
+  .btn-secondary:hover {
+    background-color: rgba(252, 143, 84, 0.1);
   }
 
+  /* Botón coral — para CTAs de alto impacto */
+  .btn-coral {
+    @apply px-8 py-3 font-semibold rounded-lg transition-all duration-300 transform hover:scale-105 active:scale-95;
+    background-color: var(--coral);
+    color: #fff;
+  }
+  .btn-coral:hover {
+    background-color: #e03a44;
+    box-shadow: 0 0 18px rgba(245, 82, 91, 0.4);
+  }
+
+  /* Card con fondo índigo muy oscuro */
   .card {
-    @apply bg-gradient-to-br from-zinc-800 to-zinc-900 rounded-xl 
-           border border-zinc-700 hover:border-emerald-400/50 
-           transition-all duration-300;
+    @apply rounded-xl border transition-all duration-300;
+    background: linear-gradient(135deg, #1e1a24, #16132a);
+    border-color: rgba(104, 103, 210, 0.25);
+  }
+  .card:hover {
+    border-color: rgba(252, 143, 84, 0.45);
+    box-shadow: 0 4px 24px rgba(252, 143, 84, 0.08);
   }
 
+  /* Badge naranja */
   .badge {
-    @apply inline-flex items-center gap-2 px-4 py-2 
-           bg-emerald-400/10 border border-emerald-400/30 rounded-full;
+    @apply inline-flex items-center gap-2 px-4 py-2 rounded-full;
+    background-color: rgba(252, 143, 84, 0.1);
+    border: 1px solid rgba(252, 143, 84, 0.3);
+    color: var(--accent-lit);
+  }
+
+  /* Badge lavanda — variante */
+  .badge-indigo {
+    @apply inline-flex items-center gap-2 px-4 py-2 rounded-full;
+    background-color: rgba(104, 103, 210, 0.12);
+    border: 1px solid rgba(104, 103, 210, 0.35);
+    color: #a5a4e8;
+  }
+
+  /* Badge coral — variante */
+  .badge-coral {
+    @apply inline-flex items-center gap-2 px-4 py-2 rounded-full;
+    background-color: rgba(245, 82, 91, 0.1);
+    border: 1px solid rgba(245, 82, 91, 0.3);
+    color: #f87a82;
   }
 }
 
-/* Smooth scroll */
+/* ── Misc ────────────────────────────────────────────────────────────────── */
 html {
   scroll-behavior: smooth;
 }
 
-/* Selection color */
 ::selection {
-  background-color: #34d399;
-  color: #18181b;
+  background-color: var(--accent);
+  color: #0f0f0f;
 }
 
 ::-moz-selection {
-  background-color: #34d399;
-  color: #18181b;
+  background-color: var(--accent);
+  color: #0f0f0f;
 }
