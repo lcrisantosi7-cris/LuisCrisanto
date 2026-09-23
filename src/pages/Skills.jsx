@@ -1,180 +1,154 @@
 import { useState, useEffect, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Layers, Server, Code2, Database, Cloud, Terminal, X, ArrowUpRight } from 'lucide-react'
+import { Layers, Server, Code2, Database, Cloud, X, ArrowUpRight } from 'lucide-react'
 import { Link, useSearchParams } from 'react-router-dom'
 import SEO from '../components/SEO'
 import { SKILLS, LEARNING_SKILLS, buildProjectCountMap } from '../data/techData'
 
 const CATEGORIES = [
-  { id: 'all',      name: 'Stack Completo', icon: Layers   },
-  { id: 'backend',  name: 'Backend & API',  icon: Server   },
-  { id: 'frontend', name: 'Frontend & UI',  icon: Code2    },
-  { id: 'database', name: 'Data Store',     icon: Database },
-  { id: 'cloud',    name: 'DevOps & Cloud', icon: Cloud    },
+  { id: 'all', name: 'Todo', icon: Layers },
+  { id: 'backend', name: 'Backend', icon: Server },
+  { id: 'frontend', name: 'Frontend', icon: Code2 },
+  { id: 'database', name: 'Bases de datos', icon: Database },
+  { id: 'cloud', name: 'Cloud & herramientas', icon: Cloud },
 ]
 
-const levelLabel = (pct) => {
-  if (pct >= 85) return { text: 'Expert',    color: '#FC8F54' }
-  if (pct >= 70) return { text: 'Mastering', color: '#6867D2' }
-  if (pct >= 50) return { text: 'Sólido',    color: '#a5a4e8' }
-  return              { text: 'Learning',   color: 'rgba(255,255,255,0.35)' }
+// ≥80 Dominio · 60-79 Sólido · <60 Explorando (igual que en Experiencia)
+const TIERS = {
+  3: { text: 'Dominio', color: '#FC8F54', desc: 'Lo uso con soltura en proyectos' },
+  2: { text: 'Sólido', color: '#6867D2', desc: 'Lo uso con confianza' },
+  1: { text: 'Explorando', color: 'rgba(255,255,255,0.4)', desc: 'Lo estoy aprendiendo' },
 }
+const tierOf = (pct) => (pct >= 80 ? 3 : pct >= 60 ? 2 : 1)
 
+const DEVICON = 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons'
 const DEVICON_MAP = {
-  'Node.js':      'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg',
-  'Express':      'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/express/express-original.svg',
-  'PHP':          'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/php/php-original.svg',
-  'Laravel':      'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/laravel/laravel-original.svg',
-  'FastAPI':      'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/fastapi/fastapi-original.svg',
-  'Python':       'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg',
-  'React':        'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg',
-  'Vue.js':       'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vuejs/vuejs-original.svg',
-  'JavaScript':   'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg',
-  'TypeScript':   'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg',
-  'Tailwind':     'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/tailwindcss/tailwindcss-original.svg',
-  'MySQL':        'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original.svg',
-  'SQL Server':   'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/microsoftsqlserver/microsoftsqlserver-original.svg',
-  'PostgreSQL':   'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/postgresql/postgresql-original.svg',
-  'MongoDB':      'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mongodb/mongodb-original.svg',
-  'Git':          'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/git/git-original.svg',
-  'Docker':       'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/docker/docker-original.svg',
-  'AWS':          'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/amazonwebservices/amazonwebservices-original-wordmark.svg',
-  'Linux':        'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/linux/linux-original.svg',
-  'Vercel':       'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vercel/vercel-original.svg',
-  'GitHub':       'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg',
-  'Postman':      'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/postman/postman-original.svg',
-  'VS Code':      'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vscode/vscode-original.svg',
-  'Java':         'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/java/java-original.svg',
-  'Spring Boot':  'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/spring/spring-original.svg',
-  'Redis':        'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/redis/redis-original.svg',
-  'GraphQL':      'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/graphql/graphql-plain.svg',
-  'Kubernetes':   'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/kubernetes/kubernetes-original.svg',
-  'Terraform':    'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/terraform/terraform-original.svg',
+  'Node.js': `${DEVICON}/nodejs/nodejs-original.svg`,
+  'Express': `${DEVICON}/express/express-original.svg`,
+  'PHP': `${DEVICON}/php/php-original.svg`,
+  'Laravel': `${DEVICON}/laravel/laravel-original.svg`,
+  'FastAPI': `${DEVICON}/fastapi/fastapi-original.svg`,
+  'Python': `${DEVICON}/python/python-original.svg`,
+  'React': `${DEVICON}/react/react-original.svg`,
+  'Vue.js': `${DEVICON}/vuejs/vuejs-original.svg`,
+  'Next.js': `${DEVICON}/nextjs/nextjs-original.svg`,
+  'JavaScript': `${DEVICON}/javascript/javascript-original.svg`,
+  'TypeScript': `${DEVICON}/typescript/typescript-original.svg`,
+  'HTML5/CSS3': `${DEVICON}/html5/html5-original.svg`,
+  'Tailwind': `${DEVICON}/tailwindcss/tailwindcss-original.svg`,
+  'Tailwind CSS': `${DEVICON}/tailwindcss/tailwindcss-original.svg`,
+  'MySQL': `${DEVICON}/mysql/mysql-original.svg`,
+  'MySQL / MariaDB': `${DEVICON}/mysql/mysql-original.svg`,
+  'SQL Server': `${DEVICON}/microsoftsqlserver/microsoftsqlserver-original.svg`,
+  'PostgreSQL': `${DEVICON}/postgresql/postgresql-original.svg`,
+  'MongoDB': `${DEVICON}/mongodb/mongodb-original.svg`,
+  'Redis': `${DEVICON}/redis/redis-original.svg`,
+  'Git': `${DEVICON}/git/git-original.svg`,
+  'Git & GitHub': `${DEVICON}/git/git-original.svg`,
+  'GitHub': `${DEVICON}/github/github-original.svg`,
+  'Docker': `${DEVICON}/docker/docker-original.svg`,
+  'AWS': `${DEVICON}/amazonwebservices/amazonwebservices-original-wordmark.svg`,
+  'AWS Services': `${DEVICON}/amazonwebservices/amazonwebservices-original-wordmark.svg`,
+  'Linux': `${DEVICON}/linux/linux-original.svg`,
+  'Vercel': `${DEVICON}/vercel/vercel-original.svg`,
+  'Postman': `${DEVICON}/postman/postman-original.svg`,
+  'Java': `${DEVICON}/java/java-original.svg`,
+  'Spring Boot': `${DEVICON}/spring/spring-original.svg`,
+  'GraphQL': `${DEVICON}/graphql/graphql-plain.svg`,
+  'Kubernetes': `${DEVICON}/kubernetes/kubernetes-original.svg`,
+  'Terraform': `${DEVICON}/terraform/terraform-original.svg`,
 }
 
-const FlipCard = ({ skill, projectCount, isHighlighted }) => {
-  const [flipped, setFlipped] = useState(false)
-  const label   = levelLabel(skill.level)
-  const count   = projectCount.get(skill.name) ?? 0
+// Logos oscuros que necesitan invertirse sobre fondo oscuro
+const NEEDS_INVERT = ['Express', 'GitHub', 'Vercel', 'Next.js']
+
+// ── Nivel en 3 segmentos ────────────────────────────────────────────────────
+const TierBar = ({ tier, color }) => (
+  <div className="flex gap-1">
+    {[1, 2, 3].map((n) => (
+      <motion.span
+        key={n}
+        className="h-1 flex-1 rounded-full origin-left"
+        style={{ background: n <= tier ? color : 'rgba(255,255,255,0.08)' }}
+        initial={{ scaleX: 0 }}
+        whileInView={{ scaleX: 1 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.5, delay: n * 0.1 }}
+      />
+    ))}
+  </div>
+)
+
+// ── Tarjeta de skill ────────────────────────────────────────────────────────
+const SkillCard = ({ skill, projectCount, highlighted }) => {
+  const tier = tierOf(skill.level)
+  const t = TIERS[tier]
+  const count = projectCount.get(skill.name) ?? 0
   const logoUrl = DEVICON_MAP[skill.name]
-
-  useEffect(() => {
-    if (isHighlighted) setFlipped(true)
-  }, [isHighlighted])
-
-  const needsInvert = ['Express', 'GitHub', 'Vercel'].includes(skill.name)
+  const invert = NEEDS_INVERT.includes(skill.name)
 
   return (
-    <div
-      className="relative cursor-pointer select-none"
-      style={{ perspective: '900px', height: '148px' }}
-      onMouseEnter={() => setFlipped(true)}
-      onMouseLeave={() => !isHighlighted && setFlipped(false)}
-      onClick={() => setFlipped((f) => !f)}
+    <motion.div
+      whileHover={{ y: -3 }}
+      transition={{ duration: 0.2 }}
+      className="h-full rounded-2xl p-4 flex flex-col"
+      style={{
+        background: highlighted ? 'rgba(252,143,84,0.07)' : 'rgba(255,255,255,0.025)',
+        border: highlighted ? '1px solid rgba(252,143,84,0.45)' : '1px solid rgba(255,255,255,0.07)',
+      }}
     >
-      <motion.div
-        animate={{ rotateY: flipped ? 180 : 0 }}
-        transition={{ duration: 0.42, ease: [0.4, 0, 0.2, 1] }}
-        style={{ transformStyle: 'preserve-3d', position: 'absolute', inset: 0 }}
-      >
-        {/* FRENTE */}
-        <div
-          className="absolute inset-0 rounded-2xl flex flex-col items-center justify-center gap-3 p-4"
-          style={{
-            backfaceVisibility: 'hidden',
-            WebkitBackfaceVisibility: 'hidden',
-            background: isHighlighted ? 'rgba(252,143,84,0.07)' : 'rgba(255,255,255,0.025)',
-            border: isHighlighted ? '1px solid rgba(252,143,84,0.4)' : '1px solid rgba(255,255,255,0.07)',
-          }}
-        >
-          {logoUrl ? (
-            <img
-              src={logoUrl}
-              alt={skill.name}
-              width={40}
-              height={40}
-              className="object-contain"
-              style={{ filter: needsInvert ? 'invert(1) brightness(0.7)' : 'none' }}
-              loading="lazy"
-            />
-          ) : (
-            <div
-              className="w-10 h-10 rounded-xl flex items-center justify-center"
-              style={{ background: `${skill.color}18`, border: `1px solid ${skill.color}30` }}
-            >
-              <skill.icon size={22} style={{ color: skill.color }} />
-            </div>
-          )}
-          <span className="text-xs font-semibold text-center leading-tight" style={{ color: 'rgba(255,255,255,0.75)' }}>
-            {skill.name}
-          </span>
-        </div>
-
-        {/* DORSO */}
-        <div
-          className="absolute inset-0 rounded-2xl flex flex-col justify-between p-4"
-          style={{
-            backfaceVisibility: 'hidden',
-            WebkitBackfaceVisibility: 'hidden',
-            transform: 'rotateY(180deg)',
-            background: `linear-gradient(135deg, ${skill.color}12, rgba(13,11,20,0.95))`,
-            border: `1px solid ${skill.color}35`,
-          }}
-        >
-          <div className="flex items-start justify-between">
-            <span className="text-xs font-bold text-white leading-tight">{skill.name}</span>
-            <span
-              className="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded"
-              style={{ color: label.color, background: `${label.color}15`, border: `1px solid ${label.color}30` }}
-            >
-              {label.text}
-            </span>
+      <div className="flex items-center gap-3 mb-5">
+        {logoUrl ? (
+          <img
+            src={logoUrl}
+            alt=""
+            width={36}
+            height={36}
+            className="object-contain shrink-0"
+            style={{ filter: invert ? 'invert(1) brightness(0.7)' : 'none' }}
+            loading="lazy"
+          />
+        ) : (
+          <div
+            className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
+            style={{ background: `${skill.color}18`, border: `1px solid ${skill.color}30` }}
+          >
+            <skill.icon size={20} style={{ color: skill.color }} />
           </div>
+        )}
+        <span className="text-sm font-semibold text-white leading-tight">{skill.name}</span>
+      </div>
 
-          <div>
-            <div className="flex justify-between items-center mb-1.5">
-              <span className="font-mono text-[10px]" style={{ color: 'rgba(255,255,255,0.3)' }}>nivel</span>
-              <span className="font-mono text-sm font-black" style={{ color: label.color }}>{skill.level}%</span>
-            </div>
-            <div className="h-1.5 w-full rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.07)' }}>
-              <motion.div
-                className="h-full rounded-full"
-                style={{ background: `linear-gradient(90deg, ${skill.color}, ${skill.color}70)`, boxShadow: `0 0 8px ${skill.color}50` }}
-                initial={{ width: 0 }}
-                animate={{ width: flipped ? `${skill.level}%` : 0 }}
-                transition={{ duration: 0.6, ease: 'easeOut', delay: 0.15 }}
-              />
-            </div>
-          </div>
+      <div className="mt-auto">
+        <span className="block font-mono text-[10px] uppercase tracking-wider mb-2" style={{ color: t.color }}>
+          {t.text}
+        </span>
+        <TierBar tier={tier} color={t.color} />
 
+        <div className="mt-3 min-h-[16px]">
           {count > 0 ? (
             <Link
               to={`/projects?tech=${encodeURIComponent(skill.name)}`}
-              className="flex items-center justify-between"
-              onClick={(e) => e.stopPropagation()}
+              className="inline-flex items-center gap-1 text-[11px] transition-colors duration-200"
+              style={{ color: 'rgba(255,255,255,0.4)' }}
+              onMouseEnter={(e) => { e.currentTarget.style.color = '#FC8F54' }}
+              onMouseLeave={(e) => { e.currentTarget.style.color = 'rgba(255,255,255,0.4)' }}
             >
-              <span className="text-[10px] uppercase tracking-wider" style={{ color: 'rgba(255,255,255,0.25)' }}>proyectos</span>
-              <span
-                className="flex items-center gap-1 text-xs font-bold font-mono transition-colors duration-200"
-                style={{ color: `${skill.color}90` }}
-                onMouseEnter={(e) => { e.currentTarget.style.color = skill.color }}
-                onMouseLeave={(e) => { e.currentTarget.style.color = `${skill.color}90` }}
-              >
-                {count} <ArrowUpRight size={11} />
-              </span>
+              {count} proyecto{count !== 1 ? 's' : ''} <ArrowUpRight size={11} />
             </Link>
           ) : (
-            <span className="text-[10px] uppercase tracking-wider" style={{ color: 'rgba(255,255,255,0.15)' }}>en aprendizaje</span>
+            <span className="text-[11px]" style={{ color: 'rgba(255,255,255,0.15)' }}>—</span>
           )}
         </div>
-      </motion.div>
-    </div>
+      </div>
+    </motion.div>
   )
 }
 
+// ════════════════════════════════════════════════════════════════════════════
 export default function Skills() {
   const [activeCategory, setActiveCategory] = useState('all')
-  const [searchParams, setSearchParams]     = useSearchParams()
+  const [searchParams, setSearchParams] = useSearchParams()
   const techParam = searchParams.get('tech') || ''
   const clearTech = () => setSearchParams({})
   const projectCount = useMemo(() => buildProjectCountMap(), [])
@@ -183,62 +157,114 @@ export default function Skills() {
     if (!techParam) return
     const skill = SKILLS.find((s) => s.name === techParam)
     if (skill) {
-      const cat = skill.category === 'tools' ? 'cloud' : skill.category
-      setActiveCategory(cat)
+      setActiveCategory(skill.category === 'tools' ? 'cloud' : skill.category)
     }
     window.scrollTo({ top: 0, behavior: 'smooth' })
-  }, [techParam]) // eslint-disable-line
+  }, [techParam])
 
   const filteredSkills = SKILLS.filter(
-    (s) => activeCategory === 'all' || s.category === activeCategory || (activeCategory === 'cloud' && s.category === 'tools'),
+    (s) =>
+      activeCategory === 'all' ||
+      s.category === activeCategory ||
+      (activeCategory === 'cloud' && s.category === 'tools'),
   )
 
   return (
     <>
       <SEO
         title="Habilidades Técnicas | Luis Crisanto"
-        description="Stack tecnológico: Node.js, PHP, React, MySQL, AWS, Docker. Nivel de dominio por tecnología."
+        description="Stack tecnológico: Node.js, PHP, Python, FastAPI, React, MySQL, AWS y Docker. Nivel por tecnología y proyectos donde las uso."
         canonical="https://luis-crisanto.vercel.app/skills"
-        keywords="Habilidades, Skills, Node.js, PHP, React, MySQL, AWS, Docker, Frontend, Backend, DevOps"
+        keywords="Habilidades, Skills, Node.js, PHP, Python, FastAPI, React, MySQL, AWS, Docker, Backend, Frontend, Cloud"
       />
-      <div className="min-h-screen relative overflow-hidden pt-28 pb-24 px-6" style={{ background: '#0d0b14' }}>
 
-        <div className="absolute inset-0 z-0" style={{ backgroundImage: 'radial-gradient(rgba(104,103,210,0.18) 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
+      <div className="min-h-screen relative overflow-hidden pt-28 pb-24 px-6" style={{ background: '#0d0b14' }}>
+        {/* Fondo */}
+        <div
+          className="absolute inset-0 z-0"
+          style={{
+            backgroundImage: 'radial-gradient(rgba(104,103,210,0.18) 1px, transparent 1px)',
+            backgroundSize: '24px 24px',
+            maskImage: 'linear-gradient(to bottom, black 40%, transparent 100%)',
+            WebkitMaskImage: 'linear-gradient(to bottom, black 40%, transparent 100%)',
+          }}
+        />
         <div className="absolute top-0 left-1/4 w-[500px] h-[500px] rounded-full pointer-events-none blur-[140px]" style={{ background: 'rgba(104,103,210,0.07)' }} />
         <div className="absolute bottom-0 right-0 w-[450px] h-[450px] rounded-full pointer-events-none blur-[130px]" style={{ background: 'rgba(252,143,84,0.06)' }} />
 
         <div className="max-w-7xl mx-auto relative z-10">
-
-          {/* ENCABEZADO */}
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-20">
+          {/* ── ENCABEZADO ── */}
+          <header className="mb-16">
             <div className="flex items-center gap-3 mb-5">
-              <div className="h-px w-10" style={{ background: '#FC8F54' }} />
-              <span className="font-mono text-[10px] uppercase tracking-[0.35em]" style={{ color: 'rgba(252,143,84,0.7)' }}>Stack Tecnológico</span>
+              <motion.div
+                className="h-px w-10 origin-left"
+                style={{ background: '#FC8F54' }}
+                initial={{ scaleX: 0 }}
+                animate={{ scaleX: 1 }}
+                transition={{ duration: 0.8, delay: 0.2 }}
+              />
+              <span className="font-mono text-[10px] uppercase tracking-[0.35em]" style={{ color: 'rgba(252,143,84,0.7)' }}>
+                Stack
+              </span>
             </div>
-            <h1 className="font-black tracking-tighter leading-[0.88] mb-5" style={{ fontFamily: "'Poppins', sans-serif", fontSize: 'clamp(3rem, 9vw, 7rem)' }}>
-              <span className="block text-white">ARSENAL</span>
-              <span className="block text-transparent bg-clip-text" style={{ backgroundImage: 'linear-gradient(90deg, #FC8F54 0%, #F5525B 45%, #6867D2 100%)' }}>TÉCNICO</span>
-            </h1>
-            <p className="text-lg max-w-lg" style={{ color: 'rgba(255,255,255,0.4)' }}>
-              Tecnologías que uso en producción — pasa el cursor sobre cada una para ver el nivel.
-            </p>
-          </motion.div>
 
-          {/* BANNER TECH FILTER */}
+            <h1
+              className="font-black tracking-tighter leading-[0.9] mb-5"
+              style={{ fontFamily: "'Poppins', sans-serif", fontSize: 'clamp(2.6rem, 8vw, 6.5rem)' }}
+            >
+              <span className="block overflow-hidden pb-[0.08em]">
+                <motion.span
+                  className="block text-white"
+                  initial={{ y: '105%' }}
+                  animate={{ y: 0 }}
+                  transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1], delay: 0.1 }}
+                >
+                  HABILIDADES
+                </motion.span>
+              </span>
+              <span className="block overflow-hidden pb-[0.08em]">
+                <motion.span
+                  className="block text-transparent bg-clip-text"
+                  style={{ backgroundImage: 'linear-gradient(90deg, #FC8F54 0%, #F5525B 45%, #6867D2 100%)' }}
+                  initial={{ y: '105%' }}
+                  animate={{ y: 0 }}
+                  transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1], delay: 0.22 }}
+                >
+                  TÉCNICAS
+                </motion.span>
+              </span>
+            </h1>
+
+            <motion.p
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+              className="text-lg max-w-lg"
+              style={{ color: 'rgba(255,255,255,0.4)' }}
+            >
+              Las tecnologías con las que trabajo y qué tan cómodo estoy con cada una.
+            </motion.p>
+          </header>
+
+          {/* ── BANNER FILTRO ── */}
           <AnimatePresence>
             {techParam && (
               <motion.div
-                initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}
-                className="flex items-center justify-between mb-10 px-5 py-3 rounded-2xl"
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="flex items-center justify-between mb-8 px-5 py-3 rounded-2xl"
                 style={{ background: 'rgba(252,143,84,0.06)', border: '1px solid rgba(252,143,84,0.25)' }}
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: '#FC8F54' }} />
+                  <div className="w-1.5 h-1.5 rounded-full" style={{ background: '#FC8F54' }} />
                   <span className="text-sm" style={{ color: 'rgba(255,255,255,0.6)' }}>
                     Mostrando: <span className="font-bold font-mono" style={{ color: '#FC8F54' }}>{techParam}</span>
                   </span>
                 </div>
-                <button onClick={clearTech} className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg transition-all"
+                <button
+                  onClick={clearTech}
+                  className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg transition-all"
                   style={{ color: 'rgba(255,255,255,0.4)', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}
                   onMouseEnter={(e) => { e.currentTarget.style.color = '#fff' }}
                   onMouseLeave={(e) => { e.currentTarget.style.color = 'rgba(255,255,255,0.4)' }}
@@ -249,118 +275,133 @@ export default function Skills() {
             )}
           </AnimatePresence>
 
-          {/* TABS */}
-          <div className="flex flex-wrap gap-2 mb-12">
-            {CATEGORIES.map((cat) => {
-              const active = activeCategory === cat.id
-              return (
-                <button key={cat.id} onClick={() => setActiveCategory(cat.id)}
-                  className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-medium text-sm transition-all duration-250"
-                  style={{
-                    background:  active ? 'rgba(252,143,84,0.1)'           : 'rgba(255,255,255,0.03)',
-                    border:      active ? '1px solid rgba(252,143,84,0.4)' : '1px solid rgba(255,255,255,0.07)',
-                    color:       active ? '#FC8F54'                        : 'rgba(255,255,255,0.4)',
-                    boxShadow:   active ? '0 0 16px rgba(252,143,84,0.12)' : 'none',
-                  }}
-                  onMouseEnter={(e) => { if (!active) e.currentTarget.style.color = 'rgba(255,255,255,0.75)' }}
-                  onMouseLeave={(e) => { if (!active) e.currentTarget.style.color = 'rgba(255,255,255,0.4)' }}
-                >
-                  <cat.icon size={15} />
-                  {cat.name}
-                </button>
-              )
-            })}
+          {/* ── TABS ── */}
+          <div className="flex justify-start mb-6">
+            <div
+              className="flex flex-wrap gap-1.5 p-1.5 rounded-2xl"
+              style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)' }}
+            >
+              {CATEGORIES.map((cat) => {
+                const active = activeCategory === cat.id
+                return (
+                  <button
+                    key={cat.id}
+                    onClick={() => setActiveCategory(cat.id)}
+                    className="relative flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-colors duration-200 z-10"
+                    style={{ color: active ? '#0d0b14' : 'rgba(255,255,255,0.4)' }}
+                  >
+                    {active && (
+                      <motion.div
+                        layoutId="skillTab"
+                        className="absolute inset-0 rounded-xl -z-10"
+                        style={{ background: 'linear-gradient(90deg, #FC8F54, #F5525B)' }}
+                        transition={{ type: 'spring', bounce: 0.2, duration: 0.5 }}
+                      />
+                    )}
+                    <cat.icon size={15} />
+                    {cat.name}
+                  </button>
+                )
+              })}
+            </div>
           </div>
 
-          {/* ICON WALL */}
-          <motion.div layout className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7 gap-3 mb-20">
+          {/* ── LEYENDA DE NIVELES ── */}
+          <div className="flex flex-wrap gap-x-8 gap-y-3 mb-10">
+            {[3, 2, 1].map((n) => (
+              <div key={n} className="flex items-center gap-3">
+                <div className="flex gap-0.5 w-9">
+                  {[1, 2, 3].map((s) => (
+                    <span
+                      key={s}
+                      className="h-1 flex-1 rounded-full"
+                      style={{ background: s <= n ? TIERS[n].color : 'rgba(255,255,255,0.08)' }}
+                    />
+                  ))}
+                </div>
+                <p className="text-xs" style={{ color: 'rgba(255,255,255,0.35)' }}>
+                  <span className="font-mono uppercase tracking-wider mr-1.5" style={{ color: TIERS[n].color }}>
+                    {TIERS[n].text}
+                  </span>
+                  {TIERS[n].desc}
+                </p>
+              </div>
+            ))}
+          </div>
+
+          {/* ── GRID DE SKILLS ── */}
+          <motion.div layout className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 mb-24">
             <AnimatePresence mode="popLayout">
               {filteredSkills.map((skill) => (
-                <motion.div key={skill.name} layout initial={{ opacity: 0, scale: 0.85 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.85 }} transition={{ duration: 0.25 }}>
-                  <FlipCard skill={skill} projectCount={projectCount} isHighlighted={techParam === skill.name} />
+                <motion.div
+                  key={skill.name}
+                  layout
+                  initial={{ opacity: 0, y: 16 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: '-40px' }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  transition={{ duration: 0.35 }}
+                >
+                  <SkillCard skill={skill} projectCount={projectCount} highlighted={techParam === skill.name} />
                 </motion.div>
               ))}
             </AnimatePresence>
           </motion.div>
 
-          {/* STATS DE NIVEL */}
-          <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-20">
-            {[
-              { value: SKILLS.filter((s) => levelLabel(s.level).text === 'Expert').length,    label: 'Expert',    color: '#FC8F54' },
-              { value: SKILLS.filter((s) => levelLabel(s.level).text === 'Mastering').length, label: 'Mastering', color: '#6867D2' },
-              { value: SKILLS.filter((s) => levelLabel(s.level).text === 'Sólido').length,    label: 'Sólido',    color: '#a5a4e8' },
-              { value: SKILLS.filter((s) => levelLabel(s.level).text === 'Learning').length,  label: 'Learning',  color: 'rgba(255,255,255,0.35)' },
-            ].map((s) => (
-              <div key={s.label} className="text-center rounded-2xl py-6 px-4" style={{ background: `${s.color}08`, border: `1px solid ${s.color}20` }}>
-                <p className="text-4xl font-black font-mono mb-1" style={{ color: s.color }}>{s.value}</p>
-                <p className="text-[9px] uppercase tracking-widest" style={{ color: 'rgba(255,255,255,0.25)' }}>{s.label}</p>
-              </div>
-            ))}
-          </motion.div>
-
-          {/* R&D LAB */}
-          <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
-            className="relative rounded-3xl overflow-hidden"
+          {/* ── APRENDIENDO AHORA ── */}
+          <motion.section
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="rounded-3xl p-8"
             style={{ background: 'rgba(255,255,255,0.02)', border: '1px dashed rgba(104,103,210,0.25)' }}
           >
-            <div className="absolute top-0 right-0 w-64 h-64 rounded-full pointer-events-none blur-[80px]" style={{ background: 'rgba(104,103,210,0.08)', transform: 'translate(30%, -30%)' }} />
-            <div className="relative p-8">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full mb-6 text-xs font-bold uppercase tracking-wider"
-                style={{ background: 'rgba(104,103,210,0.1)', border: '1px solid rgba(104,103,210,0.3)', color: '#6867D2' }}>
-                <Terminal size={12} /> R&amp;D Lab
-              </div>
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-                <div>
-                  <h2 className="text-2xl font-bold text-white mb-1">Próximos Objetivos</h2>
-                  <p className="text-sm" style={{ color: 'rgba(255,255,255,0.3)' }}>Tecnologías en fase de exploración activa</p>
-                </div>
-              </div>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                {LEARNING_SKILLS.map((skill, i) => {
-                  const logoUrl = DEVICON_MAP[skill.name]
-                  return (
-                    <div key={i} className="flex items-center gap-3 p-4 rounded-xl transition-all duration-200"
-                      style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(104,103,210,0.12)' }}
-                      onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'rgba(104,103,210,0.3)'; e.currentTarget.style.background = 'rgba(104,103,210,0.06)' }}
-                      onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'rgba(104,103,210,0.12)'; e.currentTarget.style.background = 'rgba(255,255,255,0.03)' }}
-                    >
-                      {logoUrl ? (
-                        <img src={logoUrl} alt={skill.name} width={24} height={24} className="object-contain shrink-0"
-                          style={{ filter: skill.name === 'GitHub' ? 'invert(1) brightness(0.6)' : 'none', opacity: 0.7 }} loading="lazy" />
-                      ) : (
-                        <skill.icon size={20} style={{ color: 'rgba(104,103,210,0.6)', flexShrink: 0 }} />
-                      )}
-                      <div className="min-w-0">
-                        <p className="text-sm font-medium truncate" style={{ color: 'rgba(255,255,255,0.7)' }}>{skill.name}</p>
-                        <div className="flex items-center gap-1.5 mt-0.5">
-                          <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: '#6867D2' }} />
-                          <span className="text-[9px] uppercase tracking-wider font-bold" style={{ color: 'rgba(104,103,210,0.7)' }}>{skill.status}</span>
-                        </div>
+            <h2 className="text-2xl font-bold text-white mb-1">Aprendiendo ahora</h2>
+            <p className="text-sm mb-8" style={{ color: 'rgba(255,255,255,0.3)' }}>
+              Tecnologías que estoy explorando.
+            </p>
+
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              {LEARNING_SKILLS.map((skill) => {
+                const logoUrl = DEVICON_MAP[skill.name]
+                const invert = NEEDS_INVERT.includes(skill.name)
+                return (
+                  <div
+                    key={skill.name}
+                    className="flex items-center gap-3 p-4 rounded-xl transition-all duration-200"
+                    style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(104,103,210,0.12)' }}
+                    onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'rgba(104,103,210,0.3)'; e.currentTarget.style.background = 'rgba(104,103,210,0.06)' }}
+                    onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'rgba(104,103,210,0.12)'; e.currentTarget.style.background = 'rgba(255,255,255,0.03)' }}
+                  >
+                    {logoUrl ? (
+                      <img
+                        src={logoUrl}
+                        alt=""
+                        width={24}
+                        height={24}
+                        className="object-contain shrink-0"
+                        style={{ filter: invert ? 'invert(1) brightness(0.7)' : 'none', opacity: 0.8 }}
+                        loading="lazy"
+                      />
+                    ) : (
+                      <skill.icon size={20} style={{ color: 'rgba(104,103,210,0.7)', flexShrink: 0 }} />
+                    )}
+                    <div className="min-w-0">
+                      <p className="text-sm font-medium truncate" style={{ color: 'rgba(255,255,255,0.75)' }}>
+                        {skill.name}
+                      </p>
+                      <div className="flex items-center gap-1.5 mt-0.5">
+                        <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: '#6867D2' }} />
+                        <span className="text-[9px] uppercase tracking-wider font-bold" style={{ color: 'rgba(104,103,210,0.8)' }}>
+                          {skill.status}
+                        </span>
                       </div>
                     </div>
-                  )
-                })}
-              </div>
+                  </div>
+                )
+              })}
             </div>
-          </motion.div>
-
-          {/* FOOTER STATS */}
-          <div className="grid grid-cols-3 gap-6 mt-16 pt-12 text-center" style={{ borderTop: '1px solid rgba(255,255,255,0.05)' }}>
-            {[
-              { value: '2+',                    label: 'Años aprendiendo' },
-              { value: `${SKILLS.length}+`,     label: 'Tecnologías'     },
-              { value: '100%',                  label: 'Compromiso'      },
-            ].map((s) => (
-              <div key={s.label}>
-                <p className="font-black font-mono mb-2"
-                  style={{ fontSize: 'clamp(2rem, 5vw, 3.5rem)', background: 'linear-gradient(90deg, #FC8F54, #6867D2)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
-                  {s.value}
-                </p>
-                <p className="text-[9px] uppercase tracking-widest" style={{ color: 'rgba(255,255,255,0.25)' }}>{s.label}</p>
-              </div>
-            ))}
-          </div>
-
+          </motion.section>
         </div>
       </div>
     </>

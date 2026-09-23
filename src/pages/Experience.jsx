@@ -1,172 +1,296 @@
-import React, { useState } from 'react'
-import {
-  Terminal, Cpu, Network, Database, Globe,
-  Code2, Layers, Zap, ArrowRight, BookOpen,
-  Briefcase, Award, ChevronDown
-} from 'lucide-react'
-import { motion, AnimatePresence } from 'framer-motion'
+import React, { useRef } from 'react'
 import { Link } from 'react-router-dom'
+import {
+  ArrowRight, Briefcase, BookOpen, Sparkles, Cloud, Server, Database, Layers, Cpu,
+} from 'lucide-react'
+import {
+  motion, animate, useMotionValue, useMotionTemplate,
+  useScroll, useTransform, useReducedMotion,
+} from 'framer-motion'
 import SEO from '../components/SEO'
 
 // ── Variantes ───────────────────────────────────────────────────────────────
 const container = {
-  hidden:  { opacity: 0 },
-  visible: { opacity: 1, transition: { staggerChildren: 0.08 } },
+  hidden: { opacity: 0 },
+  visible: { opacity: 1, transition: { staggerChildren: 0.1 } },
 }
 const up = {
-  hidden:  { y: 24, opacity: 0 },
-  visible: { y: 0, opacity: 1, transition: { duration: 0.55, ease: 'easeOut' } },
+  hidden: { y: 24, opacity: 0 },
+  visible: { y: 0, opacity: 1, transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] } },
+}
+const inView = {
+  variants: up,
+  initial: 'hidden',
+  whileInView: 'visible',
+  viewport: { once: true, margin: '-80px' },
 }
 
-// ── Datos de ciclos ─────────────────────────────────────────────────────────
-// Cada ciclo tiene `img`: coloca ahí una foto real tuya de esa época/proyecto.
-// Si aún no tienes foto, pon null y mostrará el color de fondo.
-const cycles = [
+// ── Datos ───────────────────────────────────────────────────────────────────
+const KPIS = [
+  { icon: Briefcase, label: 'Proyectos', to: 8, suffix: '+' },
+  { icon: BookOpen, label: 'Cursos', to: 37, suffix: '+' },
+  { icon: Sparkles, label: 'Aprendizaje constante', text: '∞' },
+]
+
+// Agrega aquí más hitos (prácticas, freelance, certificaciones) con el mismo formato.
+const MILESTONES = [
   {
-    cycle: 'I',
-    label: 'Fundamentos',
-    year: '2022-1',
-    courses: ['Introducción a Sistemas', 'Lógica de Programación', 'Cálculo General'],
-    icon: Terminal,
-    img: '/cycles/cycle-1.jpg',   // foto: primer día de clases, libros, campus
-    color: '#6867D2',
-    done: true,
+    date: '2023',
+    icon: Server,
+    title: 'School Management System',
+    sub: 'Proyecto académico · Node.js + MySQL',
+    tags: ['REST API', 'Backend', 'Deployado'],
+    accent: '104,103,210',
   },
   {
-    cycle: 'II',
-    label: 'Algoritmia',
-    year: '2022-2',
-    courses: ['Metodologías de Programación', 'Pensamiento Sistémico', 'Cálculo I'],
-    icon: Code2,
-    img: '/cycles/cycle-2.jpg',   // foto: cuaderno con pseudocódigo, diagrama de flujo a mano
-    color: '#6867D2',
-    done: true,
-  },
-  {
-    cycle: 'III',
-    label: 'Estructuras & HW',
-    year: '2023-1',
-    courses: ['Estructura de Datos', 'Circuitos Digitales', 'Cálculo II'],
+    date: '2024',
     icon: Cpu,
-    img: '/cycles/cycle-3.jpg',   // foto: placa de circuito, lab de hardware
-    color: '#5546AD',
-    done: true,
+    title: 'RetailVision Analytics',
+    sub: 'Proyecto de tesis · YOLOv8 + FastAPI + React',
+    tags: ['Computer Vision', 'Full Stack', 'Tiempo real'],
+    accent: '252,143,84',
   },
   {
-    cycle: 'IV',
-    label: 'Análisis & Diseño',
-    year: '2023-2',
-    courses: ['POO Avanzado', 'Análisis de Sistemas', 'Modelado de Datos I'],
-    icon: Layers,
-    img: '/cycles/cycle-4.jpg',   // foto: diagrama UML en pizarrón, whiteboard
-    color: '#5546AD',
-    done: true,
-  },
-  {
-    cycle: 'V',
-    label: 'Arquitectura SW',
-    year: '2024-1',
-    courses: ['Ingeniería de Software', 'Arquitectura Empresarial', 'Gestión de Datos II'],
-    icon: Database,
-    img: '/cycles/cycle-5.jpg',   // foto: tu laptop con un esquema de base de datos abierto
-    color: '#FC8F54',
-    done: true,
-  },
-  {
-    cycle: 'VI',
-    label: 'Web & Redes',
-    year: '2024-2',
-    courses: ['Ingeniería Web Fullstack', 'Networking Avanzado', 'Gestión de TI'],
-    icon: Network,
-    img: '/cycles/cycle-6.jpg',   // foto: monitor con código React, terminal abierta
-    color: '#FC8F54',
-    done: true,
-  },
-  {
-    cycle: 'VII',
-    label: 'Cloud & Distribuidos',
-    year: '2025-1',
-    courses: ['Arquitectura Cloud (AWS)', 'Sistemas Distribuidos', 'Seguridad Informática'],
-    icon: Globe,
-    img: '/cycles/cycle-7.jpg',   // foto: tu setup actual, laptop, café, lo que sea real
-    color: '#F5525B',
-    done: false,
+    date: 'Ahora',
+    icon: Cloud,
+    title: 'Arquitectura en la nube',
+    sub: 'Aprendizaje continuo · AWS + Docker',
+    tags: ['AWS', 'Docker', 'Arquitectura'],
+    accent: '245,82,91',
     current: true,
   },
 ]
 
-// ── Datos de skills por categoría ───────────────────────────────────────────
-const skillGroups = [
+// level (0-100) → nivel: ≥80 Dominio · 60-79 Sólido · <60 Explorando
+const tierOf = (l) => (l >= 80 ? 3 : l >= 60 ? 2 : 1)
+const TIER_LABEL = { 3: 'Dominio', 2: 'Sólido', 1: 'Explorando' }
+
+const SKILL_GROUPS = [
   {
-    category: 'Frontend',
-    icon: '💻',
-    img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ7kVwY6E3UkmCgzAWgtGomGiRCMrGr8ZeYqsWeQUCCgEcPTwYvWzjBTEZljwOScmdW0PuSYcVD5CWmP8WEY5MS_0g9ISItFLhQNXgDMx9XSw&s=10',   // foto: browser abierto con tu portafolio o un proyecto
+    category: 'DevOps & Cloud',
+    icon: Cloud,
+    accent: '252,143,84',
+    focus: true,
     items: [
-      { name: 'React',       level: 75 },
-      { name: 'Vue.js',      level: 55 },
-      { name: 'Tailwind',    level: 80 },
-      { name: 'JavaScript',  level: 78 },
+      { name: 'AWS (EC2/S3)', level: 38 },
+      { name: 'Docker', level: 50 },
+      { name: 'Vercel / Render', level: 70 },
+      { name: 'Git / GitHub', level: 85 },
     ],
-    accent: '#6867D2',
   },
   {
     category: 'Backend',
-    icon: '⚙️',
-    img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ7kVwY6E3UkmCgzAWgtGomGiRCMrGr8ZeYqsWeQUCCgEcPTwYvWzjBTEZljwOScmdW0PuSYcVD5CWmP8WEY5MS_0g9ISItFLhQNXgDMx9XSw&s=10',    // foto: terminal con Node.js / FastAPI corriendo
+    icon: Server,
+    accent: '104,103,210',
     items: [
-      { name: 'Node.js',    level: 75 },
-      { name: 'PHP/Laravel',level: 82 },
-      { name: 'FastAPI',    level: 68 },
-      { name: 'Python',     level: 70 },
+      { name: 'Node.js', level: 75 },
+      { name: 'PHP / Laravel', level: 82 },
+      { name: 'FastAPI', level: 68 },
+      { name: 'Python', level: 70 },
     ],
-    accent: '#FC8F54',
   },
   {
     category: 'Datos & DB',
-    icon: '🗄',
-    img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ7kVwY6E3UkmCgzAWgtGomGiRCMrGr8ZeYqsWeQUCCgEcPTwYvWzjBTEZljwOScmdW0PuSYcVD5CWmP8WEY5MS_0g9ISItFLhQNXgDMx9XSw&s=10',   // foto: DBeaver o MySQL Workbench en pantalla
+    icon: Database,
+    accent: '85,70,173',
     items: [
-      { name: 'MySQL',        level: 88 },
-      { name: 'SQL Server',   level: 80 },
-      { name: 'PostgreSQL',   level: 55 },
-      { name: 'MongoDB',      level: 45 },
+      { name: 'MySQL', level: 88 },
+      { name: 'SQL Server', level: 80 },
+      { name: 'PostgreSQL', level: 55 },
+      { name: 'MongoDB', level: 45 },
     ],
-    accent: '#5546AD',
   },
   {
-    category: 'DevOps & Cloud',
-    icon: '☁️',
-    img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ7kVwY6E3UkmCgzAWgtGomGiRCMrGr8ZeYqsWeQUCCgEcPTwYvWzjBTEZljwOScmdW0PuSYcVD5CWmP8WEY5MS_0g9ISItFLhQNXgDMx9XSw&s=10',     // foto: dashboard de Vercel/Render/AWS en pantalla
+    category: 'Frontend',
+    icon: Layers,
+    accent: '245,82,91',
     items: [
-      { name: 'Git / GitHub', level: 85 },
-      { name: 'Docker',       level: 50 },
-      { name: 'Vercel/Render',level: 70 },
-      { name: 'AWS (EC2/S3)', level: 38 },
+      { name: 'React', level: 75 },
+      { name: 'Vue.js', level: 55 },
+      { name: 'Tailwind', level: 80 },
+      { name: 'JavaScript', level: 78 },
     ],
-    accent: '#F5525B',
   },
 ]
 
-// ── Componente principal ────────────────────────────────────────────────────
+// ── Tarjeta con spotlight ───────────────────────────────────────────────────
+function SpotlightCard({ children, className = '', accent = '252,143,84', style }) {
+  const x = useMotionValue(-300)
+  const y = useMotionValue(-300)
+  const bg = useMotionTemplate`radial-gradient(340px circle at ${x}px ${y}px, rgba(${accent},0.13), transparent 70%)`
+
+  return (
+    <div
+      onMouseMove={(e) => {
+        const r = e.currentTarget.getBoundingClientRect()
+        x.set(e.clientX - r.left)
+        y.set(e.clientY - r.top)
+      }}
+      className={`relative overflow-hidden rounded-2xl ${className}`}
+      style={{ background: 'rgba(255,255,255,0.025)', border: '1px solid rgba(255,255,255,0.07)', ...style }}
+    >
+      <motion.div className="pointer-events-none absolute inset-0" style={{ background: bg }} />
+      <div className="relative h-full">{children}</div>
+    </div>
+  )
+}
+
+// ── Contador animado ────────────────────────────────────────────────────────
+function Counter({ to, suffix = '' }) {
+  const reduce = useReducedMotion()
+  const mv = useMotionValue(reduce ? to : 0)
+  const text = useTransform(mv, (v) => `${Math.round(v)}${suffix}`)
+
+  return (
+    <motion.span
+      viewport={{ once: true }}
+      onViewportEnter={() => {
+        if (!reduce) animate(mv, to, { duration: 1.4, ease: 'easeOut' })
+      }}
+    >
+      {text}
+    </motion.span>
+  )
+}
+
+// ── Nivel en 3 segmentos ────────────────────────────────────────────────────
+function TierBar({ tier, accent }) {
+  return (
+    <div className="flex gap-1">
+      {[1, 2, 3].map((n) => (
+        <motion.span
+          key={n}
+          className="h-1 flex-1 rounded-full origin-left"
+          style={{ background: n <= tier ? `rgb(${accent})` : 'rgba(255,255,255,0.08)' }}
+          initial={{ scaleX: 0 }}
+          whileInView={{ scaleX: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: n * 0.12 }}
+        />
+      ))}
+    </div>
+  )
+}
+
+// ── Hito del timeline (se enciende con el scroll) ───────────────────────────
+function TimelineItem({ m, i, total, progress }) {
+  const t = (i + 0.5) / total
+  const lit = useTransform(progress, [t - 0.2, t], [0.35, 1])
+  const Icon = m.icon
+  const left = i % 2 === 0
+
+  return (
+    <div className="relative md:grid md:grid-cols-2 mb-12 last:mb-0">
+      {/* Nodo */}
+      <div className="absolute left-5 md:left-1/2 top-6 -translate-x-1/2 z-10">
+        <motion.div
+          className="w-10 h-10 rounded-2xl flex items-center justify-center"
+          style={{
+            opacity: lit,
+            background: '#0d0b14',
+            border: `1px solid rgba(${m.accent},0.6)`,
+            boxShadow: `0 0 24px rgba(${m.accent},0.3)`,
+          }}
+        >
+          <Icon size={16} style={{ color: `rgb(${m.accent})` }} />
+        </motion.div>
+        {m.current && (
+          <span
+            className="absolute inset-0 rounded-2xl animate-ping opacity-30 pointer-events-none"
+            style={{ border: `1px solid rgb(${m.accent})` }}
+          />
+        )}
+      </div>
+
+      {/* Contenido */}
+      <motion.div
+        style={{ opacity: lit }}
+        className={`pl-16 md:pl-0 ${left ? 'md:pr-16 md:text-right' : 'md:col-start-2 md:pl-16'}`}
+      >
+        <SpotlightCard accent={m.accent} className="p-6">
+          <p className="font-mono text-[10px] uppercase tracking-widest mb-2" style={{ color: `rgb(${m.accent})` }}>
+            {m.date}
+          </p>
+          <h3 className="text-lg font-bold text-white leading-tight mb-1">{m.title}</h3>
+          <p className="text-xs italic mb-4" style={{ color: 'rgba(255,255,255,0.35)' }}>
+            {m.sub}
+          </p>
+          <div className={`flex flex-wrap gap-1.5 ${left ? 'md:justify-end' : ''}`}>
+            {m.tags.map((tag) => (
+              <span
+                key={tag}
+                className="text-[9px] px-2 py-0.5 rounded font-mono"
+                style={{
+                  background: `rgba(${m.accent},0.08)`,
+                  border: `1px solid rgba(${m.accent},0.22)`,
+                  color: `rgba(${m.accent},0.85)`,
+                }}
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+        </SpotlightCard>
+      </motion.div>
+    </div>
+  )
+}
+
+function Timeline() {
+  const ref = useRef(null)
+  const { scrollYProgress } = useScroll({ target: ref, offset: ['start 70%', 'end 60%'] })
+
+  return (
+    <div ref={ref} className="relative">
+      <div
+        className="absolute left-5 md:left-1/2 top-0 bottom-0 w-px md:-translate-x-1/2"
+        style={{ background: 'rgba(255,255,255,0.08)' }}
+      >
+        <motion.div
+          className="w-full h-full origin-top"
+          style={{
+            scaleY: scrollYProgress,
+            background: 'linear-gradient(to bottom, #FC8F54, #F5525B, #6867D2)',
+          }}
+        />
+      </div>
+      {MILESTONES.map((m, i) => (
+        <TimelineItem key={m.title} m={m} i={i} total={MILESTONES.length} progress={scrollYProgress} />
+      ))}
+    </div>
+  )
+}
+
+// ── Título de sección ───────────────────────────────────────────────────────
+function SectionLabel({ color = '#FC8F54', children }) {
+  return (
+    <h2
+      className="text-xs font-bold uppercase tracking-[0.3em] mb-8 flex items-center gap-3"
+      style={{ color: 'rgba(255,255,255,0.35)' }}
+    >
+      <span className="h-px w-8" style={{ background: color }} />
+      {children}
+    </h2>
+  )
+}
+
+// ════════════════════════════════════════════════════════════════════════════
 const Experience = () => {
-  const [openCycle, setOpenCycle] = useState(null)
-  const completedCount = cycles.filter((c) => c.done).length
+  const { scrollY } = useScroll()
+  const bloomA = useTransform(scrollY, [0, 1000], [0, -120])
+  const bloomB = useTransform(scrollY, [0, 1000], [0, 100])
 
   return (
     <>
       <SEO
-        title="Experiencia y Formación | Luis Crisanto"
-        description="Trayectoria académica en Ingeniería de Sistemas: 7 ciclos, 116+ créditos, 8+ proyectos deployados."
+        title="Experiencia y Aprendizaje | Luis Crisanto"
+        description="Proyectos reales y aprendizaje continuo con enfoque en arquitectura cloud: AWS, Docker, Node.js, FastAPI y más."
         canonical="https://luis-crisanto.vercel.app/experience"
-        keywords="Experiencia, Formación, Ingeniería de Sistemas, UCV, Trayectoria académica"
+        keywords="Experiencia, Aprendizaje continuo, Arquitectura Cloud, AWS, Docker, Node.js, FastAPI, Proyectos"
       />
 
-      <div
-        className="min-h-screen relative overflow-hidden pt-28 pb-24"
-        style={{ background: '#0d0b14' }}
-      >
-
-        {/* ── FONDO: patrón diagonal sutil en paleta índigo ─────────────── */}
+      <div className="min-h-screen relative overflow-hidden pt-28 pb-24" style={{ background: '#0d0b14' }}>
+        {/* Patrón diagonal */}
         <div
           className="absolute inset-0 z-0"
           style={{
@@ -179,15 +303,14 @@ const Experience = () => {
             )`,
           }}
         />
-        {/* Bloom naranja arriba-derecha */}
-        <div
+        {/* Blooms con parallax */}
+        <motion.div
           className="absolute top-[-5%] right-[-5%] w-[550px] h-[550px] rounded-full pointer-events-none blur-[150px]"
-          style={{ background: 'rgba(252,143,84,0.07)' }}
+          style={{ background: 'rgba(252,143,84,0.08)', y: bloomA }}
         />
-        {/* Bloom índigo abajo-izquierda */}
-        <div
+        <motion.div
           className="absolute bottom-0 left-0 w-[500px] h-[500px] rounded-full pointer-events-none blur-[140px]"
-          style={{ background: 'rgba(85,70,173,0.07)' }}
+          style={{ background: 'rgba(85,70,173,0.08)', y: bloomB }}
         />
 
         <motion.div
@@ -196,455 +319,166 @@ const Experience = () => {
           animate="visible"
           className="relative z-10 max-w-6xl mx-auto px-6"
         >
-
-          {/* ══════════════════════════════════════════════════════════════
-              ENCABEZADO
-          ══════════════════════════════════════════════════════════════ */}
-          <motion.div variants={up} className="mb-20">
+          {/* ── ENCABEZADO ─────────────────────────────────────────────── */}
+          <motion.header variants={up} className="mb-16">
             <div className="flex items-center gap-3 mb-5">
-              <div className="h-px w-10" style={{ background: '#FC8F54' }} />
-              <span
-                className="font-mono text-[10px] uppercase tracking-[0.35em]"
-                style={{ color: 'rgba(252,143,84,0.7)' }}
-              >
-                Roadmap Académico
+              <motion.div
+                className="h-px w-10 origin-left"
+                style={{ background: '#FC8F54' }}
+                initial={{ scaleX: 0 }}
+                animate={{ scaleX: 1 }}
+                transition={{ duration: 0.8, delay: 0.2 }}
+              />
+              <span className="font-mono text-[10px] uppercase tracking-[0.35em]" style={{ color: 'rgba(252,143,84,0.7)' }}>
+                Experiencia
               </span>
             </div>
+
             <h1
-              className="font-black tracking-tighter leading-[0.88] mb-4"
-              style={{
-                fontFamily: "'Poppins', sans-serif",
-                fontSize: 'clamp(3rem, 9vw, 7rem)',
-              }}
+              className="font-black tracking-tighter leading-[0.9] mb-5"
+              style={{ fontFamily: "'Poppins', sans-serif", fontSize: 'clamp(2.4rem, 8vw, 6rem)' }}
             >
-              <span className="block text-white">FORMACIÓN</span>
-              <span
-                className="block text-transparent bg-clip-text"
-                style={{
-                  backgroundImage: 'linear-gradient(90deg, #FC8F54 0%, #F5525B 45%, #6867D2 100%)',
-                }}
-              >
-                & SKILLS
+              <span className="block overflow-hidden pb-[0.08em]">
+                <motion.span
+                  className="block text-white"
+                  initial={{ y: '105%' }}
+                  animate={{ y: 0 }}
+                  transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1], delay: 0.1 }}
+                >
+                  EXPERIENCIA
+                </motion.span>
+              </span>
+              <span className="block overflow-hidden pb-[0.08em]">
+                <motion.span
+                  className="block text-transparent bg-clip-text"
+                  style={{ backgroundImage: 'linear-gradient(90deg, #FC8F54 0%, #F5525B 45%, #6867D2 100%)' }}
+                  initial={{ y: '105%' }}
+                  animate={{ y: 0 }}
+                  transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1], delay: 0.22 }}
+                >
+                  & APRENDIZAJE
+                </motion.span>
               </span>
             </h1>
-            <p className="text-lg max-w-lg" style={{ color: 'rgba(255,255,255,0.4)' }}>
-              Mi evolución técnica ciclo a ciclo — desde lógica de programación hasta
-              sistemas distribuidos en la nube.
-            </p>
-          </motion.div>
 
-          {/* ══════════════════════════════════════════════════════════════
-              KPI ROW
-          ══════════════════════════════════════════════════════════════ */}
-          <motion.div variants={up} className="flex flex-wrap gap-6 mb-16">
-            {[
-              { v: '8+',  l: 'Proyectos',          icon: <Briefcase size={15} /> },
-              { v: '116+',l: 'Créditos aprobados', icon: <BookOpen  size={15} /> },
-              { v: 'Top 10%', l: 'Promedio',        icon: <Award    size={15} /> },
-            ].map((k) => (
-              <div
-                key={k.l}
-                className="flex items-center gap-4 px-6 py-4 rounded-2xl backdrop-blur-sm"
-                style={{
-                  background: 'rgba(255,255,255,0.03)',
-                  border:     '1px solid rgba(255,255,255,0.07)',
-                }}
-              >
-                <div style={{ color: '#FC8F54' }}>{k.icon}</div>
-                <div>
-                  <p className="text-2xl font-black text-white font-mono leading-none">{k.v}</p>
-                  <p
-                    className="text-[9px] uppercase tracking-widest mt-0.5"
-                    style={{ color: 'rgba(255,255,255,0.3)' }}
-                  >
-                    {k.l}
-                  </p>
+            <p className="text-lg max-w-xl" style={{ color: 'rgba(255,255,255,0.45)' }}>
+              Proyectos reales y aprendizaje constante, con la mira puesta en la{' '}
+              <span className="text-white font-medium">arquitectura en la nube</span>.
+            </p>
+          </motion.header>
+
+          {/* ── KPIs ───────────────────────────────────────────────────── */}
+          <motion.div variants={up} className="grid sm:grid-cols-3 gap-4 mb-24">
+            {KPIS.map((k) => (
+              <SpotlightCard key={k.label} className="p-6" accent="104,103,210">
+                <div className="flex items-center gap-4">
+                  <div className="p-2.5 rounded-xl" style={{ background: 'rgba(252,143,84,0.08)', border: '1px solid rgba(252,143,84,0.2)' }}>
+                    <k.icon size={16} style={{ color: '#FC8F54' }} />
+                  </div>
+                  <div>
+                    <p className="text-3xl font-black text-white font-mono leading-none">
+                      {k.text ? k.text : <Counter to={k.to} suffix={k.suffix} />}
+                    </p>
+                    <p className="text-[9px] uppercase tracking-widest mt-1" style={{ color: 'rgba(255,255,255,0.3)' }}>
+                      {k.label}
+                    </p>
+                  </div>
                 </div>
-              </div>
+              </SpotlightCard>
             ))}
-
-            {/* Barra de progreso académico global */}
-            <div
-              className="flex-1 min-w-[220px] px-6 py-4 rounded-2xl backdrop-blur-sm flex flex-col justify-center gap-2"
-              style={{
-                background: 'rgba(255,255,255,0.03)',
-                border:     '1px solid rgba(255,255,255,0.07)',
-              }}
-            >
-              <div className="flex justify-between items-center">
-                <span
-                  className="text-[9px] uppercase tracking-widest font-mono"
-                  style={{ color: 'rgba(255,255,255,0.3)' }}
-                >
-                  Progreso académico
-                </span>
-                <span className="text-sm font-black text-white font-mono">
-                  {completedCount}/{cycles.length}
-                </span>
-              </div>
-              <div
-                className="h-1.5 w-full rounded-full overflow-hidden"
-                style={{ background: 'rgba(255,255,255,0.06)' }}
-              >
-                <motion.div
-                  className="h-full rounded-full"
-                  style={{
-                    background: 'linear-gradient(90deg, #FC8F54, #F5525B, #6867D2)',
-                  }}
-                  initial={{ width: 0 }}
-                  animate={{ width: `${(completedCount / cycles.length) * 100}%` }}
-                  transition={{ duration: 1.2, ease: 'easeOut', delay: 0.4 }}
-                />
-              </div>
-              <div className="flex gap-1 mt-1">
-                {cycles.map((c) => (
-                  <div
-                    key={c.cycle}
-                    className="flex-1 h-1 rounded-sm"
-                    style={{
-                      background: c.current
-                        ? '#F5525B'
-                        : c.done
-                        ? 'rgba(104,103,210,0.6)'
-                        : 'rgba(255,255,255,0.06)',
-                    }}
-                  />
-                ))}
-              </div>
-            </div>
           </motion.div>
 
-          {/* ══════════════════════════════════════════════════════════════
-              GRID DE CICLOS  — tarjetas con imagen de fondo
-          ══════════════════════════════════════════════════════════════ */}
-          <motion.div variants={up} className="mb-24">
-            <h2
-              className="text-xs font-bold uppercase tracking-[0.3em] mb-8 flex items-center gap-3"
-              style={{ color: 'rgba(255,255,255,0.3)' }}
-            >
-              <span className="h-px w-8" style={{ background: '#6867D2' }} />
-              Ciclos académicos · UCV Ingeniería de Sistemas
-            </h2>
+          {/* ── TIMELINE ───────────────────────────────────────────────── */}
+          <motion.section {...inView} className="mb-28">
+            <SectionLabel color="#6867D2">Ruta hacia la nube</SectionLabel>
+            <Timeline />
+          </motion.section>
 
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-              {cycles.map((item, i) => {
-                const Icon = item.icon
-                const isOpen = openCycle === i
-                return (
-                  <motion.div
-                    key={i}
-                    variants={up}
-                    className="relative overflow-hidden rounded-2xl cursor-pointer group"
-                    style={{
-                      border: item.current
-                        ? '1px solid rgba(245,82,91,0.5)'
-                        : '1px solid rgba(255,255,255,0.07)',
-                      minHeight: '160px',
-                    }}
-                    onClick={() => setOpenCycle(isOpen ? null : i)}
-                    whileHover={{ y: -3 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    {/* Imagen de fondo del ciclo */}
-                    {item.img && (
-                      <img
-                        src={item.img}
-                        alt={`Ciclo ${item.cycle}`}
-                        className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                        style={{ opacity: 0.18 }}
-                      />
-                    )}
-
-                    {/* Overlay degradado */}
-                    <div
-                      className="absolute inset-0"
-                      style={{
-                        background: item.current
-                          ? `linear-gradient(135deg, rgba(245,82,91,0.15), rgba(13,11,20,0.85))`
-                          : `linear-gradient(135deg, rgba(${item.done ? '104,103,210' : '13,11,20'},0.1), rgba(13,11,20,0.88))`,
-                      }}
-                    />
-
-                    {/* Glow del ciclo actual */}
-                    {item.current && (
-                      <div
-                        className="absolute -inset-1 rounded-2xl blur-xl pointer-events-none"
-                        style={{ background: 'rgba(245,82,91,0.12)' }}
-                      />
-                    )}
-
-                    {/* Contenido */}
-                    <div className="relative p-5 flex flex-col h-full min-h-[160px]">
-                      {/* Número de ciclo grande como watermark */}
-                      <span
-                        className="absolute top-3 right-4 font-black font-mono leading-none select-none pointer-events-none"
-                        style={{
-                          fontSize: '3.5rem',
-                          color: item.current ? 'rgba(245,82,91,0.12)' : 'rgba(104,103,210,0.1)',
-                        }}
-                      >
-                        {item.cycle}
-                      </span>
-
-                      {/* Badge "En curso" */}
-                      {item.current && (
-                        <span
-                          className="self-start text-[8px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full mb-3"
-                          style={{
-                            background: 'rgba(245,82,91,0.2)',
-                            border:     '1px solid rgba(245,82,91,0.4)',
-                            color:      '#F5525B',
-                          }}
-                        >
-                          En progreso
-                        </span>
-                      )}
-
-                      {/* Ícono + ciclo */}
-                      <div className="flex items-center gap-2 mb-2 mt-auto">
-                        <div
-                          className="p-1.5 rounded-lg"
-                          style={{
-                            background: `${item.color}18`,
-                            border:     `1px solid ${item.color}30`,
-                          }}
-                        >
-                          <Icon size={14} style={{ color: item.color }} />
-                        </div>
-                        <span
-                          className="font-mono text-[10px] uppercase tracking-widest"
-                          style={{ color: `${item.color}90` }}
-                        >
-                          {item.year}
-                        </span>
-                      </div>
-
-                      <p
-                        className="font-bold text-sm leading-tight mb-0.5"
-                        style={{ color: item.current ? '#fff' : 'rgba(255,255,255,0.8)' }}
-                      >
-                        Ciclo {item.cycle}
-                      </p>
-                      <p
-                        className="text-[10px] uppercase tracking-wider"
-                        style={{ color: 'rgba(255,255,255,0.3)' }}
-                      >
-                        {item.label}
-                      </p>
-
-                      {/* Chevron toggle */}
-                      <ChevronDown
-                        size={14}
-                        className="mt-2 transition-transform duration-300"
-                        style={{
-                          color: 'rgba(255,255,255,0.25)',
-                          transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)',
-                        }}
-                      />
-                    </div>
-
-                    {/* Panel expandible con cursos */}
-                    <AnimatePresence>
-                      {isOpen && (
-                        <motion.div
-                          initial={{ height: 0, opacity: 0 }}
-                          animate={{ height: 'auto', opacity: 1 }}
-                          exit={{ height: 0, opacity: 0 }}
-                          transition={{ duration: 0.3 }}
-                          className="overflow-hidden"
-                          style={{
-                            borderTop: `1px solid ${item.color}25`,
-                            background: 'rgba(13,11,20,0.92)',
-                          }}
-                        >
-                          <div className="p-4 space-y-2">
-                            {item.courses.map((course, ci) => (
-                              <div key={ci} className="flex items-start gap-2">
-                                <Zap
-                                  size={11}
-                                  className="mt-0.5 shrink-0"
-                                  style={{ color: item.color }}
-                                />
-                                <span
-                                  className="text-xs leading-snug"
-                                  style={{ color: 'rgba(255,255,255,0.6)' }}
-                                >
-                                  {course}
-                                </span>
-                              </div>
-                            ))}
-                          </div>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </motion.div>
-                )
-              })}
-            </div>
-            <p
-              className="text-[10px] font-mono mt-4"
-              style={{ color: 'rgba(255,255,255,0.2)' }}
-            >
-              * Haz clic en cada ciclo para ver los cursos
-            </p>
-          </motion.div>
-
-          {/* ══════════════════════════════════════════════════════════════
-              SKILLS POR CATEGORÍA — cards con imagen de fondo
-          ══════════════════════════════════════════════════════════════ */}
-          <motion.div variants={up} className="mb-24">
-            <h2
-              className="text-xs font-bold uppercase tracking-[0.3em] mb-8 flex items-center gap-3"
-              style={{ color: 'rgba(255,255,255,0.3)' }}
-            >
-              <span className="h-px w-8" style={{ background: '#FC8F54' }} />
-              Nivel técnico actual
-            </h2>
+          {/* ── SKILLS ─────────────────────────────────────────────────── */}
+          <motion.section {...inView} className="mb-24">
+            <SectionLabel>Nivel técnico actual</SectionLabel>
 
             <div className="grid sm:grid-cols-2 gap-5">
-              {skillGroups.map((group) => (
-                <motion.div
-                  key={group.category}
-                  variants={up}
-                  className="relative overflow-hidden rounded-2xl"
-                  style={{
-                    background: 'rgba(255,255,255,0.025)',
-                    border:     `1px solid ${group.accent}20`,
-                  }}
-                >
-                  {/* Imagen de fondo de la categoría */}
-                  {group.img && (
-                    <img
-                      src={group.img}
-                      alt={group.category}
-                      className="absolute inset-0 w-full h-full object-cover"
-                      style={{ opacity: 0.07, filter: 'saturate(0.5)' }}
-                    />
-                  )}
-
-                  <div
-                    className="absolute inset-0 pointer-events-none"
-                    style={{
-                      background: `linear-gradient(135deg, ${group.accent}08 0%, transparent 60%)`,
-                    }}
-                  />
-
-                  <div className="relative p-6">
-                    {/* Header de categoría */}
-                    <div className="flex items-center gap-3 mb-6">
-                      <div
-                        className="w-9 h-9 rounded-xl flex items-center justify-center text-lg"
-                        style={{
-                          background: `${group.accent}15`,
-                          border:     `1px solid ${group.accent}30`,
-                        }}
-                      >
-                        {group.icon}
-                      </div>
-                      <div>
-                        <p
-                          className="font-bold text-sm text-white"
+              {SKILL_GROUPS.map((g) => (
+                <div key={g.category} className={g.focus ? 'sm:col-span-2' : ''}>
+                  <SpotlightCard
+                    accent={g.accent}
+                    className="h-full p-6"
+                    style={g.focus ? { border: `1px solid rgba(${g.accent},0.3)` } : undefined}
+                  >
+                    <div className="flex items-center justify-between mb-6">
+                      <div className="flex items-center gap-3">
+                        <div
+                          className="w-9 h-9 rounded-xl flex items-center justify-center"
+                          style={{ background: `rgba(${g.accent},0.12)`, border: `1px solid rgba(${g.accent},0.3)` }}
                         >
-                          {group.category}
-                        </p>
-                        <p
-                          className="text-[9px] uppercase tracking-widest"
-                          style={{ color: 'rgba(255,255,255,0.25)' }}
-                        >
-                          {group.items.length} tecnologías
-                        </p>
-                      </div>
-                    </div>
-
-                    {/* Items con barra */}
-                    <div className="space-y-4">
-                      {group.items.map((skill) => (
-                        <div key={skill.name}>
-                          <div className="flex justify-between items-center mb-1.5">
-                            <span
-                              className="text-xs font-medium"
-                              style={{ color: 'rgba(255,255,255,0.7)' }}
-                            >
-                              {skill.name}
-                            </span>
-                            <span
-                              className="font-mono text-[10px]"
-                              style={{ color: `${group.accent}90` }}
-                            >
-                              {skill.level}%
-                            </span>
-                          </div>
-                          {/* Track */}
-                          <div
-                            className="h-1 w-full rounded-full overflow-hidden"
-                            style={{ background: 'rgba(255,255,255,0.06)' }}
-                          >
-                            <motion.div
-                              className="h-full rounded-full"
-                              style={{
-                                background: `linear-gradient(90deg, ${group.accent}, ${group.accent}60)`,
-                              }}
-                              initial={{ width: 0 }}
-                              whileInView={{ width: `${skill.level}%` }}
-                              viewport={{ once: true }}
-                              transition={{ duration: 0.9, ease: 'easeOut', delay: 0.1 }}
-                            />
-                          </div>
+                          <g.icon size={16} style={{ color: `rgb(${g.accent})` }} />
                         </div>
-                      ))}
+                        <div>
+                          <p className="font-bold text-sm text-white">{g.category}</p>
+                          <p className="text-[9px] uppercase tracking-widest" style={{ color: 'rgba(255,255,255,0.25)' }}>
+                            {g.items.length} tecnologías
+                          </p>
+                        </div>
+                      </div>
+                      {g.focus && (
+                        <span
+                          className="text-[9px] px-2 py-0.5 rounded font-mono"
+                          style={{ color: '#FC8F54', background: 'rgba(252,143,84,0.1)', border: '1px solid rgba(252,143,84,0.3)' }}
+                        >
+                          En foco
+                        </span>
+                      )}
                     </div>
-                  </div>
-                </motion.div>
+
+                    <div className={g.focus ? 'grid sm:grid-cols-2 lg:grid-cols-4 gap-5' : 'space-y-5'}>
+                      {g.items.map((s) => {
+                        const tier = tierOf(s.level)
+                        return (
+                          <div key={s.name}>
+                            <div className="flex justify-between items-center mb-2">
+                              <span className="text-xs font-medium" style={{ color: 'rgba(255,255,255,0.75)' }}>
+                                {s.name}
+                              </span>
+                              <span className="font-mono text-[10px]" style={{ color: `rgba(${g.accent},0.9)` }}>
+                                {TIER_LABEL[tier]}
+                              </span>
+                            </div>
+                            <TierBar tier={tier} accent={g.accent} />
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </SpotlightCard>
+                </div>
               ))}
             </div>
-          </motion.div>
+          </motion.section>
 
-          {/* ══════════════════════════════════════════════════════════════
-              CTA FINAL
-          ══════════════════════════════════════════════════════════════ */}
+          {/* ── CTA FINAL ──────────────────────────────────────────────── */}
           <motion.div
-            variants={up}
+            {...inView}
             className="flex flex-col sm:flex-row items-center justify-between gap-6 p-8 rounded-3xl"
-            style={{
-              background: 'rgba(252,143,84,0.04)',
-              border:     '1px solid rgba(252,143,84,0.15)',
-            }}
+            style={{ background: 'rgba(252,143,84,0.04)', border: '1px solid rgba(252,143,84,0.15)' }}
           >
             <div>
-              <p
-                className="font-mono text-[10px] uppercase tracking-widest mb-1"
-                style={{ color: 'rgba(252,143,84,0.6)' }}
-              >
+              <p className="font-mono text-[10px] uppercase tracking-widest mb-1" style={{ color: 'rgba(252,143,84,0.6)' }}>
                 ¿Quieres ver el resultado?
               </p>
-              <p className="text-xl font-bold text-white">
-                Revisa mis proyectos deployados
-              </p>
+              <p className="text-xl font-bold text-white">Revisa mis proyectos deployados</p>
             </div>
             <Link to="/projects">
               <button
-                className="group flex items-center gap-2 px-7 py-3.5 font-bold rounded-xl
-                           transition-all duration-300 hover:scale-[1.04] active:scale-95 whitespace-nowrap"
-                style={{
-                  background: 'linear-gradient(90deg, #FC8F54, #F5525B)',
-                  color:      '#fff',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.boxShadow = '0 0 24px rgba(252,143,84,0.35)'
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.boxShadow = 'none'
-                }}
+                className="group flex items-center gap-2 px-7 py-3.5 font-bold rounded-xl transition-all duration-300 hover:scale-[1.04] active:scale-95 whitespace-nowrap"
+                style={{ background: 'linear-gradient(90deg, #FC8F54, #F5525B)', color: '#fff' }}
+                onMouseEnter={(e) => (e.currentTarget.style.boxShadow = '0 0 24px rgba(252,143,84,0.35)')}
+                onMouseLeave={(e) => (e.currentTarget.style.boxShadow = 'none')}
               >
                 Ver Proyectos
-                <ArrowRight
-                  size={16}
-                  className="group-hover:translate-x-1 transition-transform"
-                />
+                <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
               </button>
             </Link>
           </motion.div>
-
         </motion.div>
       </div>
     </>
