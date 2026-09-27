@@ -7,38 +7,24 @@ import {
   ArrowUpRight, Clock, Mail,
 } from 'lucide-react'
 import SEO from '../components/SEO'
-import { buildNotificationHtml, buildConfirmationHtml } from '../lib/emailTemplates'
 
-// ── Brevo config ──────────────────────────────────────────────────────────────
-// ⚠️ VITE_* queda visible en el navegador. Ideal: mover el envío a un backend.
-const BREVO_KEY = import.meta.env.VITE_BREVO_API_KEY
-const NOTIFY_TO = 'lcrisantosi7@gmail.com'
-const SENDER_EMAIL = 'lcrisantosi7@gmail.com'
-const SENDER_NAME = 'LC.dev'
+// ── Configuración ─────────────────────────────────────────────────────────────
 const MAX_LEN = 2000
 const COOLDOWN_KEY = 'contact:last'
 const COOLDOWN_MS = 60_000
 
-// ── Email via Brevo API — sin cambios ────────────────────────────────────────
-const sendEmail = async ({ to, subject, html }) => {
-  const res = await fetch('https://api.brevo.com/v3/smtp/email', {
+// ── Envío: pasa por tu backend (api/contact.js). La API key ya no está aquí ──
+const sendMessage = async (payload) => {
+  const res = await fetch('/api/contact', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'api-key': BREVO_KEY },
-    body: JSON.stringify({
-      sender: { name: SENDER_NAME, email: SENDER_EMAIL },
-      to: [{ email: to }],
-      subject,
-      htmlContent: html,
-    }),
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
   })
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}))
-    throw new Error(err.message || `Brevo error ${res.status}`)
-  }
+  const data = await res.json().catch(() => ({}))
+  if (!res.ok) throw new Error(data.error || 'No se pudo enviar el mensaje.')
 }
 
 const isValidEmail = (v) => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim())
-const sanitize = (v) => String(v).replace(/<[^>]*>/g, '').trim().slice(0, MAX_LEN)
 
 // ── Datos ─────────────────────────────────────────────────────────────────────
 const PROJECT_TYPES = ['Backend & APIs', 'Arquitectura cloud', 'Full Stack', 'Otro']
@@ -166,22 +152,14 @@ export default function Contact() {
     setStatus('loading')
     setErrMsg('')
 
-    const name = sanitize(form.name)
-    const email = sanitize(form.email)
-    const body = type ? `Tipo de proyecto: ${type}\n\n${form.message}` : form.message
-    const message = sanitize(body)
-
     try {
-      await sendEmail({
-        to: NOTIFY_TO,
-        subject: `📬 Nuevo mensaje de ${name}`,
-        html: buildNotificationHtml(name, email, message),
+      await sendMessage({
+        name: form.name,
+        email: form.email,
+        message: form.message,
+        type,
+        company: hp,
       })
-      sendEmail({
-        to: email,
-        subject: `¡Gracias por escribirme, ${name}! — LC.dev`,
-        html: buildConfirmationHtml(name),
-      }).catch(() => { })
 
       try { localStorage.setItem(COOLDOWN_KEY, String(Date.now())) } catch { /* noop */ }
 
@@ -190,9 +168,9 @@ export default function Contact() {
       setTimeout(() => setStatus('idle'), 6000)
     } catch (err) {
       setErrMsg(
-        err.message.includes('Failed to fetch')
+        err instanceof TypeError
           ? 'Sin conexión a internet. Verifica tu red e intenta de nuevo.'
-          : `Error al enviar: ${err.message}`,
+          : err.message,
       )
       setStatus('error')
       setTimeout(() => setStatus('idle'), 6000)

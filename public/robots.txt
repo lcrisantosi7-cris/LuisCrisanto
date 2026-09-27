@@ -17,7 +17,7 @@ Disallow: /*.json$
 Disallow: /api/
 
 # Sitemap
-Sitemap: https://mi-portafolio-khaki-two.vercel.app/sitemap.xml
+Sitemap: https://luis-crisanto.vercel.app/sitemap.xml
 
 # Crawl delay (opcional, para respetar recursos del servidor)
 Crawl-delay: 1
