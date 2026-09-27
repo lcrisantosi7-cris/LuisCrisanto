@@ -5,29 +5,37 @@ export const SEO = ({
   title = 'Luis Crisanto | Software Engineer & Full Stack Developer',
   description = 'Ingeniero de Sistemas especializado en desarrollo Full Stack. Experto en Node.js, Spring Boot y soluciones Cloud (AWS). Creando software escalable y eficiente.',
   canonical = 'https://luis-crisanto.vercel.app/',
-  ogImage = 'https://luis-crisanto.vercel.app/og-preview.png',
+  ogImage = 'https://luis-crisanto.vercel.app/og-preview.png?v=2',
   ogType = 'website',
   keywords = 'Luis Crisanto, Software Engineer, Full Stack Developer, Node.js, Spring Boot, React, AWS'
 }) => {
   return (
     <Helmet>
+      {/* 1. Meta tags fundamentales */}
       <title>{title}</title>
       <meta name="description" content={description} />
       <meta name="keywords" content={keywords} />
       <link rel="canonical" href={canonical} />
 
-      {/* Open Graph */}
+      {/* 2. Open Graph (Universal: Facebook, LinkedIn, WhatsApp, Discord, Slack, Telegram) */}
+      <meta property="og:site_name" content="Luis Crisanto Portfolio" />
       <meta property="og:type" content={ogType} />
       <meta property="og:url" content={canonical} />
       <meta property="og:title" content={title} />
       <meta property="og:description" content={description} />
       <meta property="og:image" content={ogImage} />
+      <meta property="og:image:secure_url" content={ogImage} />
+      <meta property="og:image:type" content="image/png" />
+      <meta property="og:image:width" content="1200" />
+      <meta property="og:image:height" content="630" />
+      <meta property="og:image:alt" content="Luis Crisanto - Software Engineer & Full Stack Developer" />
 
-      {/* Twitter Card */}
-      <meta property="twitter:card" content="summary_large_image" />
-      <meta property="twitter:title" content={title} />
-      <meta property="twitter:description" content={description} />
-      <meta property="twitter:image" content={ogImage} />
+      {/* 3. Twitter / X Cards */}
+      <meta name="twitter:card" content="summary_large_image" />
+      <meta name="twitter:title" content={title} />
+      <meta name="twitter:description" content={description} />
+      <meta name="twitter:image" content={ogImage} />
+      <meta name="twitter:image:alt" content="Luis Crisanto - Software Engineer & Full Stack Developer" />
     </Helmet>
   )
 }
