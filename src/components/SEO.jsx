@@ -1,14 +1,12 @@
 import React from 'react'
 import { Helmet } from 'react-helmet-async'
 
-// Versionado dinámico para invalidar la caché en todas las plataformas (Cache Busting)
-const IMAGE_VERSION = 'v=2026.1'
+const IMAGE_VERSION = 'v=3'
 
 export const SEO = ({
   title = 'Luis Crisanto | Software Engineer & Full Stack Developer',
   description = 'Ingeniero de Sistemas especializado en desarrollo Full Stack. Experto en Node.js, Spring Boot y soluciones Cloud (AWS). Creando software escalable y eficiente.',
   canonical = 'https://luis-crisanto.vercel.app/',
-  // Cambiamos a og-banner.png y aplicamos IMAGE_VERSION para forzar una URL totalmente nueva
   ogImage = `https://luis-crisanto.vercel.app/og-banner.png?${IMAGE_VERSION}`,
   ogType = 'website',
   keywords = 'Luis Crisanto, Software Engineer, Full Stack Developer, Node.js, Spring Boot, React, AWS'
@@ -21,7 +19,7 @@ export const SEO = ({
       <meta name="keywords" content={keywords} />
       <link rel="canonical" href={canonical} />
 
-      {/* 2. Open Graph / Facebook / LinkedIn / WhatsApp / Discord / Slack */}
+      {/* 2. Open Graph */}
       <meta property="og:site_name" content="Luis Crisanto Portfolio" />
       <meta property="og:type" content={ogType} />
       <meta property="og:url" content={canonical} />
