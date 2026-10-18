@@ -1,5 +1,5 @@
-import React, { Suspense, lazy } from 'react'
-import { Routes, Route } from 'react-router-dom'
+import React, { Suspense, lazy, useEffect, useRef } from 'react'
+import { Routes, Route, useLocation } from 'react-router-dom'
 import { Header } from './components/Header'
 import { Footer } from './components/Footer'
 import WelcomeRobot from './components/WelcomeRobot'
@@ -31,12 +31,35 @@ const PageLoader = () => (
   </div>
 )
 
+// Al cambiar de ruta: sube al inicio y mueve el foco al contenido (no actúa en la carga inicial)
+function ScrollToTop() {
+  const { pathname } = useLocation()
+  const prev = useRef(pathname)
+
+  useEffect(() => {
+    if (prev.current === pathname) return
+    prev.current = pathname
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
+    document.getElementById('contenido')?.focus({ preventScroll: true })
+  }, [pathname])
+
+  return null
+}
+
 function App() {
   return (
     <div className="min-h-screen bg-zinc-950 text-white">
+      <a
+        href="#contenido"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[100] focus:px-4 focus:py-2 focus:rounded-lg focus:font-semibold"
+        style={{ background: '#FC8F54', color: '#0d0b14' }}
+      >
+        Saltar al contenido
+      </a>
+      <ScrollToTop />
       <Header />
       <WelcomeRobot />
-      <main className="pt-20">
+      <main id="contenido" tabIndex={-1} className="pt-20 outline-none">
         <Suspense fallback={<PageLoader />}>
           <Routes>
             <Route path="/" element={<Home />} />

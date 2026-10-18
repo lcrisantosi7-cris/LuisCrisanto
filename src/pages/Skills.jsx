@@ -16,10 +16,17 @@ const CATEGORIES = [
 // ≥80 Dominio · 60-79 Sólido · <60 Explorando (igual que en Experiencia)
 const TIERS = {
   3: { text: 'Dominio', color: '#FC8F54', desc: 'Lo uso con soltura en proyectos' },
-  2: { text: 'Sólido', color: '#6867D2', desc: 'Lo uso con confianza' },
-  1: { text: 'Explorando', color: 'rgba(255,255,255,0.4)', desc: 'Lo estoy aprendiendo' },
+  2: { text: 'Sólido', color: '#8f8eea', desc: 'Lo uso con confianza' },
+  1: { text: 'Explorando', color: 'rgba(255,255,255,0.6)', desc: 'Lo estoy aprendiendo' },
 }
 const tierOf = (pct) => (pct >= 80 ? 3 : pct >= 60 ? 2 : 1)
+
+// Categoría de la pestaña que corresponde a una tecnología (o null si no existe)
+const categoryForTech = (tech) => {
+  const skill = SKILLS.find((s) => s.name === tech)
+  if (!skill) return null
+  return skill.category === 'tools' ? 'cloud' : skill.category
+}
 
 const DEVICON = 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons'
 const DEVICON_MAP = {
@@ -120,24 +127,24 @@ const SkillCard = ({ skill, projectCount, highlighted }) => {
       </div>
 
       <div className="mt-auto">
-        <span className="block font-mono text-[10px] uppercase tracking-wider mb-2" style={{ color: t.color }}>
+        <span className="block font-mono text-[11px] uppercase tracking-wider mb-2" style={{ color: t.color }}>
           {t.text}
         </span>
         <TierBar tier={tier} color={t.color} />
 
-        <div className="mt-3 min-h-[16px]">
+        <div className="mt-2 min-h-[16px]">
           {count > 0 ? (
             <Link
               to={`/projects?tech=${encodeURIComponent(skill.name)}`}
-              className="inline-flex items-center gap-1 text-[11px] transition-colors duration-200"
-              style={{ color: 'rgba(255,255,255,0.4)' }}
+              className="inline-flex items-center gap-1 text-xs py-2 transition-colors duration-200"
+              style={{ color: 'rgba(255,255,255,0.6)' }}
               onMouseEnter={(e) => { e.currentTarget.style.color = '#FC8F54' }}
-              onMouseLeave={(e) => { e.currentTarget.style.color = 'rgba(255,255,255,0.4)' }}
+              onMouseLeave={(e) => { e.currentTarget.style.color = 'rgba(255,255,255,0.6)' }}
             >
-              {count} proyecto{count !== 1 ? 's' : ''} <ArrowUpRight size={11} />
+              {count} proyecto{count !== 1 ? 's' : ''} <ArrowUpRight size={12} aria-hidden="true" />
             </Link>
           ) : (
-            <span className="text-[11px]" style={{ color: 'rgba(255,255,255,0.15)' }}>—</span>
+            <span className="inline-block py-2 text-xs" style={{ color: 'rgba(255,255,255,0.4)' }}>—</span>
           )}
         </div>
       </div>
@@ -147,19 +154,25 @@ const SkillCard = ({ skill, projectCount, highlighted }) => {
 
 // ════════════════════════════════════════════════════════════════════════════
 export default function Skills() {
-  const [activeCategory, setActiveCategory] = useState('all')
   const [searchParams, setSearchParams] = useSearchParams()
   const techParam = searchParams.get('tech') || ''
   const clearTech = () => setSearchParams({})
   const projectCount = useMemo(() => buildProjectCountMap(), [])
 
+  // Pestaña inicial: si llegas con ?tech=X, abre la categoría de esa tecnología
+  const [activeCategory, setActiveCategory] = useState(() => categoryForTech(techParam) ?? 'all')
+
+  // Si cambia ?tech=X estando en la página: cambia de pestaña (ajuste durante el render, sin useEffect)
+  const [prevTech, setPrevTech] = useState(techParam)
+  if (prevTech !== techParam) {
+    setPrevTech(techParam)
+    const category = categoryForTech(techParam)
+    if (category) setActiveCategory(category)
+  }
+
+  // Efecto externo: subir al inicio al llegar con un filtro
   useEffect(() => {
-    if (!techParam) return
-    const skill = SKILLS.find((s) => s.name === techParam)
-    if (skill) {
-      setActiveCategory(skill.category === 'tools' ? 'cloud' : skill.category)
-    }
-    window.scrollTo({ top: 0, behavior: 'smooth' })
+    if (techParam) window.scrollTo({ top: 0, behavior: 'smooth' })
   }, [techParam])
 
   const filteredSkills = SKILLS.filter(
@@ -203,7 +216,7 @@ export default function Skills() {
                 animate={{ scaleX: 1 }}
                 transition={{ duration: 0.8, delay: 0.2 }}
               />
-              <span className="font-mono text-[10px] uppercase tracking-[0.35em]" style={{ color: 'rgba(252,143,84,0.7)' }}>
+              <span className="font-mono text-[10px] uppercase tracking-[0.35em]" style={{ color: 'rgba(252,143,84,0.85)' }}>
                 Stack
               </span>
             </div>
@@ -240,7 +253,7 @@ export default function Skills() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
               className="text-lg max-w-lg"
-              style={{ color: 'rgba(255,255,255,0.4)' }}
+              style={{ color: 'rgba(255,255,255,0.6)' }}
             >
               Las tecnologías con las que trabajo y qué tan cómodo estoy con cada una.
             </motion.p>
@@ -258,16 +271,16 @@ export default function Skills() {
               >
                 <div className="flex items-center gap-3">
                   <div className="w-1.5 h-1.5 rounded-full" style={{ background: '#FC8F54' }} />
-                  <span className="text-sm" style={{ color: 'rgba(255,255,255,0.6)' }}>
+                  <span className="text-sm" style={{ color: 'rgba(255,255,255,0.7)' }}>
                     Mostrando: <span className="font-bold font-mono" style={{ color: '#FC8F54' }}>{techParam}</span>
                   </span>
                 </div>
                 <button
                   onClick={clearTech}
-                  className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg transition-all"
-                  style={{ color: 'rgba(255,255,255,0.4)', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}
+                  className="flex items-center gap-1.5 text-xs px-3 py-2 rounded-lg transition-all"
+                  style={{ color: 'rgba(255,255,255,0.6)', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}
                   onMouseEnter={(e) => { e.currentTarget.style.color = '#fff' }}
-                  onMouseLeave={(e) => { e.currentTarget.style.color = 'rgba(255,255,255,0.4)' }}
+                  onMouseLeave={(e) => { e.currentTarget.style.color = 'rgba(255,255,255,0.6)' }}
                 >
                   <X size={12} /> Quitar
                 </button>
@@ -287,8 +300,9 @@ export default function Skills() {
                   <button
                     key={cat.id}
                     onClick={() => setActiveCategory(cat.id)}
-                    className="relative flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-colors duration-200 z-10"
-                    style={{ color: active ? '#0d0b14' : 'rgba(255,255,255,0.4)' }}
+                    aria-pressed={active}
+                    className="relative flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-colors duration-200 z-10"
+                    style={{ color: active ? '#0d0b14' : 'rgba(255,255,255,0.6)' }}
                   >
                     {active && (
                       <motion.div
@@ -319,7 +333,7 @@ export default function Skills() {
                     />
                   ))}
                 </div>
-                <p className="text-xs" style={{ color: 'rgba(255,255,255,0.35)' }}>
+                <p className="text-xs" style={{ color: 'rgba(255,255,255,0.6)' }}>
                   <span className="font-mono uppercase tracking-wider mr-1.5" style={{ color: TIERS[n].color }}>
                     {TIERS[n].text}
                   </span>
@@ -357,7 +371,7 @@ export default function Skills() {
             style={{ background: 'rgba(255,255,255,0.02)', border: '1px dashed rgba(104,103,210,0.25)' }}
           >
             <h2 className="text-2xl font-bold text-white mb-1">Aprendiendo ahora</h2>
-            <p className="text-sm mb-8" style={{ color: 'rgba(255,255,255,0.3)' }}>
+            <p className="text-sm mb-8" style={{ color: 'rgba(255,255,255,0.55)' }}>
               Tecnologías que estoy explorando.
             </p>
 
@@ -384,15 +398,15 @@ export default function Skills() {
                         loading="lazy"
                       />
                     ) : (
-                      <skill.icon size={20} style={{ color: 'rgba(104,103,210,0.7)', flexShrink: 0 }} />
+                      <skill.icon size={20} style={{ color: 'rgba(143,142,234,0.9)', flexShrink: 0 }} />
                     )}
                     <div className="min-w-0">
-                      <p className="text-sm font-medium truncate" style={{ color: 'rgba(255,255,255,0.75)' }}>
+                      <p className="text-sm font-medium truncate" style={{ color: 'rgba(255,255,255,0.8)' }}>
                         {skill.name}
                       </p>
                       <div className="flex items-center gap-1.5 mt-0.5">
                         <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: '#6867D2' }} />
-                        <span className="text-[9px] uppercase tracking-wider font-bold" style={{ color: 'rgba(104,103,210,0.8)' }}>
+                        <span className="text-[10px] uppercase tracking-wider font-bold" style={{ color: '#a5a4e8' }}>
                           {skill.status}
                         </span>
                       </div>

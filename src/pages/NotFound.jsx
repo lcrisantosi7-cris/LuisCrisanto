@@ -51,7 +51,7 @@ const findSuggestion = (pathname) => {
 }
 
 const TONES = {
-  muted: 'rgba(255,255,255,0.4)',
+  muted: 'rgba(255,255,255,0.6)',
   error: '#F5525B',
   warn: '#FC8F54',
   ok: '#a5a4e8',
@@ -328,7 +328,8 @@ const NotFound = () => {
     : location.pathname
   const suggestion = useMemo(() => findSuggestion(location.pathname), [location.pathname])
 
-  const [logs, setLogs] = useState([])
+  const [shown, setShown] = useState(0)        // cuántas líneas de la secuencia se muestran
+  const [extra, setExtra] = useState([])       // líneas añadidas por el "reboot"
   const [rebooting, setRebooting] = useState(false)
   const botRef = useRef(null)
   const rebootTimer = useRef(null)
@@ -360,18 +361,24 @@ const NotFound = () => {
     [shownPath, suggestion],
   )
 
-  // Logs de la terminal
+  // Si cambia la ruta rota: reinicia la terminal (ajuste durante el render, sin useEffect)
+  const [prevSequence, setPrevSequence] = useState(sequence)
+  if (prevSequence !== sequence) {
+    setPrevSequence(sequence)
+    setShown(0)
+    setExtra([])
+  }
+
+  // Revela una línea cada 550 ms (con reduced-motion se muestran todas de inmediato)
   useEffect(() => {
-    if (reduce) {
-      setLogs(sequence)
-      return
-    }
-    setLogs([])
-    const timers = sequence.map((log, i) =>
-      setTimeout(() => setLogs((prev) => [...prev, log]), 400 + i * 550),
+    if (reduce) return
+    const timers = sequence.map((_, i) =>
+      setTimeout(() => setShown(i + 1), 400 + i * 550),
     )
     return () => timers.forEach(clearTimeout)
   }, [sequence, reduce])
+
+  const logs = [...(reduce ? sequence : sequence.slice(0, shown)), ...extra].slice(-8)
 
   // Seguimiento del cursor
   useEffect(() => {
@@ -396,11 +403,13 @@ const NotFound = () => {
   const reboot = () => {
     if (rebooting) return
     setRebooting(true)
-    setLogs((prev) => [
-      ...prev.slice(-6),
-      { text: '> reboot --force', tone: 'warn' },
-      { text: '> ok: still 404, but we are fine', tone: 'ok' },
-    ])
+    setExtra((prev) =>
+      [
+        ...prev,
+        { text: '> reboot --force', tone: 'warn' },
+        { text: '> ok: still 404, but we are fine', tone: 'ok' },
+      ].slice(-6),
+    )
     rebootTimer.current = setTimeout(() => setRebooting(false), 1400)
   }
 
@@ -446,7 +455,7 @@ const NotFound = () => {
             >
               <BrokenRobot px={px} py={py} rebooting={rebooting} reduce={reduce} />
             </button>
-            <p className="font-mono text-[10px] uppercase tracking-[0.25em] mt-1" style={{ color: 'rgba(255,255,255,0.22)' }}>
+            <p className="font-mono text-[11px] uppercase tracking-[0.25em] mt-1" style={{ color: 'rgba(255,255,255,0.5)' }}>
               haz clic para reiniciarlo
             </p>
           </div>
@@ -462,7 +471,7 @@ const NotFound = () => {
             <p className="text-2xl sm:text-3xl font-bold text-white mb-3 tracking-tight">
               Houston, tenemos un problema.
             </p>
-            <p className="max-w-md mx-auto lg:mx-0 mb-7 leading-relaxed" style={{ color: 'rgba(255,255,255,0.45)' }}>
+            <p className="max-w-md mx-auto lg:mx-0 mb-7 leading-relaxed" style={{ color: 'rgba(255,255,255,0.6)' }}>
               La página que buscas no existe, cambió de lugar o nunca estuvo aquí.
             </p>
           </motion.div>
@@ -481,7 +490,7 @@ const NotFound = () => {
               {['rgba(245,82,91,0.6)', 'rgba(252,143,84,0.6)', 'rgba(104,103,210,0.6)'].map((c) => (
                 <span key={c} className="w-2.5 h-2.5 rounded-full" style={{ background: c }} />
               ))}
-              <span className="text-[10px] ml-auto" style={{ color: 'rgba(255,255,255,0.25)' }}>
+              <span className="text-[11px] ml-auto" style={{ color: 'rgba(255,255,255,0.5)' }}>
                 bash — 404
               </span>
             </div>
@@ -520,7 +529,7 @@ const NotFound = () => {
                 onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'rgba(252,143,84,0.28)' }}
               >
                 <Compass size={16} style={{ color: '#FC8F54' }} />
-                <span className="text-sm" style={{ color: 'rgba(255,255,255,0.7)' }}>
+                <span className="text-sm" style={{ color: 'rgba(255,255,255,0.75)' }}>
                   ¿Buscabas{' '}
                   <span className="font-mono font-bold" style={{ color: '#ffb388' }}>{suggestion.path}</span>
                   {' '}({suggestion.label})?
@@ -536,14 +545,14 @@ const NotFound = () => {
               <Link
                 key={r.path}
                 to={r.path}
-                className="px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all duration-200"
+                className="px-3.5 py-2 rounded-lg text-xs font-medium transition-all duration-200"
                 style={{
-                  color: 'rgba(255,255,255,0.5)',
+                  color: 'rgba(255,255,255,0.65)',
                   background: 'rgba(255,255,255,0.03)',
                   border: '1px solid rgba(255,255,255,0.08)',
                 }}
                 onMouseEnter={(e) => { e.currentTarget.style.color = '#fff'; e.currentTarget.style.borderColor = 'rgba(104,103,210,0.5)' }}
-                onMouseLeave={(e) => { e.currentTarget.style.color = 'rgba(255,255,255,0.5)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)' }}
+                onMouseLeave={(e) => { e.currentTarget.style.color = 'rgba(255,255,255,0.65)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)' }}
               >
                 {r.label}
               </Link>

@@ -2,48 +2,51 @@ import React from 'react'
 import { Github, Linkedin, Mail } from 'lucide-react'
 
 // ── Datos centralizados ────────────────────────────────────────────────────
-// Edita tus links aquí y se propagan a los 3 componentes automáticamente
- const SOCIAL_LINKS = [
+// Edita tus links aquí y se propagan a los 3 componentes automáticamente.
+// Los labels son únicos y descriptivos para no chocar con otros enlaces "GitHub" de la web.
+const SOCIAL_LINKS = [
   {
     id: 'github',
-    label: 'GitHub',
+    label: 'Perfil de GitHub',
     href: 'https://github.com/lcrisantosi7-cris/',
     icon: Github,
     external: true,
   },
   {
     id: 'linkedin',
-    label: 'LinkedIn',
+    label: 'Perfil de LinkedIn',
     href: 'https://www.linkedin.com/in/luis-crisanto-silupú',
     icon: Linkedin,
     external: true,
   },
   {
     id: 'mail',
-    label: 'Email',
+    label: 'Enviar correo',
     href: 'mailto:lcrisantosi7@gmail.com',
     icon: Mail,
     external: false,
   },
 ]
 
+const MUTED = 'rgba(255,255,255,0.55)'
+
 // ── Helper: color de hover según red ──────────────────────────────────────
 const hoverColor = (id) => ({
-  color:       id === 'mail' ? '#FC8F54' : id === 'linkedin' ? '#6867D2' : 'rgba(255,255,255,0.9)',
+  color: id === 'mail' ? '#FC8F54' : id === 'linkedin' ? '#8f8eea' : 'rgba(255,255,255,0.95)',
   borderColor: id === 'mail' ? 'rgba(252,143,84,0.5)' : id === 'linkedin' ? 'rgba(104,103,210,0.5)' : 'rgba(255,255,255,0.25)',
-  background:  id === 'mail' ? 'rgba(252,143,84,0.08)' : id === 'linkedin' ? 'rgba(104,103,210,0.08)' : 'rgba(255,255,255,0.06)',
+  background: id === 'mail' ? 'rgba(252,143,84,0.08)' : id === 'linkedin' ? 'rgba(104,103,210,0.08)' : 'rgba(255,255,255,0.06)',
 })
 
 const baseStyle = {
-  background:   'rgba(255,255,255,0.04)',
-  border:       '1px solid rgba(255,255,255,0.1)',
-  color:        'rgba(255,255,255,0.35)',
+  background: 'rgba(255,255,255,0.04)',
+  border: '1px solid rgba(255,255,255,0.1)',
+  color: MUTED,
 }
 
 const resetStyle = {
-  background:   'rgba(255,255,255,0.04)',
-  borderColor:  'rgba(255,255,255,0.1)',
-  color:        'rgba(255,255,255,0.35)',
+  background: 'rgba(255,255,255,0.04)',
+  borderColor: 'rgba(255,255,255,0.1)',
+  color: MUTED,
 }
 
 // ── Wrapper que decide <a> externo o interno ───────────────────────────────
@@ -88,7 +91,7 @@ export const SocialSidebar = () => (
         href={href}
         external={external}
         label={label}
-        className="relative group p-2.5 rounded-xl backdrop-blur-sm transition-all duration-300 block"
+        className="relative group w-10 h-10 flex items-center justify-center rounded-xl backdrop-blur-sm transition-all duration-300"
         style={{ ...baseStyle }}
         onMouseEnter={(e) => Object.assign(e.currentTarget.style, hoverColor(id))}
         onMouseLeave={(e) => Object.assign(e.currentTarget.style, resetStyle)}
@@ -96,13 +99,14 @@ export const SocialSidebar = () => (
         <Icon size={16} />
         {/* Tooltip izquierda */}
         <span
-          className="pointer-events-none absolute right-11 top-1/2 -translate-y-1/2
-                     opacity-0 group-hover:opacity-100 transition-opacity duration-200
+          aria-hidden="true"
+          className="pointer-events-none absolute right-12 top-1/2 -translate-y-1/2
+                     opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity duration-200
                      text-[10px] font-mono whitespace-nowrap px-2 py-1 rounded-md"
           style={{
             background: 'rgba(13,11,20,0.9)',
             border: '1px solid rgba(255,255,255,0.1)',
-            color: 'rgba(255,255,255,0.6)',
+            color: 'rgba(255,255,255,0.75)',
           }}
         >
           {label}
@@ -120,14 +124,14 @@ export const SocialSidebar = () => (
 //         <SocialRow size={18} className="mb-4" />  en mobile nav
 // ══════════════════════════════════════════════════════════════════════════
 export const SocialRow = ({ size = 18, className = '' }) => (
-  <div className={`flex items-center gap-3 ${className}`}>
+  <div className={`flex items-center gap-2 ${className}`}>
     {SOCIAL_LINKS.map(({ id, label, href, icon: Icon, external }) => (
       <SocialAnchor
         key={id}
         href={href}
         external={external}
         label={label}
-        className="p-2 rounded-lg backdrop-blur-sm transition-all duration-250"
+        className="w-10 h-10 flex items-center justify-center rounded-lg backdrop-blur-sm transition-all duration-200"
         style={{ ...baseStyle }}
         onMouseEnter={(e) => Object.assign(e.currentTarget.style, hoverColor(id))}
         onMouseLeave={(e) => Object.assign(e.currentTarget.style, resetStyle)}
@@ -150,17 +154,17 @@ export const SocialFooter = () => (
         href={href}
         external={external}
         label={label}
-        className="p-2.5 rounded-xl transition-all duration-300"
+        className="w-11 h-11 flex items-center justify-center rounded-xl transition-all duration-300"
         style={{
-          background:   'rgba(255,255,255,0.03)',
-          border:       '1px solid rgba(255,255,255,0.07)',
-          color:        'rgba(255,255,255,0.35)',
+          background: 'rgba(255,255,255,0.03)',
+          border: '1px solid rgba(255,255,255,0.07)',
+          color: MUTED,
         }}
         onMouseEnter={(e) => Object.assign(e.currentTarget.style, hoverColor(id))}
         onMouseLeave={(e) => Object.assign(e.currentTarget.style, {
-          background:   'rgba(255,255,255,0.03)',
-          borderColor:  'rgba(255,255,255,0.07)',
-          color:        'rgba(255,255,255,0.35)',
+          background: 'rgba(255,255,255,0.03)',
+          borderColor: 'rgba(255,255,255,0.07)',
+          color: MUTED,
         })}
       >
         <Icon size={20} />

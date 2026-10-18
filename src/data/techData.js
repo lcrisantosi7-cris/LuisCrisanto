@@ -31,7 +31,7 @@ export const TAG_ALIAS = {
     'Git': 'Git & GitHub',
     'GitHub': 'Git & GitHub',
     'SQL Server': 'SQL Server',
-    'PostgreSQL': 'MySQL / MariaDB', // agrúpala con databases si quieres
+
 }
 
 // Normaliza un tag de proyecto al nombre canónico de skill

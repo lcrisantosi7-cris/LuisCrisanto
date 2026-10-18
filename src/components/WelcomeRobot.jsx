@@ -14,28 +14,24 @@ const getGreeting = () => {
 }
 
 // ── Texto que se escribe solo ─────────────────────────────────────────────────
+// El padre usa key={idx}, así que cada mensaje nuevo remonta el componente y n parte de 0.
 function Typed({ text, instant }) {
-  const [n, setN] = useState(instant ? text.length : 0)
+  const [n, setN] = useState(0)
+  const shown = instant ? text.length : n
 
   useEffect(() => {
-    if (instant) { setN(text.length); return }
-    setN(0)
-    const id = setInterval(() => {
-      setN((v) => {
-        if (v >= text.length) { clearInterval(id); return v }
-        return v + 1
-      })
-    }, 22)
-    return () => clearInterval(id)
-  }, [text, instant])
+    if (instant || n >= text.length) return
+    const t = setTimeout(() => setN(n + 1), 22)
+    return () => clearTimeout(t)
+  }, [n, text, instant])
 
   return (
     // El texto completo va invisible para reservar el alto y evitar saltos
     <span className="relative block">
       <span className="invisible">{text}</span>
       <span className="absolute inset-0">
-        {text.slice(0, n)}
-        {n < text.length && <span style={{ color: ORANGE }}>▍</span>}
+        {text.slice(0, shown)}
+        {shown < text.length && <span style={{ color: ORANGE }}>▍</span>}
       </span>
     </span>
   )
@@ -222,6 +218,16 @@ const WelcomeRobot = () => {
   const botRef = useRef(null)
   const happyTimer = useRef(null)
 
+  // Al salir de Home: ocultar robot y globo (ajuste durante el render, sin useEffect)
+  const [prevHome, setPrevHome] = useState(isHome)
+  if (prevHome !== isHome) {
+    setPrevHome(isHome)
+    if (!isHome) {
+      setMounted(false)
+      setOpen(false)
+    }
+  }
+
   // Seguimiento del cursor con los ojos
   const mx = useMotionValue(0)
   const my = useMotionValue(0)
@@ -230,11 +236,7 @@ const WelcomeRobot = () => {
 
   // Aparición (solo en Home, y si no se ocultó en esta sesión)
   useEffect(() => {
-    if (!isHome) {
-      setMounted(false)
-      setOpen(false)
-      return
-    }
+    if (!isHome) return
     let dismissed = false
     try { dismissed = sessionStorage.getItem(STORAGE_KEY) === 'true' } catch { /* noop */ }
     if (dismissed) return
@@ -341,12 +343,12 @@ const WelcomeRobot = () => {
                     type="button"
                     onClick={() => setOpen(false)}
                     aria-label="Cerrar mensaje"
-                    className="p-0.5 rounded-md transition-colors"
-                    style={{ color: 'rgba(255,255,255,0.35)' }}
+                    className="p-1.5 -m-1 rounded-md transition-colors"
+                    style={{ color: 'rgba(255,255,255,0.6)' }}
                     onMouseEnter={(e) => { e.currentTarget.style.color = '#fff' }}
-                    onMouseLeave={(e) => { e.currentTarget.style.color = 'rgba(255,255,255,0.35)' }}
+                    onMouseLeave={(e) => { e.currentTarget.style.color = 'rgba(255,255,255,0.6)' }}
                   >
-                    <X size={13} />
+                    <X size={14} />
                   </button>
                 </div>
 
@@ -355,7 +357,7 @@ const WelcomeRobot = () => {
                     <Link
                       to="/projects"
                       onClick={() => setOpen(false)}
-                      className="group inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold text-white whitespace-nowrap transition-transform hover:scale-[1.03] active:scale-95"
+                      className="group inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold text-white whitespace-nowrap transition-transform hover:scale-[1.03] active:scale-95"
                       style={{ background: 'linear-gradient(90deg, #FC8F54, #F5525B)' }}
                     >
                       Ver proyectos
@@ -366,6 +368,7 @@ const WelcomeRobot = () => {
 
                 {/* Colita del globo */}
                 <span
+                  aria-hidden="true"
                   className="absolute -bottom-1.5 right-10 w-3 h-3 rotate-45"
                   style={{
                     background: 'rgba(19,16,31,0.94)',
@@ -408,14 +411,14 @@ const WelcomeRobot = () => {
               type="button"
               onClick={dismiss}
               aria-label="Ocultar asistente"
-              className="absolute -top-1 -left-1 p-1 rounded-full opacity-0 group-hover:opacity-100 focus-visible:opacity-100 [@media(hover:none)]:opacity-70 transition-opacity"
+              className="absolute -top-1 -left-1 w-6 h-6 flex items-center justify-center rounded-full opacity-0 group-hover:opacity-100 focus-visible:opacity-100 [@media(hover:none)]:opacity-70 transition-opacity"
               style={{
                 background: 'rgba(19,16,31,0.95)',
                 border: '1px solid rgba(255,255,255,0.15)',
-                color: 'rgba(255,255,255,0.6)',
+                color: 'rgba(255,255,255,0.7)',
               }}
             >
-              <X size={10} />
+              <X size={11} />
             </button>
           </div>
         </motion.div>

@@ -34,6 +34,14 @@ export const Header = () => {
   const reduce = useReducedMotion()
   const location = useLocation()
 
+  // Al cambiar de ruta: cerrar menú y mostrar el header (ajuste durante el render, sin useEffect)
+  const [prevPath, setPrevPath] = useState(location.pathname)
+  if (prevPath !== location.pathname) {
+    setPrevPath(location.pathname)
+    setIsMobileMenuOpen(false)
+    setHidden(false)
+  }
+
   const isActive = (path) =>
     path === '/' ? location.pathname === '/' : location.pathname.startsWith(path)
   const contactActive = location.pathname.startsWith('/contact')
@@ -60,12 +68,6 @@ export const Header = () => {
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
-
-  // Al cambiar de ruta: cerrar menú y mostrar el header
-  useEffect(() => {
-    setIsMobileMenuOpen(false)
-    setHidden(false)
-  }, [location.pathname])
 
   // Menú móvil abierto: bloquear scroll, Escape y cierre al pasar a desktop
   useEffect(() => {
@@ -137,10 +139,10 @@ export const Header = () => {
                   key={link.path}
                   to={link.path}
                   aria-current={active ? 'page' : undefined}
-                  className="relative group text-sm font-medium transition-colors duration-200"
-                  style={{ color: active ? '#FC8F54' : 'rgba(255,255,255,0.5)' }}
+                  className="relative group text-sm font-medium transition-colors duration-200 py-2"
+                  style={{ color: active ? '#FC8F54' : 'rgba(255,255,255,0.55)' }}
                   onMouseEnter={(e) => { if (!active) e.currentTarget.style.color = 'rgba(255,255,255,0.9)' }}
-                  onMouseLeave={(e) => { e.currentTarget.style.color = active ? '#FC8F54' : 'rgba(255,255,255,0.5)' }}
+                  onMouseLeave={(e) => { e.currentTarget.style.color = active ? '#FC8F54' : 'rgba(255,255,255,0.55)' }}
                 >
                   {link.name}
 
@@ -148,7 +150,7 @@ export const Header = () => {
                   {active && (
                     <motion.span
                       layoutId="nav-underline"
-                      className="absolute -bottom-1 left-0 right-0 h-px"
+                      className="absolute bottom-0 left-0 right-0 h-px"
                       style={{ background: GRADIENT }}
                       transition={{ type: 'spring', stiffness: 380, damping: 32 }}
                     />
@@ -157,7 +159,7 @@ export const Header = () => {
                   {/* Subrayado hover */}
                   {!active && (
                     <span
-                      className="absolute -bottom-1 left-0 h-px w-0 group-hover:w-full transition-all duration-300"
+                      className="absolute bottom-0 left-0 h-px w-0 group-hover:w-full transition-all duration-300"
                       style={{ background: GRADIENT }}
                     />
                   )}
@@ -175,7 +177,7 @@ export const Header = () => {
             <Link
               to="/contact"
               aria-current={contactActive ? 'page' : undefined}
-              className="ml-1 px-5 py-2 rounded-full text-sm font-semibold transition-all duration-300 hover:scale-[1.04] active:scale-95"
+              className="ml-1 px-5 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 hover:scale-[1.04] active:scale-95"
               style={{
                 background: 'linear-gradient(90deg, #FC8F54, #F5525B)',
                 color: '#fff',
@@ -193,9 +195,9 @@ export const Header = () => {
           {/* ── BOTÓN MÓVIL ── */}
           <button
             onClick={() => setIsMobileMenuOpen((prev) => !prev)}
-            className="lg:hidden p-2 rounded-lg transition-all duration-200"
+            className="lg:hidden p-2.5 rounded-lg transition-all duration-200"
             style={{
-              color: 'rgba(255,255,255,0.6)',
+              color: 'rgba(255,255,255,0.7)',
               background: 'rgba(255,255,255,0.04)',
               border: '1px solid rgba(255,255,255,0.08)',
             }}
@@ -253,7 +255,7 @@ export const Header = () => {
                         className="block text-base font-medium py-3 pl-4 rounded-lg transition-all duration-200"
                         style={{
                           borderLeft: active ? '2px solid #FC8F54' : '2px solid transparent',
-                          color: active ? '#FC8F54' : 'rgba(255,255,255,0.55)',
+                          color: active ? '#FC8F54' : 'rgba(255,255,255,0.65)',
                           background: active ? 'rgba(252,143,84,0.05)' : 'transparent',
                         }}
                       >

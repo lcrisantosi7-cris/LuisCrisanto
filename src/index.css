@@ -234,3 +234,15 @@ html {
   background-color: var(--accent);
   color: #0f0f0f;
 }
+
+/* ── Accesibilidad ───────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}

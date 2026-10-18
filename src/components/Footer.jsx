@@ -36,18 +36,17 @@ export const Footer = () => {
 
       <div className="relative max-w-7xl mx-auto px-6">
 
-        {/* ═══════════════════════════════════════════════════════════════
-            MAIN FOOTER
-        ═══════════════════════════════════════════════════════════════ */}
+        {/* ═══════════════ MAIN FOOTER ═══════════════ */}
 
         <div className="grid grid-cols-1 md:grid-cols-12 gap-12 lg:gap-16 mb-16">
 
-          {/* ── BRAND ─────────────────────────────────────────────────── */}
+          {/* ── BRAND ── */}
           <div className="md:col-span-6">
 
             {/* Logo */}
             <Link
               to="/"
+              aria-label="LC.dev — Inicio"
               className="flex items-center gap-2.5 group w-fit mb-6"
             >
               <div
@@ -87,7 +86,7 @@ export const Footer = () => {
             {/* Description */}
             <p
               className="text-sm leading-relaxed max-w-md mb-6"
-              style={{ color: 'rgba(255,255,255,0.4)' }}
+              style={{ color: 'rgba(255,255,255,0.6)' }}
             >
               Ingeniero de Sistemas enfocado en backend, arquitectura de
               software y cloud. Construyo sistemas robustos, escalables y
@@ -99,10 +98,10 @@ export const Footer = () => {
               {['Backend', 'Architecture', 'Cloud'].map((item) => (
                 <span
                   key={item}
-                  className="px-3 py-1.5 rounded-full text-[10px] font-mono
+                  className="px-3 py-1.5 rounded-full text-[11px] font-mono
                              uppercase tracking-wider"
                   style={{
-                    color: 'rgba(255,255,255,0.45)',
+                    color: 'rgba(255,255,255,0.65)',
                     background: 'rgba(255,255,255,0.035)',
                     border: '1px solid rgba(255,255,255,0.08)',
                   }}
@@ -133,7 +132,7 @@ export const Footer = () => {
               </span>
 
               <span
-                className="text-[10px] font-bold uppercase tracking-wider"
+                className="text-[11px] font-bold uppercase tracking-wider"
                 style={{ color: '#ffb388' }}
               >
                 Disponible para nuevos proyectos
@@ -141,11 +140,11 @@ export const Footer = () => {
             </div>
           </div>
 
-          {/* ── NAVIGATION ─────────────────────────────────────────────── */}
-          <div className="md:col-span-3">
+          {/* ── NAVIGATION ── */}
+          <nav aria-label="Pie de página" className="md:col-span-3">
             <h4
               className="font-semibold mb-6 flex items-center gap-2 text-sm"
-              style={{ color: 'rgba(255,255,255,0.8)' }}
+              style={{ color: 'rgba(255,255,255,0.85)' }}
             >
               <span
                 className="h-px w-4"
@@ -154,24 +153,25 @@ export const Footer = () => {
               Explorar
             </h4>
 
-            <ul className="space-y-3">
+            <ul className="space-y-1">
               {navLinks.map((item) => (
                 <li key={item.path}>
                   <Link
                     to={item.path}
-                    className="group flex items-center gap-2 text-sm transition-all duration-200 w-fit"
+                    className="group flex items-center gap-2 text-sm py-2 transition-all duration-200 w-fit"
                     style={{
-                      color: 'rgba(255,255,255,0.35)',
+                      color: 'rgba(255,255,255,0.6)',
                     }}
                     onMouseEnter={(e) => {
                       e.currentTarget.style.color = '#fff'
                     }}
                     onMouseLeave={(e) => {
                       e.currentTarget.style.color =
-                        'rgba(255,255,255,0.35)'
+                        'rgba(255,255,255,0.6)'
                     }}
                   >
                     <span
+                      aria-hidden="true"
                       className="w-0 overflow-hidden transition-all duration-200
                                  group-hover:w-3"
                       style={{ color: '#FC8F54' }}
@@ -184,13 +184,13 @@ export const Footer = () => {
                 </li>
               ))}
             </ul>
-          </div>
+          </nav>
 
-          {/* ── CONNECT ────────────────────────────────────────────────── */}
+          {/* ── CONNECT ── */}
           <div className="md:col-span-3">
             <h4
               className="font-semibold mb-6 flex items-center gap-2 text-sm"
-              style={{ color: 'rgba(255,255,255,0.8)' }}
+              style={{ color: 'rgba(255,255,255,0.85)' }}
             >
               <span
                 className="h-px w-4"
@@ -203,20 +203,21 @@ export const Footer = () => {
 
             <Link
               to="/contact"
-              className="group inline-flex items-center gap-2 mt-6 text-sm
+              className="group inline-flex items-center gap-2 mt-6 py-2 text-sm
                          transition-colors duration-200"
-              style={{ color: 'rgba(255,255,255,0.4)' }}
+              style={{ color: 'rgba(255,255,255,0.6)' }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.color = '#FC8F54'
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.color =
-                  'rgba(255,255,255,0.4)'
+                  'rgba(255,255,255,0.6)'
               }}
             >
               Hablemos sobre un proyecto
               <ArrowUpRight
                 size={14}
+                aria-hidden="true"
                 className="transition-transform duration-200
                            group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
               />
@@ -224,9 +225,7 @@ export const Footer = () => {
           </div>
         </div>
 
-        {/* ═══════════════════════════════════════════════════════════════
-            BOTTOM BAR
-        ═══════════════════════════════════════════════════════════════ */}
+        {/* ═══════════════ BOTTOM BAR ═══════════════ */}
 
         <div
           className="pt-7 flex flex-col md:flex-row justify-between
@@ -239,15 +238,16 @@ export const Footer = () => {
           {/* Code signature */}
           <p
             className="font-mono text-xs"
-            style={{ color: 'rgba(255,255,255,0.25)' }}
+            style={{ color: 'rgba(255,255,255,0.5)' }}
           >
             &lt;coded_by /&gt;{' '}
-            <span style={{ color: 'rgba(252,143,84,0.7)' }}>
+            <span style={{ color: 'rgba(252,143,84,0.85)' }}>
               Luis Crisanto
             </span>
           </p>
 
           <div
+            aria-hidden="true"
             className="hidden md:block h-px flex-1 mx-8"
             style={{
               background:
@@ -255,10 +255,10 @@ export const Footer = () => {
             }}
           />
 
-
           {/* Center status */}
           <div className="hidden md:flex items-center gap-2">
             <span
+              aria-hidden="true"
               className="h-1.5 w-1.5 rounded-full"
               style={{
                 background: '#FC8F54',
@@ -266,15 +266,15 @@ export const Footer = () => {
               }}
             />
             <span
-              className="font-mono text-[9px] uppercase tracking-[0.25em]"
-              style={{ color: 'rgba(255,255,255,0.2)' }}
+              className="font-mono text-[10px] uppercase tracking-[0.25em]"
+              style={{ color: 'rgba(255,255,255,0.5)' }}
             >
               Building the next system
             </span>
           </div>
 
-
           <div
+            aria-hidden="true"
             className="hidden md:block h-px flex-1 mx-8"
             style={{
               background:
@@ -282,11 +282,10 @@ export const Footer = () => {
             }}
           />
 
-          
           {/* Copyright */}
           <p
-            className="text-[10px] uppercase tracking-[0.2em] text-center"
-            style={{ color: 'rgba(255,255,255,0.15)' }}
+            className="text-[11px] uppercase tracking-[0.2em] text-center"
+            style={{ color: 'rgba(255,255,255,0.5)' }}
           >
             © {currentYear} LC.dev
           </p>

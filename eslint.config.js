@@ -23,7 +23,27 @@ export default defineConfig([
       },
     },
     rules: {
-      'no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z_]' }],
+      // ESLint no cuenta <motion.div /> ni <Icon /> como "uso" sin eslint-plugin-react.
+      'no-unused-vars': [
+        'error',
+        {
+          varsIgnorePattern: '^[A-Z_]|^motion$',
+          argsIgnorePattern: '^[A-Z_]',
+        },
+      ],
+    },
+  },
+  {
+    // Funciones serverless y configs corren en Node
+    files: [
+      'api/**/*.js',
+      'vite.config.js',
+      'postcss.config.js',
+      'tailwind.config.js',
+      'eslint.config.js',
+    ],
+    languageOptions: {
+      globals: { ...globals.node },
     },
   },
 ])
