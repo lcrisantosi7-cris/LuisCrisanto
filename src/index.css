@@ -1,0 +1,248 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Paleta "Painted Clouds" ─────────────────────────────────────────────────
+   Naranja cálido #FC8F54 como acento principal
+   Índigo profundo #5546AD / #2C3D95 como estructura
+   Coral #F5525B para highlights y CTAs de impacto
+   Lavanda #6867D2 para textos de acento y bordes suaves               */
+:root {
+  --accent: #fc8f54; /* naranja — botones, activos               */
+  --accent-dim: #e67a3f; /* naranja oscuro — hover                   */
+  --accent-lit: #ffb388; /* naranja claro — glow, selección          */
+  --accent-glow: rgba(252, 143, 84, 0.15);
+  --accent-dot: #6867d2; /* lavanda — patrones SVG, decoración       */
+  --coral: #f5525b; /* coral — CTAs secundarios, badges         */
+  --indigo-deep: #2c3d95; /* azul índigo profundo                     */
+  --indigo-mid: #5546ad; /* índigo medio                             */
+  --indigo-soft: #6867d2; /* lavanda/violeta                          */
+  --bg-card: #1e1a24; /* fondo de cards                           */
+}
+
+/* ── Base ────────────────────────────────────────────────────────────────── */
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-zinc-950 text-white;
+    font-family: "Inter", system-ui, sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    /* Sutil tinte índigo en el fondo global */
+    background-color: #0d0b14;
+  }
+
+  /* Poppins solo en headings */
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: "Poppins", "Inter", sans-serif;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+  }
+}
+
+/* ── Scrollbar ───────────────────────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0d0b14;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--indigo-mid);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent);
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #5546ad #0d0b14;
+}
+
+/* ── Animaciones ─────────────────────────────────────────────────────────── */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-20px) rotate(5deg);
+  }
+}
+
+@keyframes float-delayed {
+  0%,
+  100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-30px) rotate(-5deg);
+  }
+}
+
+/* Glow pulsante para el acento naranja */
+@keyframes glow-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 8px 0 rgba(252, 143, 84, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 22px 4px rgba(252, 143, 84, 0.55);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.8s ease-out;
+}
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+.animate-float-delayed {
+  animation: float-delayed 8s ease-in-out infinite;
+}
+.animate-glow {
+  animation: glow-pulse 2.5s ease-in-out infinite;
+}
+
+/* ── Utilities ───────────────────────────────────────────────────────────── */
+@layer utilities {
+  /* Gradiente naranja → lavanda — para textos de hero */
+  .text-gradient {
+    @apply text-transparent bg-clip-text;
+    background-image: linear-gradient(90deg, #fc8f54, #6867d2);
+  }
+
+  /* Variante coral para secciones especiales */
+  .text-gradient-coral {
+    @apply text-transparent bg-clip-text;
+    background-image: linear-gradient(90deg, #f5525b, #fc8f54);
+  }
+
+  .glass-effect {
+    background: rgba(85, 70, 173, 0.08);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(104, 103, 210, 0.2);
+  }
+}
+
+/* ── Components ──────────────────────────────────────────────────────────── */
+@layer components {
+  /* Botón principal — naranja cálido */
+  .btn-primary {
+    @apply px-8 py-3 font-semibold rounded-lg transition-all duration-300 transform hover:scale-105 active:scale-95;
+    background-color: var(--accent);
+    color: #fff;
+  }
+  .btn-primary:hover {
+    background-color: var(--accent-dim);
+    box-shadow: 0 0 18px rgba(252, 143, 84, 0.4);
+  }
+
+  /* Botón secundario — borde naranja */
+  .btn-secondary {
+    @apply px-8 py-3 font-semibold rounded-lg transition-all duration-300;
+    border: 2px solid var(--accent);
+    color: var(--accent-lit);
+  }
+  .btn-secondary:hover {
+    background-color: rgba(252, 143, 84, 0.1);
+  }
+
+  /* Botón coral — para CTAs de alto impacto */
+  .btn-coral {
+    @apply px-8 py-3 font-semibold rounded-lg transition-all duration-300 transform hover:scale-105 active:scale-95;
+    background-color: var(--coral);
+    color: #fff;
+  }
+  .btn-coral:hover {
+    background-color: #e03a44;
+    box-shadow: 0 0 18px rgba(245, 82, 91, 0.4);
+  }
+
+  /* Card con fondo índigo muy oscuro */
+  .card {
+    @apply rounded-xl border transition-all duration-300;
+    background: linear-gradient(135deg, #1e1a24, #16132a);
+    border-color: rgba(104, 103, 210, 0.25);
+  }
+  .card:hover {
+    border-color: rgba(252, 143, 84, 0.45);
+    box-shadow: 0 4px 24px rgba(252, 143, 84, 0.08);
+  }
+
+  /* Badge naranja */
+  .badge {
+    @apply inline-flex items-center gap-2 px-4 py-2 rounded-full;
+    background-color: rgba(252, 143, 84, 0.1);
+    border: 1px solid rgba(252, 143, 84, 0.3);
+    color: var(--accent-lit);
+  }
+
+  /* Badge lavanda — variante */
+  .badge-indigo {
+    @apply inline-flex items-center gap-2 px-4 py-2 rounded-full;
+    background-color: rgba(104, 103, 210, 0.12);
+    border: 1px solid rgba(104, 103, 210, 0.35);
+    color: #a5a4e8;
+  }
+
+  /* Badge coral — variante */
+  .badge-coral {
+    @apply inline-flex items-center gap-2 px-4 py-2 rounded-full;
+    background-color: rgba(245, 82, 91, 0.1);
+    border: 1px solid rgba(245, 82, 91, 0.3);
+    color: #f87a82;
+  }
+}
+
+/* ── Misc ────────────────────────────────────────────────────────────────── */
+html {
+  scroll-behavior: smooth;
+}
+
+::selection {
+  background-color: var(--accent);
+  color: #0f0f0f;
+}
+
+::-moz-selection {
+  background-color: var(--accent);
+  color: #0f0f0f;
+}
+
+/* ── Accesibilidad ───────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
