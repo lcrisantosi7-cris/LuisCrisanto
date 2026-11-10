@@ -7,8 +7,7 @@
 import {
     Server, Terminal, Braces, Globe, Code2, LayoutTemplate,
     Database, ShieldCheck, Cloud, Container, GitBranch,
-    School, ShoppingCart, Box, CreditCard, BarChart3, Calendar,
-    Map as MapIcon, MessageSquare, Share2, Layers, Cpu, Zap,
+    School, BarChart3, PawPrint, Leaf, Cpu, Zap, Share2, Layers,
 } from 'lucide-react'
 
 // ─── Mapa de aliases tag → skill.name ────────────────────────────────────────
@@ -51,124 +50,190 @@ export const normalizeTag = (tag) => TAG_ALIAS[tag] ?? tag
  *   architecture  → array de pasos, se muestra como flujo: ['A', 'B', 'C']
  *   github, demo  → '#' oculta el botón
  */
+export const CHANNEL_LABEL = {
+    vision: 'Cámaras + IA',
+    ecommerce: 'Ecommerce',
+    sistemas: 'Sistemas',
+}
+
 export const PROJECTS = [
     {
-        title: 'RetailVision Analytics',
         slug: 'retailvision',
-        thumb: '/projects/retailvision.webp',
+        title: 'RetailVision Analytics',
+        channel: 'vision',
         featured: true,
-        description: 'Plataforma de análisis de clientes en tiempo real con detección YOLOv8, mapas de calor, métricas de afluencia y reportes PDF para múltiples cámaras.',
-        longDescription: 'Plataforma de análisis de clientes en tiempo real: detecta personas con YOLOv8 en múltiples cámaras y genera mapas de calor, métricas de afluencia y reportes PDF, para que el negocio sepa dónde se concentra la gente y ubique ahí lo más importante.',
-        problem: 'El negocio no sabe por dónde se mueve realmente su gente.',
-        solution: 'Detecta personas por cámara y muestra dónde se concentra la afluencia, para poner productos y promociones donde más se mueve la gente.',
-        architecture: ['Cámaras', 'YOLOv8 + OpenCV', 'FastAPI', 'WebSocket', 'React + Recharts'],
+        status: 'production',
+        videoPending: true,
+        year: '2024',
+        kind: 'Tesis',
+        accent: '252 143 84',
         icon: BarChart3,
-        tags: ['Python', 'FastAPI', 'YOLOv8', 'OpenCV', 'React', 'WebSocket', 'Recharts'],
-        category: 'fullstack',
-        type: 'personal',
+        thumb: '/projects/retailvision-analisis.webp',
+        tagline: 'Cámaras que cuentan quién entra, adónde va y cuánto se queda.',
+        description: 'Detección de personas en tiempo real con YOLOv8, mapas de calor y reportes por zona para decidir dónde poner lo importante.',
+        tags: ['Python', 'YOLOv8', 'FastAPI', 'React', 'WebSocket', 'OpenCV'],
+        problem: 'El negocio no sabe por dónde se mueve realmente su gente.',
+        solution: 'Cámaras con detección de personas que muestran dónde se concentra la afluencia por zona, para ubicar productos y promociones donde más se mueve la gente.',
+        metrics: [
+            { v: '94.9%', l: 'Recall' },
+            { v: '79.8%', l: 'Precisión' },
+            { v: '86.7%', l: 'F1-score' },
+            { v: '1,371', l: 'Frames evaluados' },
+        ],
+        highlights: [
+            'Detección de personas por cámara con YOLOv8',
+            'Mapas de calor y métricas de afluencia por zona',
+            'Reportes listos para tomar decisiones comerciales',
+            'Evaluación del modelo (precisión, recall, F1) en tiempo real',
+        ],
+        architecture: ['Cámaras', 'YOLOv8 + OpenCV', 'FastAPI', 'WebSocket', 'React + Recharts'],
+        gallery: [
+            { src: '/projects/retailvision-analisis.webp', caption: 'Métricas del modelo en tiempo real' },
+            { src: '/projects/retailvision-reporte.webp', caption: 'Reporte para toma de decisiones' },
+            // { src: '/projects/retailvision-monitor.webp', caption: 'Monitor en vivo' }, // activar con captura en vivo
+        ],
+        layers: {
+            design: {
+                src: '/projects/retailvision-analisis.webp',
+                caption: 'Diseño · métricas del modelo en tiempo real: precisión, recall y F1.',
+            },
+            code: {
+                file: 'main.py',
+                note: 'extracto de capture_loop',
+                caption: 'Código · un hilo de captura por cámara que nunca espera a YOLO y se reconecta solo.',
+                src: `def capture_loop(cam_id: str):
+    source = CAMERAS[cam_id]["source"]
+    flags  = cv2.CAP_DSHOW if isinstance(source, int) else cv2.CAP_ANY
+
+    while True:
+        cap = cv2.VideoCapture(source, flags)
+        cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)
+
+        if not cap.isOpened():
+            _estados[cam_id]["activa"] = False
+            time.sleep(5)
+            continue
+
+        _estados[cam_id]["activa"] = True
+        fail_count = 0
+        while True:
+            ret, frame = cap.read()
+            if not ret:
+                fail_count += 1
+                if fail_count >= 10:
+                    break
+                time.sleep(0.1)
+                continue
+            fail_count = 0
+            with _frame_locks[cam_id]:
+                _frames_raw[cam_id] = frame
+
+        cap.release()
+        time.sleep(3)`,
+            },
+            arch: {
+                caption: 'Arquitectura · captura e inferencia desacopladas, tres salidas hacia React.',
+                cols: [
+                    { title: 'Fuentes', items: ['Webcam local', 'RTSP / cámara IP', 'Archivo de video'] },
+                    { title: 'FastAPI · 1 hilo por cámara', items: ['Captura (reconecta sola)', 'Inferencia YOLOv8', 'Estado en memoria'] },
+                    { title: 'Salidas', items: ['WebSocket /ws/monitor', 'REST /api/*', 'MJPEG /video'] },
+                    { title: 'React', items: ['Monitor', 'Análisis', 'Reportes'] },
+                ],
+            },
+        },
+        video: 'https://youtu.be/cygu65ytwTc?si=QZDDV75dxKx0iAmt', // referencial
         github: 'https://github.com/lcrisantosi7-cris/retailvision-analytics',
         demo: '#',
-        status: 'production',
     },
     {
-        title: 'Sistema de Gestión Escolar',
+        slug: 'alfapet',
+        title: 'AlfaPet',
+        channel: 'sistemas',
+        status: 'production', // confirma: ¿producción o desarrollo?
+        video: 'https://youtu.be/Krr2u8BUtLw?si=nzwesXxsIRjFGa_i',
+        year: '2026',
+        kind: 'Personal', // confirma
+        accent: '255 179 136',
+        icon: PawPrint,
+        thumb: '/projects/alfapet-login.webp',
+        tagline: 'Todo lo de una clínica veterinaria en un solo panel.',
+        description: 'Pacientes, citas, consultas, vacunas, cirugías, análisis, internamiento, inventario y caja, con arquitectura MVC y POO bajo ISO 25010.',
+        tags: ['Supabase', 'MVC', 'POO', 'ISO 25010'],
+        problem: 'Agenda, historiales, vacunas y stock suelen vivir en lugares distintos.',
+        solution: 'Un solo panel donde el equipo de la clínica atiende pacientes, agenda citas, registra consultas y controla inventario y caja con datos reales.',
+        metrics: [
+            { v: '10', l: 'Módulos clínicos' },
+            { v: 'MVC', l: 'Arquitectura · POO' },
+            { v: 'ISO 25010', l: 'Calidad de software' },
+        ],
+        highlights: [
+            'Agenda de citas, consultas e historial clínico',
+            'Vacunas, cirugías, análisis e internamiento por habitación',
+            'Productos, inventario, ventas y caja',
+            'Panel con datos reales: ingresos, alertas y ocupación',
+        ],
+        architecture: ['Interfaz web', 'Controladores MVC', 'Modelos POO', 'Supabase'],
+        gallery: [
+            { src: '/projects/alfapet-login.webp', caption: 'Acceso para el equipo de la clínica' },
+            { src: '/projects/alfapet-dashboard.webp', caption: 'Panel principal con datos reales' },
+        ],
+        github: 'https://github.com/lcrisantosi7-cris/AlfaPet',
+        demo: 'https://alfapet.vercel.app/',
+        demoNote: 'El panel es de acceso restringido. Mira el video o pídeme un usuario de prueba.',
+    },
+    {
+        slug: 'plantmilk',
+        title: 'PlantMilk',
+        channel: 'ecommerce',
+        status: 'dev', // confirma
+        year: '2026',
+        kind: 'Concepto de marca',
+
+        accent: '143 142 232',
+        icon: Leaf,
+        thumb: '/projects/plantmilk-pack.webp',
+        thumbPos: 'center',
+        tagline: 'Una marca de leches vegetales que se siente premium y vende sola.',
+        description: 'Sitio inmersivo con historia, proceso, comparador y tienda conectada a Shopify, con animaciones GSAP y partículas 3D.',
+        tags: ['React', 'TanStack Start', 'Shopify', 'GSAP', 'Three.js', 'Tailwind'],
+        problem: 'Una marca pequeña necesita verse premium y vender sin depender de una plantilla genérica.',
+        solution: 'Un sitio que cuenta la marca con movimiento y conecta su catálogo y carrito con Shopify.',
+        metrics: [
+            { v: 'Shopify', l: 'Tienda conectada' },
+            { v: '3D', l: 'Partículas con Three.js' },
+            { v: 'Light / Dark', l: 'Tema claro y oscuro' },
+        ],
+        highlights: [
+            'Landing narrativa por capítulos: origen, historia y proceso en cuatro pasos',
+            'Comparador interactivo de leches con perfil sensorial',
+            'Calculadora de impacto: agua, emisiones y tierra por año',
+            'Catálogo y tienda conectados a Shopify, con carrito y favoritos',
+        ],
+        architecture: ['TanStack Start + React 19', 'GSAP · Lenis · Three.js', 'Zustand', 'Shopify Storefront API'],
+        gallery: [
+            { src: '/projects/plantmilk-pack.webp', caption: 'Línea de productos', pos: 'center' },
+            { src: '/projects/plantmilk-cacao.webp', caption: 'Avena y cacao', pos: 'center' },
+            { src: '/projects/plantmilk-pistacho.webp', caption: 'Pistacho', pos: 'center' },
+        ],
+        github: 'https://github.com/lcrisantosi7-cris/plantmilk',
+        demo: 'https://plantmilk.lovable.app',
+        demoNote: 'Emprendimiento.',
+
+    },
+    {
         slug: 'gestion-escolar',
-        thumb: '/projects/gestion-escolar.webp',
-        description: 'Plataforma MVC integral para administración académica. Manejo de concurrencia y roles.',
+        title: 'Sistema de Gestión Escolar',
+        channel: 'sistemas',
+        status: 'production',
+        year: '2023',
+        kind: 'Académico',
+        accent: '104 103 210',
         icon: School,
-        tags: ['PHP', 'MySQL', 'CSS', 'JavaScript', 'MVC'],
-        category: 'fullstack',
-        type: 'academic',
+        tagline: 'Administración académica con roles y concurrencia.',
+        description: 'Plataforma MVC para administración académica. Manejo de concurrencia y roles.',
+        tags: ['PHP', 'MySQL', 'JavaScript', 'MVC'],
         github: 'https://github.com/lcrisantosi7-cris/Sistema-Gestion-Escolar',
-        status: 'production',
-    },
-    {
-        title: 'API REST E-Commerce',
-        slug: 'api-ecommerce',
-        thumb: '/projects/api-ecommerce.webp',
-        description: 'Arquitectura RESTful escalable con autenticación JWT, pasarela de pagos y gestión de inventario.',
-        icon: ShoppingCart,
-        tags: ['Node.js', 'Express', 'MongoDB', 'JWT'],
-        category: 'backend',
-        type: 'personal',
-        github: '#',
-        status: 'dev',
-    },
-    {
-        title: 'Control de Inventario',
-        slug: 'control-inventario',
-        thumb: '/projects/control-inventario.webp',
-        description: 'Sistema logístico con algoritmos de predicción de stock y generación de reportes PDF/Excel.',
-        icon: Box,
-        tags: ['PHP', 'MySQL', 'JS', 'Chart.js'],
-        category: 'fullstack',
-        type: 'academic',
-        github: '#',
         demo: '#',
-        status: 'production',
-    },
-    {
-        title: 'Microservicios de Pagos',
-        slug: 'microservicios-pagos',
-        thumb: '/projects/microservicios-pagos.webp',
-        description: 'Arquitectura distribuida para orquestación de pagos usando RabbitMQ para mensajería asíncrona.',
-        icon: CreditCard,
-        tags: ['PHP', 'RabbitMQ', 'Docker'],
-        category: 'backend',
-        type: 'personal',
-        github: '#',
-        status: 'dev',
-    },
-    {
-        title: 'Analytics Dashboard',
-        slug: 'analytics-dashboard',
-        thumb: '/projects/analytics-dashboard.webp',
-        description: 'Panel de visualización de datos en tiempo real con agregación de métricas de múltiples fuentes.',
-        icon: BarChart3,
-        tags: ['React', 'Node.js', 'MongoDB'],
-        category: 'fullstack',
-        type: 'personal',
-        github: '#',
-        demo: '#',
-        status: 'dev',
-    },
-    {
-        title: 'Sistema de Reservas',
-        slug: 'sistema-reservas',
-        thumb: '/projects/sistema-reservas.webp',
-        description: 'Motor de reservas con validación de conflictos horarios y notificaciones transaccionales vía AWS SES.',
-        icon: Calendar,
-        tags: ['Node.js', 'Vue.js', 'AWS SES'],
-        category: 'fullstack',
-        type: 'academic',
-        github: '#',
-        demo: '#',
-        status: 'dev',
-    },
-    {
-        title: 'API de Geolocalización',
-        slug: 'api-geolocalizacion',
-        thumb: '/projects/api-geolocalizacion.webp',
-        description: 'Servicio backend para cálculos geoespaciales y optimización de rutas usando PostGIS.',
-        icon: MapIcon,
-        tags: ['PHP', 'PostgreSQL', 'Redis'],
-        category: 'backend',
-        type: 'personal',
-        github: '#',
-        status: 'dev',
-    },
-    {
-        title: 'Real-Time Chat Engine',
-        slug: 'realtime-chat',
-        thumb: '/projects/realtime-chat.webp',
-        description: 'Infraestructura de comunicación bidireccional escalable basada en eventos WebSockets.',
-        icon: MessageSquare,
-        tags: ['Node.js', 'Socket.io', 'React'],
-        category: 'fullstack',
-        type: 'personal',
-        github: '#',
-        demo: '#',
-        status: 'dev',
     },
 ]
 

@@ -1,294 +1,64 @@
 import React from 'react'
-import { ArrowUpRight, Terminal } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import { ArrowUp, ArrowUpRight } from 'lucide-react'
+import { Logo } from './Header'
 import { SocialFooter } from './SocialLinks'
+import { CHANNELS, CONTACT } from '../lib/channels'
+import { sfx } from '../lib/sound'
 
 export const Footer = () => {
-  const currentYear = new Date().getFullYear()
-
-  const navLinks = [
-    { label: 'Sobre Mí', path: '/about' },
-    { label: 'Experiencia', path: '/experience' },
-    { label: 'Proyectos', path: '/projects' },
-    { label: 'Habilidades', path: '/skills' },
-    { label: 'Servicios', path: '/services' },
-    { label: 'Contacto', path: '/contact' },
-  ]
-
+  const year = new Date().getFullYear()
   return (
-    <footer
-      className="relative pt-20 pb-8 overflow-hidden"
-      style={{
-        background:
-          'linear-gradient(180deg, #0d0b14 0%, #090711 55%, #07050d 100%)',
-        borderTop: '1px solid rgba(104,103,210,0.12)',
-      }}
-    >
-      {/* Glow decorativo */}
-      <div
-        className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[220px]
-                   blur-3xl pointer-events-none opacity-20"
-        style={{
-          background:
-            'radial-gradient(ellipse, rgba(104,103,210,0.35) 0%, rgba(252,143,84,0.12) 45%, transparent 75%)',
-        }}
-      />
+    <footer className="overflow-hidden border-t border-white/10">
+      <div className="mx-auto max-w-7xl px-6 pt-20">
+        <div
+          aria-hidden
+          className="select-none whitespace-nowrap text-center font-display text-[17vw] font-black leading-[0.85] text-transparent transition-all duration-700 [-webkit-text-stroke:1px_rgba(255,255,255,0.14)] hover:[-webkit-text-stroke-color:rgb(var(--ch))] lg:text-[13rem]"
+        >
+          CRISANTO
+        </div>
 
-      <div className="relative max-w-7xl mx-auto px-6">
-
-        {/* ═══════════════ MAIN FOOTER ═══════════════ */}
-
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-12 lg:gap-16 mb-16">
-
-          {/* ── BRAND ── */}
-          <div className="md:col-span-6">
-
-            {/* Logo */}
-            <Link
-              to="/"
-              aria-label="LC.dev — Inicio"
-              className="flex items-center gap-2.5 group w-fit mb-6"
-            >
-              <div
-                className="p-1.5 rounded-lg transition-all duration-300
-                           group-hover:scale-105"
-                style={{
-                  background: 'rgba(252,143,84,0.08)',
-                  border: '1px solid rgba(252,143,84,0.2)',
-                }}
-              >
-                <Terminal
-                  size={17}
-                  style={{ color: '#FC8F54' }}
-                />
-              </div>
-
-              <span className="text-lg font-bold font-mono tracking-tighter text-white">
-                LC<span style={{ color: '#FC8F54' }}>.dev</span>
-              </span>
+        <div className="mt-16 grid gap-12 md:grid-cols-12">
+          <div className="md:col-span-5">
+            <Link to="/" aria-label="Luis Crisanto — Inicio" data-cursor="INICIO" className="inline-flex items-center gap-3 text-white transition-colors hover:text-channel">
+              <Logo className="h-6 w-auto" />
+              <span className="font-mono text-xs uppercase tracking-[0.25em]">Luis Crisanto</span>
             </Link>
-
-            {/* Headline */}
-            <h3 className="text-2xl sm:text-3xl font-black tracking-tight text-white max-w-lg leading-tight mb-4">
-              Construyo sistemas.
-              <br />
-              <span
-                className="text-transparent bg-clip-text"
-                style={{
-                  backgroundImage:
-                    'linear-gradient(90deg, #FC8F54 0%, #F5525B 50%, #6867D2 100%)',
-                }}
-              >
-                Diseño lo que los hace escalar.
-              </span>
-            </h3>
-
-            {/* Description */}
-            <p
-              className="text-sm leading-relaxed max-w-md mb-6"
-              style={{ color: 'rgba(255,255,255,0.6)' }}
-            >
-              Ingeniero de Sistemas enfocado en backend, arquitectura de
-              software y cloud. Construyo sistemas robustos, escalables y
-              preparados para crecer.
-            </p>
-
-            {/* Focus */}
-            <div className="flex flex-wrap items-center gap-2">
-              {['Backend', 'Architecture', 'Cloud'].map((item) => (
-                <span
-                  key={item}
-                  className="px-3 py-1.5 rounded-full text-[11px] font-mono
-                             uppercase tracking-wider"
-                  style={{
-                    color: 'rgba(255,255,255,0.65)',
-                    background: 'rgba(255,255,255,0.035)',
-                    border: '1px solid rgba(255,255,255,0.08)',
-                  }}
-                >
-                  {item}
-                </span>
-              ))}
-            </div>
-
-            {/* Availability */}
-            <div
-              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full mt-6"
-              style={{
-                background: 'rgba(252,143,84,0.06)',
-                border: '1px solid rgba(252,143,84,0.2)',
-              }}
-            >
-              <span className="relative flex h-2 w-2">
-                <span
-                  className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75"
-                  style={{ backgroundColor: '#FC8F54' }}
-                />
-
-                <span
-                  className="relative inline-flex rounded-full h-2 w-2"
-                  style={{ backgroundColor: '#FC8F54' }}
-                />
-              </span>
-
-              <span
-                className="text-[11px] font-bold uppercase tracking-wider"
-                style={{ color: '#ffb388' }}
-              >
-                Disponible para nuevos proyectos
-              </span>
-            </div>
+            <p className="mt-5 max-w-xs font-display text-2xl font-bold">Aprendo de todo. Construyo lo que importa.</p>
+            <Link to="/contacto" data-cursor="HABLEMOS" className="mt-6 inline-flex items-center gap-2 rounded-full bg-channel px-6 py-3 font-semibold text-ink-950 transition hover:brightness-110">
+              Hablemos <ArrowUpRight size={16} />
+            </Link>
           </div>
 
-          {/* ── NAVIGATION ── */}
-          <nav aria-label="Pie de página" className="md:col-span-3">
-            <h4
-              className="font-semibold mb-6 flex items-center gap-2 text-sm"
-              style={{ color: 'rgba(255,255,255,0.85)' }}
-            >
-              <span
-                className="h-px w-4"
-                style={{ background: '#6867D2' }}
-              />
-              Explorar
-            </h4>
-
-            <ul className="space-y-1">
-              {navLinks.map((item) => (
-                <li key={item.path}>
-                  <Link
-                    to={item.path}
-                    className="group flex items-center gap-2 text-sm py-2 transition-all duration-200 w-fit"
-                    style={{
-                      color: 'rgba(255,255,255,0.6)',
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.color = '#fff'
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.color =
-                        'rgba(255,255,255,0.6)'
-                    }}
-                  >
-                    <span
-                      aria-hidden="true"
-                      className="w-0 overflow-hidden transition-all duration-200
-                                 group-hover:w-3"
-                      style={{ color: '#FC8F54' }}
-                    >
-                      →
-                    </span>
-
-                    {item.label}
+          <nav aria-label="Pie de página" className="md:col-span-4">
+            <p className="font-mono text-[11px] uppercase tracking-widest text-ink-400">Canales</p>
+            <ul className="mt-4 space-y-2">
+              {[...CHANNELS, CONTACT].map((c) => (
+                <li key={c.path}>
+                  <Link to={c.path} onMouseEnter={sfx.tick} className="group flex items-baseline gap-3 text-ink-200 transition hover:text-white">
+                    <span className="font-mono text-[10px] tracking-widest text-ink-600 transition group-hover:text-channel">{c.cam}</span>
+                    {c.name}
                   </Link>
                 </li>
               ))}
             </ul>
           </nav>
 
-          {/* ── CONNECT ── */}
           <div className="md:col-span-3">
-            <h4
-              className="font-semibold mb-6 flex items-center gap-2 text-sm"
-              style={{ color: 'rgba(255,255,255,0.85)' }}
-            >
-              <span
-                className="h-px w-4"
-                style={{ background: '#6867D2' }}
-              />
-              Conectar
-            </h4>
-
-            <SocialFooter />
-
-            <Link
-              to="/contact"
-              className="group inline-flex items-center gap-2 mt-6 py-2 text-sm
-                         transition-colors duration-200"
-              style={{ color: 'rgba(255,255,255,0.6)' }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.color = '#FC8F54'
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.color =
-                  'rgba(255,255,255,0.6)'
-              }}
-            >
-              Hablemos sobre un proyecto
-              <ArrowUpRight
-                size={14}
-                aria-hidden="true"
-                className="transition-transform duration-200
-                           group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
-              />
-            </Link>
+            <p className="font-mono text-[11px] uppercase tracking-widest text-ink-400">Redes</p>
+            <div className="mt-4"><SocialFooter /></div>
           </div>
         </div>
 
-        {/* ═══════════════ BOTTOM BAR ═══════════════ */}
-
-        <div
-          className="pt-7 flex flex-col md:flex-row justify-between
-                     items-center gap-4"
-          style={{
-            borderTop: '1px solid rgba(255,255,255,0.05)',
-          }}
-        >
-
-          {/* Code signature */}
-          <p
-            className="font-mono text-xs"
-            style={{ color: 'rgba(255,255,255,0.5)' }}
+        <div className="mt-16 flex items-center justify-between gap-4 border-t border-white/10 py-6 font-mono text-[11px] tracking-widest text-ink-400">
+          <span>© {year} LUIS CRISANTO</span>
+          <button
+            onClick={() => { window.scrollTo({ top: 0, behavior: 'smooth' }); sfx.click() }}
+            data-cursor="SUBIR"
+            className="inline-flex items-center gap-2 transition hover:text-channel"
           >
-            &lt;coded_by /&gt;{' '}
-            <span style={{ color: 'rgba(252,143,84,0.85)' }}>
-              Luis Crisanto
-            </span>
-          </p>
-
-          <div
-            aria-hidden="true"
-            className="hidden md:block h-px flex-1 mx-8"
-            style={{
-              background:
-                'linear-gradient(90deg, transparent, rgba(104,103,210,0.2), rgba(252,143,84,0.2), transparent)',
-            }}
-          />
-
-          {/* Center status */}
-          <div className="hidden md:flex items-center gap-2">
-            <span
-              aria-hidden="true"
-              className="h-1.5 w-1.5 rounded-full"
-              style={{
-                background: '#FC8F54',
-                boxShadow: '0 0 10px rgba(252,143,84,0.6)',
-              }}
-            />
-            <span
-              className="font-mono text-[10px] uppercase tracking-[0.25em]"
-              style={{ color: 'rgba(255,255,255,0.5)' }}
-            >
-              Building the next system
-            </span>
-          </div>
-
-          <div
-            aria-hidden="true"
-            className="hidden md:block h-px flex-1 mx-8"
-            style={{
-              background:
-                'linear-gradient(90deg, transparent, rgba(104,103,210,0.2), rgba(252,143,84,0.2), transparent)',
-            }}
-          />
-
-          {/* Copyright */}
-          <p
-            className="text-[11px] uppercase tracking-[0.2em] text-center"
-            style={{ color: 'rgba(255,255,255,0.5)' }}
-          >
-            © {currentYear} LC.dev
-          </p>
+            VOLVER ARRIBA <ArrowUp size={14} />
+          </button>
         </div>
       </div>
     </footer>

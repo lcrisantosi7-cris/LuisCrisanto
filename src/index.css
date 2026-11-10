@@ -38,11 +38,8 @@
   }
 
   /* Poppins solo en headings */
-  h1,
-  h2,
-  h3,
-  h4 {
-    font-family: "Poppins", "Inter", sans-serif;
+  h1, h2, h3, h4 {
+    font-family: "Bricolage Grotesque", "Inter", sans-serif;
     font-weight: 700;
     letter-spacing: -0.02em;
     line-height: 1.15;
@@ -246,3 +243,46 @@ html {
   outline: 2px solid var(--accent);
   outline-offset: 3px;
 }
+
+
+/* ── Sala de control ─────────────────────────────────────────────────────── */
+:root { --ch: 252 143 84; }
+
+::selection { background: rgb(var(--ch) / 0.35); }
+
+html.has-lens,
+html.has-lens a,
+html.has-lens button,
+html.has-lens summary,
+html.has-lens [data-cursor] { cursor: none; }
+html.has-lens input,
+html.has-lens textarea,
+html.has-lens select { cursor: text; }
+
+.rec-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: #f5525b; box-shadow: 0 0 8px #f5525b;
+  animation: rec-blink 1.2s steps(2, start) infinite;
+}
+@keyframes rec-blink { to { opacity: 0.15; } }
+
+.anim-static { animation: static-shift 0.2s steps(2) infinite; }
+@keyframes static-shift {
+  0% { transform: translate(0, 0); }
+  20% { transform: translate(-3%, 2%); }
+  40% { transform: translate(2%, -3%); }
+  60% { transform: translate(-2%, -1%); }
+  80% { transform: translate(3%, 3%); }
+  100% { transform: translate(0, 0); }
+}
+
+
+@media (pointer: coarse), (prefers-reduced-motion: reduce) {
+  
+  .rec-dot, .anim-static { animation: none; }
+}
+
+/* Lenis */
+html.lenis, html.lenis body { height: auto; }
+.lenis.lenis-smooth { scroll-behavior: auto !important; }
+.lenis.lenis-stopped { overflow: hidden; }
