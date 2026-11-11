@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { Menu, X, Volume2, VolumeX, ArrowUpRight } from 'lucide-react'
+import { Menu, X, Volume2, VolumeX, ArrowUpRight, Settings } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { CHANNELS, CONTACT, channelFor } from '../lib/channels'
-import { sfx, setSound, useSound } from '../lib/sound'
+import { sfx, useSound } from '../lib/sound'
 
 export const Logo = ({ className = 'h-5 w-auto' }) => (
   <svg viewBox="0 0 140 106" fill="currentColor" className={className} aria-hidden="true">
@@ -12,20 +11,19 @@ export const Logo = ({ className = 'h-5 w-auto' }) => (
   </svg>
 )
 
+const NAV_LINKS = [
+  { name: 'Inicio', path: '/' },
+  { name: 'Sobre mí', path: '/sobre-mi' },
+  { name: 'Experiencia', path: '/experiencia' },
+  { name: 'Proyectos', path: '/proyectos' },
+]
+
 export const Header = () => {
   const { pathname } = useLocation()
-  const ch = channelFor(pathname)
   const sound = useSound()
   const [open, setOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const [hidden, setHidden] = useState(false)
-
-  const [prev, setPrev] = useState(pathname)
-  if (prev !== pathname) {
-    setPrev(pathname)
-    setOpen(false)
-    setHidden(false)
-  }
 
   useEffect(() => {
     let last = window.scrollY
@@ -64,80 +62,83 @@ export const Header = () => {
         className={`fixed inset-x-0 top-0 z-50 transition-transform duration-500 ${hidden && !open ? '-translate-y-full' : ''}`}
       >
         <div
-          className={`border-b transition-all duration-300 ${scrolled || open ? 'border-white/10 bg-ink-950/80 py-3 backdrop-blur-xl' : 'border-transparent bg-transparent py-5'
+          className={`transition-all duration-300 ${scrolled || open
+              ? 'border-b border-white/10 bg-[#070b19]/90 py-3 backdrop-blur-xl'
+              : 'border-transparent bg-transparent py-5'
             }`}
         >
           <div className="mx-auto flex max-w-7xl items-center justify-between gap-6 px-6">
+            {/* Logo y marca */}
             <Link
               to="/"
-              aria-label="Luis Crisanto — Inicio"
-              data-cursor="INICIO"
-              className="flex items-center gap-3 text-white transition-colors hover:text-channel"
+              aria-label="Lux.dev — Inicio"
+              className="flex items-center gap-2.5 text-white transition-colors hover:text-blue-400"
             >
-              <Logo />
-              <span className="hidden font-mono text-xs uppercase tracking-[0.25em] text-ink-200 sm:block">
-                Luis Crisanto
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-600 text-white">
+                <Logo className="h-4 w-auto" />
+              </div>
+              <span className="font-display text-base font-bold tracking-wider text-white">
+                Lux.dev
               </span>
             </Link>
 
-            <nav aria-label="Principal" className="hidden items-center gap-1 lg:flex">
-              {CHANNELS.map((c) => {
-                const active = ch.path === c.path
+            {/* Navegación central tipo píldoras */}
+            <nav aria-label="Principal" className="hidden items-center gap-1 rounded-full bg-[#0b132b]/80 p-1.5 border border-white/10 backdrop-blur-md lg:flex">
+              {NAV_LINKS.map((link) => {
+                const active = pathname === link.path
                 return (
                   <Link
-                    key={c.path}
-                    to={c.path}
+                    key={link.path}
+                    to={link.path}
                     onMouseEnter={sfx.tick}
                     aria-current={active ? 'page' : undefined}
-                    className="group relative px-4 py-2"
+                    className={`relative rounded-full px-5 py-2 text-sm font-medium transition-colors ${active ? 'text-white' : 'text-slate-300 hover:text-white'
+                      }`}
                   >
-                    <span className={`block font-mono text-[10px] tracking-widest ${active ? 'text-channel' : 'text-ink-400 group-hover:text-channel'}`}>
-                      CAM {c.cam}
-                    </span>
-                    <span className={`block text-sm font-medium ${active ? 'text-white' : 'text-ink-200 group-hover:text-white'}`}>
-                      {c.name}
-                    </span>
                     {active && (
-                      <motion.span layoutId="channel-underline" className="absolute inset-x-3 -bottom-px h-[2px] bg-channel" />
+                      <motion.span
+                        layoutId="nav-pill"
+                        className="absolute inset-0 rounded-full bg-blue-600 shadow-lg shadow-blue-600/30"
+                        transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                      />
                     )}
+                    <span className="relative z-10">{link.name}</span>
                   </Link>
                 )
               })}
             </nav>
 
+            {/* Controles de la derecha */}
             <div className="flex items-center gap-3">
-              <div className="hidden items-center gap-2 text-xs text-ink-200 xl:flex">
-                <span className="relative flex h-2 w-2">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-channel opacity-60" />
-                  <span className="relative inline-flex h-2 w-2 rounded-full bg-channel" />
-                </span>
-                Disponible
-              </div>
+              <Link
+                to="/contacto"
+                data-cursor="HABLEMOS"
+                onClick={sfx.click}
+                className="hidden items-center gap-1.5 rounded-full bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-500 shadow-md shadow-blue-600/20 sm:inline-flex"
+              >
+                Hablemos
+              </Link>
 
               <button
                 onClick={() => setSound(!sound)}
                 aria-pressed={sound}
                 aria-label={sound ? 'Silenciar sonidos' : 'Activar sonidos'}
-                data-cursor={sound ? 'MUTE' : 'SONIDO'}
-                className="rounded-lg p-2 text-ink-200 transition hover:bg-white/5 hover:text-white"
+                className="rounded-full p-2.5 text-slate-300 transition hover:bg-white/10 hover:text-white border border-white/10"
               >
                 {sound ? <Volume2 size={16} /> : <VolumeX size={16} />}
               </button>
 
-              <Link
-                to="/contacto"
-                data-cursor="HABLEMOS"
-                onClick={sfx.click}
-                className="hidden items-center gap-1.5 rounded-full bg-channel px-4 py-2 text-sm font-semibold text-ink-950 transition hover:brightness-110 sm:inline-flex"
+              <button
+                aria-label="Configuración"
+                className="rounded-full p-2.5 text-slate-300 transition hover:bg-white/10 hover:text-white border border-white/10"
               >
-                Hablemos <ArrowUpRight size={14} />
-              </Link>
+                <Settings size={16} />
+              </button>
 
               <button
                 onClick={() => setOpen((o) => !o)}
                 aria-label={open ? 'Cerrar menú' : 'Abrir menú'}
                 aria-expanded={open}
-                aria-controls="menu-movil"
                 className="rounded-lg p-2 text-white lg:hidden"
               >
                 {open ? <X size={22} /> : <Menu size={22} />}
@@ -147,31 +148,47 @@ export const Header = () => {
         </div>
       </header>
 
+      {/* Menú móvil */}
       <AnimatePresence>
         {open && (
           <motion.div
             id="menu-movil"
-            className="fixed inset-0 z-40 bg-ink-950 px-6 pt-24 lg:hidden"
+            className="fixed inset-0 z-40 bg-[#070b19] px-6 pt-24 lg:hidden"
             initial={{ clipPath: 'inset(0 0 100% 0)' }}
             animate={{ clipPath: 'inset(0 0 0% 0)' }}
             exit={{ clipPath: 'inset(0 0 100% 0)' }}
             transition={{ duration: 0.5, ease: [0.76, 0, 0.24, 1] }}
           >
-            <ul className="space-y-1">
-              {[...CHANNELS, CONTACT].map((c, i) => (
+            <ul className="space-y-4">
+              {NAV_LINKS.map((link, i) => (
                 <motion.li
-                  key={c.path}
+                  key={link.path}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0, transition: { delay: 0.15 + i * 0.05 } }}
                 >
-                  <Link to={c.path} className="flex items-baseline gap-4 border-b border-white/5 py-4">
-                    <span className="font-mono text-xs tracking-widest" style={{ color: `rgb(${c.rgb})` }}>
-                      {c.cam}
-                    </span>
-                    <span className="font-display text-4xl font-bold text-white">{c.name}</span>
+                  <Link
+                    to={link.path}
+                    onClick={() => setOpen(false)}
+                    className="flex items-baseline justify-between border-b border-white/10 py-4 text-2xl font-semibold text-white"
+                  >
+                    <span>{link.name}</span>
+                    <ArrowUpRight size={20} className="text-blue-500" />
                   </Link>
                 </motion.li>
               ))}
+              <motion.li
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0, transition: { delay: 0.35 } }}
+                className="pt-4"
+              >
+                <Link
+                  to="/contacto"
+                  onClick={() => setOpen(false)}
+                  className="flex w-full items-center justify-center rounded-full bg-blue-600 py-3.5 text-center font-semibold text-white"
+                >
+                  Hablemos
+                </Link>
+              </motion.li>
             </ul>
           </motion.div>
         )}
