@@ -1,0 +1,74 @@
+{
+    "contact": {
+        "metaDescription": "Escríbeme para oportunidades, colaboraciones o proyectos de desarrollo Full Stack y visión por computadora.",
+        "eyebrow": "Contacto",
+        "title": "Hablemos",
+        "lead": "Cuéntame qué tienes en mente y te respondo por correo.",
+        "emailLabel": "Correo",
+        "copy": "Copiar",
+        "copied": "Copiado",
+        "copyAria": "Copiar el correo al portapapeles",
+        "socialLabel": "En línea",
+        "localTime": "Hora en Perú",
+        "cv": "Descargar CV",
+        "card": {
+            "role": "Full Stack Developer"
+        },
+        "form": {
+            "name": "Nombre",
+            "namePh": "Tu nombre",
+            "email": "Correo",
+            "emailPh": "tu@correo.com",
+            "type": "¿Sobre qué quieres escribirme?",
+            "typeAria": "Tipo de mensaje",
+            "message": "Mensaje",
+            "messagePh": "Cuéntame sobre tu proyecto, la oportunidad o tu idea…",
+            "send": "Enviar mensaje",
+            "sending": "Enviando…"
+        },
+        "types": {
+            "job": "Oportunidad laboral",
+            "backend": "Backend y APIs",
+            "fullstack": "Full Stack",
+            "vision": "Visión por computadora",
+            "other": "Otro"
+        },
+        "success": {
+            "title": "Mensaje enviado",
+            "again": "Enviar otro mensaje",
+            "confirmed": "Tu mensaje fue enviado y la confirmación llegó a tu correo. Revisaré tu consulta personalmente y te responderé por ese mismo medio.",
+            "pending": "Tu mensaje fue enviado correctamente, pero no pude entregar el correo de confirmación. No necesitas enviarlo de nuevo; revisaré tu consulta y te responderé por correo."
+        },
+        "errors": {
+            "name": "Escribe tu nombre.",
+            "emailEmpty": "Escribe tu correo.",
+            "email": "Ese correo no parece válido.",
+            "message": "Cuéntame un poco más (mínimo 10 caracteres).",
+            "cooldown": "Espera un momento antes de enviar otro mensaje.",
+            "offline": "Sin conexión. Verifica tu red e intenta de nuevo.",
+            "unavailable": "El servicio de envío no está disponible ahora. Escríbeme directamente por correo.",
+            "rate_limited": "Demasiados mensajes seguidos. Intenta de nuevo en unos minutos.",
+            "send_failed": "No se pudo enviar el mensaje. Intenta de nuevo en unos minutos.",
+            "config": "El servicio de correo no está configurado.",
+            "origin": "Origen no permitido.",
+            "bad_request": "Solicitud inválida.",
+            "method": "Método no permitido.",
+            "generic": "No se pudo enviar el mensaje."
+        }
+    },
+    "footer": {
+        "line": "Si tienes un problema que resolver, escríbeme.",
+        "top": "Volver arriba",
+        "rights": "© 2026 Luis Crisanto"
+    },
+    "cookies": {
+        "title": "Cookies",
+        "text": "Este sitio web utiliza cookies para mejorar la experiencia del usuario y analizar el tráfico. Al continuar navegando, aceptas el uso de cookies.",
+        "accept": "Aceptar",
+        "decline": "Rechazar"
+    },
+    "nav": {
+        "status": "Abierto a oportunidades",
+        "statusPlace": "Perú"
+    }
+}

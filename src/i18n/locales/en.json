@@ -1,0 +1,97 @@
+{
+    "meta": {
+        "title": "Luis Crisanto | Lux.dev",
+        "description": "Luis Crisanto, Full Stack developer (React, Node.js, PHP). Software and computer vision projects: RetailVision, AlfaPet and EduCore."
+    },
+    "a11y": {
+        "skip": "Skip to content"
+    },
+    "nav": {
+        "label": "Main",
+        "homeAria": "Lux.dev, go to home",
+        "home": "Home",
+        "about": "About",
+        "projects": "Projects",
+        "contact": "Contact",
+        "contactCta": "Let's talk",
+        "openMenu": "Open menu",
+        "closeMenu": "Close menu"
+    },
+    "lang": {
+        "label": "Language"
+    },
+    "marquee": {
+        "aria": "Technologies I work with"
+    },
+    "status": {
+        "implemented": "Implemented",
+        "inDevelopment": "In development"
+    },
+    "hero": {
+        "eyebrow": "Full Stack Developer · Peru",
+        "tagline": "I build the whole system: interface, API and data. Right now I'm exploring computer vision and cloud architecture.",
+        "ctaProject": "See RetailVision",
+        "ctaAbout": "About me",
+        "scroll": "Explore",
+        "photoAlt": "Portrait of Luis Crisanto",
+        "orbitAria": "Map of my areas: backend, frontend, computer vision and cloud (learning).",
+        "nodes": {
+            "backend": "Backend",
+            "frontend": "Frontend",
+            "vision": "Computer vision",
+            "cloud": "Cloud · learning"
+        }
+    },
+    "manifesto": {
+        "eyebrow": "01 — My philosophy",
+        "title": "Curiosity with method.",
+        "p1": "Technology changes faster than anyone can master it.",
+        "p2": "So I don't collect tools: I learn the one the problem asks for, and I learn it properly.",
+        "p3": "Every project leaves me with something I didn't know and a better solution than the last."
+    },
+    "pages.notFound": {
+        "title": "This page doesn't exist",
+        "text": "The link may be broken or the page may have moved. Head back home and pick up from there."
+    },
+    "star": {
+        "eyebrow": "02 — Star project · 2026",
+        "problemLabel": "Problem",
+        "problem": "A business doesn't know precisely how people move inside its store.",
+        "solutionLabel": "Solution",
+        "solution": "A system that detects and tracks people by zone from one or several cameras using YOLOv8, and turns it into live KPIs, a heat map, dwell time per zone and exportable reports.",
+        "cta": "View the case",
+        "repo": "Code on GitHub",
+        "shotAlt": "RetailVision Analytics monitoring dashboard with camera feed, real-time KPIs, zone distribution and heat map."
+    },
+    "worlds": {
+        "eyebrow": "03 — Beyond the star project",
+        "title": "Other worlds",
+        "all": "See all projects",
+        "alfapet": "Clinical management for a veterinary clinic: patients, appointments, history, inventory and sales, with role-based permissions and an RLS-protected database.",
+        "educore": "Academic management for schools: enrollment, attendance, grades and report cards, built with PHP and PostgreSQL."
+    },
+    "cta": {
+        "eyebrow": "04 — Contact",
+        "title": "Let's talk",
+        "text": "If something you saw interests you, let's chat."
+    },
+    "pages": {
+        "wip": "Section under construction.",
+        "stack": "Technologies",
+        "viewCase": "View case",
+        "repo": "Repository",
+        "live": "View live",
+        "links": "Links",
+        "contactForm": "The form will be enabled once it is connected to a real delivery service.",
+        "notFound": {
+            "title": "Page not found",
+            "text": "This route does not exist in the Lux.dev universe.",
+            "back": "Back to home"
+        }
+    },
+    "footer": {
+        "designBy": "Graphic design",
+        "creditAria": "Lilian Gutiérrez, graphic design (opens in a new tab)",
+        "rights": "© 2026 LC.dev"
+    }
+}

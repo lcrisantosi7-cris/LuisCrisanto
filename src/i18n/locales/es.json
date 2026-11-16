@@ -1,0 +1,97 @@
+{
+    "meta": {
+        "title": "Luis Crisanto | Lux.dev",
+        "description": "Luis Crisanto, desarrollador Full Stack (React, Node.js, PHP). Proyectos de software y visión por computadora: RetailVision, AlfaPet y EduCore."
+    },
+    "a11y": {
+        "skip": "Saltar al contenido"
+    },
+    "nav": {
+        "label": "Principal",
+        "homeAria": "Lux.dev, ir al inicio",
+        "home": "Inicio",
+        "about": "Sobre mí",
+        "projects": "Proyectos",
+        "contact": "Contacto",
+        "contactCta": "Hablemos",
+        "openMenu": "Abrir menú",
+        "closeMenu": "Cerrar menú"
+    },
+    "lang": {
+        "label": "Idioma"
+    },
+    "marquee": {
+        "aria": "Tecnologías con las que trabajo"
+    },
+    "status": {
+        "implemented": "Implementado",
+        "inDevelopment": "En desarrollo"
+    },
+    "hero": {
+        "eyebrow": "Full Stack Developer · Perú",
+        "tagline": "Construyo el sistema completo: interfaz, API y datos. Hoy exploro visión por computadora y arquitectura en la nube.",
+        "ctaProject": "Ver RetailVision",
+        "ctaAbout": "Conóceme",
+        "scroll": "Explora",
+        "photoAlt": "Retrato de Luis Crisanto",
+        "orbitAria": "Mapa de mis áreas: backend, frontend, visión por computadora y cloud en aprendizaje.",
+        "nodes": {
+            "backend": "Backend",
+            "frontend": "Frontend",
+            "vision": "Visión por computadora",
+            "cloud": "Cloud · aprendiendo"
+        }
+    },
+    "manifesto": {
+        "eyebrow": "01 — Mi filosofía",
+        "title": "Curiosidad con método.",
+        "p1": "La tecnología cambia más rápido de lo que alguien puede dominarla.",
+        "p2": "Por eso no colecciono herramientas: aprendo la que el problema pide, y la aprendo bien.",
+        "p3": "Cada proyecto me deja algo que no sabía y una solución mejor que la anterior."
+    },
+    "pages.notFound": {
+        "title": "Esta página no existe",
+        "text": "El enlace puede estar roto o la página se movió. Vuelve al inicio y seguimos desde ahí."
+    },
+    "star": {
+        "eyebrow": "02 — Proyecto estrella · 2026",
+        "problemLabel": "Problema",
+        "problem": "Un negocio no sabe con precisión por dónde se mueve la gente dentro de su local.",
+        "solutionLabel": "Solución",
+        "solution": "Un sistema que detecta y rastrea personas por zonas desde una o varias cámaras con YOLOv8, y lo convierte en KPIs en vivo, mapa de calor, permanencia por zona y reportes exportables.",
+        "cta": "Ver el caso",
+        "repo": "Código en GitHub",
+        "shotAlt": "Panel de monitoreo de RetailVision Analytics con feed de cámara, KPIs en tiempo real, distribución por zonas y mapa de calor."
+    },
+    "worlds": {
+        "eyebrow": "03 — Más allá del proyecto estrella",
+        "title": "Otros mundos",
+        "all": "Ver todos los proyectos",
+        "alfapet": "Gestión clínica para una veterinaria: pacientes, citas, historial, inventario y ventas, con permisos por rol y base de datos protegida con RLS.",
+        "educore": "Gestión académica para colegios: matrículas, asistencia, calificaciones y boletas de notas, con PHP y PostgreSQL."
+    },
+    "cta": {
+        "eyebrow": "04 — Contacto",
+        "title": "Hablemos",
+        "text": "Si algo de lo que viste te interesa, conversemos."
+    },
+    "pages": {
+        "wip": "Sección en construcción.",
+        "stack": "Tecnologías",
+        "viewCase": "Ver caso",
+        "repo": "Repositorio",
+        "live": "Ver en producción",
+        "links": "Enlaces",
+        "contactForm": "El formulario se activará cuando esté conectado a un servicio real de envío.",
+        "notFound": {
+            "title": "Página no encontrada",
+            "text": "Esta ruta no existe en el universo de Lux.dev.",
+            "back": "Volver al inicio"
+        }
+    },
+    "footer": {
+        "designBy": "Diseño gráfico",
+        "creditAria": "Lilian Gutiérrez, diseño gráfico (se abre en una pestaña nueva)",
+        "rights": "© 2026 LC.dev"
+    }
+}
