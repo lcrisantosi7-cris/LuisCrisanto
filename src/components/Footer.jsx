@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { scrollToTop } from '../lib/lenisStore'
 import { links } from '../data/links'
+import StatusPill from './StatusPill'
 
 const LILIAN_URL = 'https://www.behance.net/gallery/257987643/PORTAFOLIO-2026-DISENO-GRAFICO'
 
@@ -22,6 +23,9 @@ export default function Footer() {
                         >
                             {links.email}
                         </a>
+                        <div className="mt-5">
+                            <StatusPill />
+                        </div>
                     </div>
 
                     <ul className="flex flex-wrap gap-x-6 gap-y-3">
@@ -56,7 +60,7 @@ export default function Footer() {
                         aria-label={t('footer.creditAria')}
                         className="flex items-center gap-2 text-sm text-cream-100/80 hover:text-cream-100"
                     >
-                        <img src="/assets/logos/logo_lilianG.svg" alt="" width="24" height="24" />
+                        <img src="/assets/logos/logo_lilianG.webp" alt="" width="24" height="24" />
                         <span>
                             {t('footer.designBy')} Lilian Gutiérrez
                         </span>

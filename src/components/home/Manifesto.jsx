@@ -12,7 +12,8 @@ export default function Manifesto() {
         () => {
             const mm = gsap.matchMedia(root.current)
 
-            mm.add('(prefers-reduced-motion: no-preference)', () => {
+            // Escritorio/tablet: sección fijada mientras se iluminan las palabras
+            mm.add('(prefers-reduced-motion: no-preference) and (min-width: 768px)', () => {
                 const words = gsap.utils.toArray('[data-word]', root.current)
                 gsap.set(words, { opacity: 0.14 })
 
@@ -29,6 +30,19 @@ export default function Manifesto() {
                     })
                     .from('[data-title]', { opacity: 0, y: 50, duration: 0.3 })
                     .to(words, { opacity: 1, stagger: 0.04, duration: 0.15 }, '>0.05')
+            })
+
+            // Móvil: sin pin (evita saltos con la barra del navegador), solo opacidad
+            mm.add('(prefers-reduced-motion: no-preference) and (max-width: 767px)', () => {
+                const words = gsap.utils.toArray('[data-word]', root.current)
+                gsap.set(words, { opacity: 0.14 })
+                gsap.to(words, {
+                    opacity: 1,
+                    stagger: 0.04,
+                    duration: 0.15,
+                    ease: 'none',
+                    scrollTrigger: { trigger: root.current, start: 'top 70%', end: 'bottom 75%', scrub: true },
+                })
             })
 
             return () => mm.revert()

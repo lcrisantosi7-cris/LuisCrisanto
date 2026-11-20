@@ -7,13 +7,6 @@ import { projects } from '../../data/projects'
 
 const FEATURED = projects.filter((p) => p.tier === 'featured')
 
-const PLANETS = {
-    alfapet:
-        'radial-gradient(circle at 30% 30%, #cfe0ff 0%, #6d97e6 24%, #1d4f94 55%, #071a33 100%)',
-    educore:
-        'radial-gradient(circle at 30% 30%, #fff3dc 0%, #e8cfa0 24%, #a8845a 55%, #2a1d14 100%)',
-}
-
 export default function OtherWorlds() {
     const { t } = useTranslation()
     const root = useRef(null)
@@ -54,10 +47,15 @@ export default function OtherWorlds() {
                             data-reveal
                             className="project-card group relative overflow-hidden rounded-3xl border border-white/10 bg-[linear-gradient(145deg,rgba(11,42,82,0.5),rgba(4,10,22,0.84))] p-8 shadow-[0_24px_70px_-48px_rgba(0,0,0,0.9)] backdrop-blur-xl transition-[transform,border-color,box-shadow] duration-500 hover:-translate-y-1 hover:border-flame-500/35 hover:shadow-[0_30px_80px_-48px_rgba(255,106,19,0.2)] md:p-10"
                         >
-                            <span
+                            <img
+                                src={project.planetImg}
+                                alt=""
                                 aria-hidden="true"
-                                className="absolute -right-16 -top-16 size-56 rounded-full opacity-90 transition-transform duration-700 group-hover:-translate-x-3 group-hover:translate-y-2 group-hover:scale-110"
-                                style={{ background: PLANETS[project.slug] }}
+                                width="520"
+                                height="520"
+                                loading="lazy"
+                                decoding="async"
+                                className="pointer-events-none absolute -right-16 -top-16 size-56 max-w-none object-contain opacity-90 transition-transform duration-700 group-hover:-translate-x-3 group-hover:translate-y-2 group-hover:scale-110"
                             />
 
                             <p className="relative font-mono text-xs uppercase tracking-[0.2em] text-flame-400">

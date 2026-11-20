@@ -30,6 +30,10 @@ export default function StarProject() {
                     ease: 'power3.out',
                     scrollTrigger: { trigger: root.current, start: 'top 70%' },
                 })
+            })
+
+            // Parallax con scrub: solo en pantallas grandes (en móvil pesa y se entrecorta)
+            mm.add('(prefers-reduced-motion: no-preference) and (min-width: 768px)', () => {
                 gsap.to('[data-star-shot]', {
                     y: -70,
                     ease: 'none',
@@ -103,17 +107,21 @@ export default function StarProject() {
 
                 <div className="relative mx-auto aspect-square w-full max-w-[640px]">
                     <div
-                        data-star-planet
                         aria-hidden="true"
-                        className="absolute inset-[6%] overflow-hidden rounded-full"
-                        style={{
-                            background:
-                                'radial-gradient(circle at 32% 28%, #ffe2b8 0%, #ffa24a 14%, #ff6a13 34%, #b53209 58%, #3a1019 80%, #0a1226 100%)',
-                            boxShadow: '0 0 140px 20px rgba(255,106,19,0.35), inset -40px -50px 100px rgba(4,10,22,0.75)',
-                        }}
-                    >
-                        <div className="grain" />
-                    </div>
+                        className="absolute inset-[-6%]"
+                        style={{ background: 'radial-gradient(circle, rgba(255,106,19,0.26) 0%, transparent 62%)' }}
+                    />
+                    <img
+                        data-star-planet
+                        src="/assets/images/planet-retailvision.webp"
+                        alt=""
+                        aria-hidden="true"
+                        width="900"
+                        height="900"
+                        loading="lazy"
+                        decoding="async"
+                        className="float-slow absolute inset-[2%] size-[96%] object-contain"
+                    />
 
                     <svg
                         aria-hidden="true"

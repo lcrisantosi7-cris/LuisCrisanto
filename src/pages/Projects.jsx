@@ -32,13 +32,16 @@ function StarCard({ project }) {
             data-reveal
             className="project-card group relative isolate overflow-hidden rounded-[2rem] border border-white/10 bg-[linear-gradient(145deg,rgba(11,42,82,0.56),rgba(4,10,22,0.82))] p-8 shadow-[0_35px_100px_-55px_rgba(0,0,0,0.9)] backdrop-blur-xl transition-[border-color,box-shadow,transform] duration-700 hover:-translate-y-1 hover:border-flame-500/35 hover:shadow-[0_40px_110px_-55px_rgba(255,106,19,0.24)] md:p-14"
         >
-            <div
+            <img
+                src={project.planetImg}
+                alt=""
                 aria-hidden="true"
-                className="absolute -right-24 -top-24 -z-10 size-[28rem] overflow-hidden rounded-full opacity-90 transition-transform duration-1000 group-hover:scale-105"
-                style={{ background: project.planet, boxShadow: '0 0 120px rgba(255,106,19,0.3)' }}
-            >
-                <div className="grain" />
-            </div>
+                width="900"
+                height="900"
+                loading="lazy"
+                decoding="async"
+                className="pointer-events-none absolute -right-24 -top-24 -z-10 size-[28rem] max-w-none object-contain opacity-90 transition-transform duration-1000 group-hover:scale-105"
+            />
 
             <div className="grid items-end gap-8 lg:grid-cols-2 lg:gap-12">
                 <div>
@@ -84,10 +87,15 @@ function FeaturedCard({ project }) {
             data-reveal
             className="project-card group relative isolate overflow-hidden rounded-3xl border border-white/10 bg-[linear-gradient(145deg,rgba(11,42,82,0.5),rgba(4,10,22,0.84))] p-8 shadow-[0_24px_70px_-48px_rgba(0,0,0,0.9)] backdrop-blur-xl transition-[transform,border-color,box-shadow] duration-500 hover:-translate-y-1 hover:border-flame-500/35 hover:shadow-[0_30px_80px_-48px_rgba(255,106,19,0.2)] md:p-10"
         >
-            <span
+            <img
+                src={project.planetImg}
+                alt=""
                 aria-hidden="true"
-                className="absolute -right-16 -top-16 -z-10 size-56 rounded-full opacity-90 transition-transform duration-700 group-hover:-translate-x-3 group-hover:translate-y-2 group-hover:scale-110"
-                style={{ background: project.planet }}
+                width="520"
+                height="520"
+                loading="lazy"
+                decoding="async"
+                className="pointer-events-none absolute -right-16 -top-16 -z-10 size-56 max-w-none object-contain opacity-90 transition-transform duration-700 group-hover:-translate-x-3 group-hover:translate-y-2 group-hover:scale-110"
             />
             <p className="font-mono text-xs uppercase tracking-[0.2em] text-flame-400">
                 {project.year} · {t(`status.${project.status}`)}

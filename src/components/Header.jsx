@@ -3,8 +3,8 @@ import { useLocation } from 'react-router'
 import { useTranslation } from 'react-i18next'
 import { TransitionLink, TransitionNavLink } from './TransitionLink'
 import LanguageToggle from './LanguageToggle'
+import CvButton from './CvButton'
 import { getLenis } from '../lib/lenisStore'
-import LocalTime from './LocalTime'
 
 const NAV = [
     { to: '/', key: 'home', end: true },
@@ -127,71 +127,42 @@ export default function Header() {
                 className={`fixed inset-x-0 top-0 z-50 px-3 pt-3 transition-transform duration-500 ${ease} sm:px-5 sm:pt-4 ${hidden ? '-translate-y-[130%] focus-within:translate-y-0' : 'translate-y-0'
                     }`}
             >
+                {/* 3 columnas: [menú | logo centrado | acciones] */}
                 <div
-                    className={`mx-auto flex max-w-6xl items-center justify-between gap-3 rounded-full py-2 pl-4 pr-2 ring-1 backdrop-blur-xl transition-[background-color,box-shadow] duration-500 ${scrolled || open
-                        ? 'bg-navy-950/75 shadow-[0_10px_40px_-12px_rgba(0,0,0,0.7)] ring-white/15'
-                        : 'bg-white/[0.03] ring-white/10'
+                    className={`mx-auto grid max-w-6xl grid-cols-[1fr_auto_1fr] items-center gap-2 rounded-full p-2 ring-1 backdrop-blur-xl transition-[background-color,box-shadow] duration-500 ${scrolled || open
+                        ? 'bg-navy-950/85 shadow-[0_10px_40px_-12px_rgba(0,0,0,0.7)] ring-white/15'
+                        : 'bg-navy-950/40 ring-white/10'
                         }`}
                 >
-                    <TransitionLink to="/" aria-label={t('nav.homeAria')} className="flex items-center gap-2.5">
-                        <img src="/assets/logos/logo.svg" alt="" width="30" height="30" />
-                        <span className="font-display text-lg font-bold tracking-tight">
-                            Lux<span className="text-flame-500">.dev</span>
-                        </span>
-                    </TransitionLink>
-
-                    <nav aria-label={t('nav.label')} className="hidden md:block">
-                        <ul ref={listRef} className="relative flex items-center">
-                            <span
-                                aria-hidden="true"
-                                className={`absolute inset-y-0 left-0 rounded-full bg-white/10 ring-1 ring-white/10 transition-[transform,width,opacity] duration-500 ${ease}`}
-                                style={{
-                                    transform: `translateX(${indicator.x}px)`,
-                                    width: indicator.w,
-                                    opacity: indicator.ready ? 1 : 0,
-                                }}
-                            />
-                            {NAV.map(({ to, key, end }) => (
-                                <li key={key} data-nav-item>
-                                    <TransitionNavLink
-                                        to={to}
-                                        end={end}
-                                        className={({ isActive }) =>
-                                            `relative z-10 block rounded-full px-4 py-2 text-sm transition-colors ${isActive ? 'text-cream-100' : 'text-cream-100/65 hover:text-cream-100'
-                                            }`
-                                        }
-                                    >
-                                        {t(`nav.${key}`)}
-                                    </TransitionNavLink>
-                                </li>
-                            ))}
-                        </ul>
-                    </nav>
-                    <p className="hidden items-center gap-2 rounded-full px-3 py-1.5 text-xs text-cream-100/70 ring-1 ring-white/10 xl:flex">
-                        <span aria-hidden="true" className="relative flex size-2">
-                            <span className="absolute inline-flex size-full animate-ping rounded-full bg-emerald-400/60 motion-reduce:animate-none" />
-                            <span className="relative inline-flex size-2 rounded-full bg-emerald-400" />
-                        </span>
-                        {t('nav.status')}
-                        <span aria-hidden="true" className="text-cream-100/30">·</span>
-                        <LocalTime /> {t('nav.statusPlace')}
-                    </p>
-                    <div className="flex items-center gap-2">
-                        <div className="hidden md:block">
-                            <LanguageToggle />
-                        </div>
-
-                        <TransitionNavLink
-                            to="/contact"
-                            className={({ isActive }) =>
-                                `rounded-full px-4 py-2 text-sm font-medium text-navy-950 transition-[background-color,transform,box-shadow] duration-300 ${isActive
-                                    ? 'bg-flame-400'
-                                    : 'bg-flame-500 hover:-translate-y-px hover:bg-flame-400 hover:shadow-[0_8px_24px_-8px_rgba(255,106,19,0.8)]'
-                                }`
-                            }
-                        >
-                            {t('nav.contactCta')}
-                        </TransitionNavLink>
+                    {/* Izquierda: navegación (escritorio) o hamburguesa (móvil) */}
+                    <div className="flex items-center justify-start">
+                        <nav aria-label={t('nav.label')} className="hidden md:block">
+                            <ul ref={listRef} className="relative flex items-center">
+                                <span
+                                    aria-hidden="true"
+                                    className={`absolute inset-y-0 left-0 rounded-full bg-white/10 ring-1 ring-white/10 transition-[transform,width,opacity] duration-500 ${ease}`}
+                                    style={{
+                                        transform: `translateX(${indicator.x}px)`,
+                                        width: indicator.w,
+                                        opacity: indicator.ready ? 1 : 0,
+                                    }}
+                                />
+                                {NAV.map(({ to, key, end }) => (
+                                    <li key={key} data-nav-item>
+                                        <TransitionNavLink
+                                            to={to}
+                                            end={end}
+                                            className={({ isActive }) =>
+                                                `relative z-10 block rounded-full px-3 py-2 text-sm transition-colors lg:px-4 ${isActive ? 'text-cream-100' : 'text-cream-100/65 hover:text-cream-100'
+                                                }`
+                                            }
+                                        >
+                                            {t(`nav.${key}`)}
+                                        </TransitionNavLink>
+                                    </li>
+                                ))}
+                            </ul>
+                        </nav>
 
                         <button
                             ref={toggleRef}
@@ -214,13 +185,46 @@ export default function Header() {
                             </span>
                         </button>
                     </div>
+
+                    {/* Centro: logo */}
+                    <TransitionLink
+                        to="/"
+                        aria-label={t('nav.homeAria')}
+                        className="flex items-center justify-center gap-2.5 justify-self-center"
+                    >
+                        <img src="/assets/logos/logo.svg" alt="" width="32" height="32" className="size-8" />
+                        <span className="hidden font-display text-lg font-bold tracking-tight min-[400px]:inline">
+                            Lux<span className="text-flame-500">.dev</span>
+                        </span>
+                    </TransitionLink>
+
+                    {/* Derecha: idioma, CV y contacto */}
+                    <div className="flex items-center justify-end gap-2">
+                        <div className="hidden md:block">
+                            <LanguageToggle />
+                        </div>
+
+                        <CvButton short className="hidden md:inline-flex" />
+
+                        <TransitionNavLink
+                            to="/contact"
+                            className={({ isActive }) =>
+                                `rounded-full px-3 py-2 text-xs font-medium text-navy-950 transition-[background-color,transform,box-shadow] duration-300 sm:px-4 sm:text-sm ${isActive
+                                    ? 'bg-flame-400'
+                                    : 'bg-flame-500 hover:-translate-y-px hover:bg-flame-400 hover:shadow-[0_8px_24px_-8px_rgba(255,106,19,0.8)]'
+                                }`
+                            }
+                        >
+                            {t('nav.contactCta')}
+                        </TransitionNavLink>
+                    </div>
                 </div>
             </header>
 
             <div
                 id="mobile-menu"
                 ref={menuRef}
-                className={`fixed inset-0 z-40 flex flex-col justify-between bg-navy-950/95 px-6 pb-8 pt-28 backdrop-blur-2xl transition-[opacity,visibility] duration-500 md:hidden ${open ? 'visible opacity-100' : 'invisible opacity-0'
+                className={`fixed inset-0 z-40 flex flex-col justify-between bg-navy-950/98 px-6 pb-8 pt-28 backdrop-blur-2xl transition-[opacity,visibility] duration-500 md:hidden ${open ? 'visible opacity-100' : 'invisible opacity-0'
                     }`}
             >
                 <nav aria-label={t('nav.label')}>
@@ -244,9 +248,12 @@ export default function Header() {
                     </ul>
                 </nav>
 
-                <div className="flex items-center justify-between">
-                    <LanguageToggle />
-                    <span className="font-mono text-xs text-cream-100/50">© 2026 LC.dev</span>
+                <div className="space-y-5">
+                    <CvButton className="w-full py-3" onClick={() => setOpen(false)} />
+                    <div className="flex items-center justify-between">
+                        <LanguageToggle />
+                        <span className="font-mono text-xs text-cream-100/50">© 2026 LC.dev</span>
+                    </div>
                 </div>
             </div>
         </>

@@ -1,6 +1,6 @@
 import { useRef } from 'react'
 import { useTranslation } from 'react-i18next'
-import { gsap, useGSAP } from '../../lib/gsap'
+import { gsap, ScrollTrigger, useGSAP } from '../../lib/gsap'
 
 const C = 400
 const toRad = (deg) => (deg * Math.PI) / 180
@@ -31,14 +31,15 @@ export default function OrbitDiagram({ className = '' }) {
         () => {
             const mm = gsap.matchMedia(root.current)
 
-            mm.add('(prefers-reduced-motion: no-preference)', () => {
-                NODES.forEach(({ id, r, angle, drift, duration }, i) => {
+            // Solo escritorio/tablet, y en pausa cuando el hero no está visible
+            mm.add('(prefers-reduced-motion: no-preference) and (min-width: 768px)', () => {
+                const tweens = NODES.map(({ id, r, angle, drift, duration }, i) => {
                     const el = root.current.querySelector(`[data-node="${id}"]`)
                     const state = { a: -drift }
                     const place = () => el.setAttribute('transform', translateAt(r, angle + state.a))
 
                     place()
-                    gsap.to(state, {
+                    return gsap.to(state, {
                         a: drift,
                         duration,
                         ease: 'sine.inOut',
@@ -48,6 +49,14 @@ export default function OrbitDiagram({ className = '' }) {
                         onUpdate: place,
                     })
                 })
+
+                const st = ScrollTrigger.create({
+                    trigger: root.current,
+                    start: 'top bottom',
+                    end: 'bottom top',
+                    onToggle: (self) => tweens.forEach((tw) => tw.paused(!self.isActive)),
+                })
+                tweens.forEach((tw) => tw.paused(!st.isActive))
             })
 
             return () => mm.revert()

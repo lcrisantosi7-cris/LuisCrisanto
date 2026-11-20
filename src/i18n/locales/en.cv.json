@@ -1,0 +1,15 @@
+{
+    "nav": {
+        "cv": "Download CV"
+    },
+    "cv": {
+        "eyebrow": "Résumé",
+        "title": "My CV",
+        "description": "Résumé of Luis Crisanto, Full Stack developer. View the CV in English and download it as a PDF.",
+        "text": "You can read it right here and download it as a PDF. It is available in Spanish and English.",
+        "download": "Download PDF",
+        "open": "Open in new tab",
+        "frameTitle": "Preview of Luis Crisanto's CV",
+        "mobileHint": "Tap to view the CV in your device's viewer."
+    }
+}

@@ -45,7 +45,14 @@ export default function Hero() {
                 window.addEventListener('pointerdown', skip, { once: true })
                 window.addEventListener('keydown', skip, { once: true })
 
-                // Scroll: el planeta crece y eclipsa, las capas se separan
+                return () => {
+                    window.removeEventListener('pointerdown', skip)
+                    window.removeEventListener('keydown', skip)
+                }
+            })
+
+            // Scroll con scrub: solo escritorio/tablet (en móvil se entrecorta)
+            mm.add('(prefers-reduced-motion: no-preference) and (min-width: 768px)', () => {
                 const trigger = { trigger: root.current, start: 'top top', end: 'bottom top', scrub: true }
                 gsap.to('[data-scroll="planet"]', { y: -120, scale: 1.35, ease: 'none', scrollTrigger: trigger })
                 gsap.to('[data-scroll="name"]', { y: -90, ease: 'none', scrollTrigger: trigger })
@@ -57,11 +64,6 @@ export default function Hero() {
                     ease: 'none',
                     scrollTrigger: { ...trigger, end: '60% top' },
                 })
-
-                return () => {
-                    window.removeEventListener('pointerdown', skip)
-                    window.removeEventListener('keydown', skip)
-                }
             })
 
             // Parallax con el cursor (solo mouse)
@@ -117,11 +119,10 @@ export default function Hero() {
             >
                 <div
                     data-depth="24"
-                    className="relative aspect-square w-full overflow-hidden rounded-full"
+                    className="hero-planet relative aspect-square w-full overflow-hidden rounded-full"
                     style={{
                         background:
                             'radial-gradient(ellipse 55% 36% at 52% 0%, #ffd9a3 0%, #ffa24a 9%, #ff6a13 22%, #b53209 36%, #4a1520 50%, #0a1226 72%)',
-                        boxShadow: '0 -24px 120px 10px rgba(255,106,19,0.45), inset 0 18px 60px rgba(255,214,160,0.35)',
                     }}
                 >
                     <div className="grain" />

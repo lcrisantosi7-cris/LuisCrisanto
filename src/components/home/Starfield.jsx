@@ -21,7 +21,7 @@ export default function Starfield({ className = '' }) {
             {STARS.map((s) => (
                 <span
                     key={s.id}
-                    className={`absolute rounded-full bg-cream-100 ${s.twinkle ? 'animate-twinkle' : ''}`}
+                    className={`absolute rounded-full bg-cream-100 ${s.id >= 40 ? 'star-extra' : ''} ${s.twinkle ? 'animate-twinkle' : ''}`}
                     style={{
                         left: `${s.left}%`,
                         top: `${s.top}%`,

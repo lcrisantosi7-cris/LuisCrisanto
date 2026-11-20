@@ -8,7 +8,8 @@ export default function SmoothScroll() {
     const reduced = useReducedMotion()
 
     useEffect(() => {
-        if (reduced) return
+        // En táctil el scroll nativo es más fluido: Lenis solo en escritorio
+        if (reduced || window.matchMedia('(pointer: coarse)').matches) return
 
         const lenis = new Lenis({ lerp: 0.1 })
         setLenis(lenis)

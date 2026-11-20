@@ -35,18 +35,16 @@ export default function PageHero({ eyebrow, title, children }) {
                 }}
             />
             <Starfield className="-z-10 opacity-70" />
-            <div
+            <img
                 data-planet
+                src="/assets/images/planet-retailvision.webp"
+                alt=""
                 aria-hidden="true"
-                className="absolute -right-[18%] -top-[30%] -z-10 aspect-square w-[min(70vw,720px)] overflow-hidden rounded-full"
-                style={{
-                    background:
-                        'radial-gradient(circle at 30% 70%, #ffe2b8 0%, #ffa24a 10%, #ff6a13 28%, #b53209 52%, #3a1019 76%, #0a1226 100%)',
-                    boxShadow: '0 0 140px 20px rgba(255,106,19,0.3)',
-                }}
-            >
-                <div className="grain" />
-            </div>
+                width="900"
+                height="900"
+                decoding="async"
+                className="pointer-events-none absolute -right-[18%] -top-[30%] -z-10 aspect-square w-[min(70vw,720px)] max-w-none object-contain opacity-90"
+            />
 
             <div className="mx-auto max-w-7xl">
                 <p data-fade className="font-mono text-xs uppercase tracking-[0.2em] text-glow-300">

@@ -2,14 +2,14 @@
 /* Humant (TipoType): archivos en public/fonts/. Si faltan, el navegador usa Poppins. */
 @font-face {
   font-family: "Humant";
-  src: url("/fonts/Humant-Bold.otf") format("opentype");
+  src: url("/fonts/Humant-Bold.woff2") format("woff2"), url("/fonts/Humant-Bold.otf") format("opentype");
   font-weight: 700;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
   font-family: "Humant";
-  src: url("/fonts/Humant-ExtraBold.otf") format("opentype");
+  src: url("/fonts/Humant-ExtraBold.woff2") format("woff2"), url("/fonts/Humant-ExtraBold.otf") format("opentype");
   font-weight: 800;
   font-style: normal;
   font-display: swap;
@@ -233,7 +233,6 @@ html {
     background-image:
       radial-gradient(ellipse at 50% -35%, rgba(29, 79, 148, 0.12), transparent 58%),
       linear-gradient(180deg, rgba(4, 10, 22, 0.18), transparent 42%);
-    background-attachment: fixed;
   }
 
   img, svg, video, canvas { max-width: 100%; }
@@ -355,4 +354,31 @@ img { max-width:100%; }
 @media (prefers-reduced-motion:reduce) {
  html { scroll-behavior:auto; }
  .project-card,.project-card img,.about-photo-frame,.fact-card,.timeline-item { transition:none !important; transform:none !important; }
+}
+
+
+/* ── Planetas e ilustraciones (imágenes) ───────────────────────────── */
+.float-slow { animation: float-slow 9s ease-in-out infinite; will-change: transform; }
+@keyframes float-slow {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(0, -10px, 0); }
+}
+.hero-planet {
+  box-shadow: 0 -24px 120px 10px rgba(255, 106, 19, 0.45), inset 0 18px 60px rgba(255, 214, 160, 0.35);
+}
+
+/* ── Rendimiento en móvil / pantallas táctiles ─────────────────────── */
+@media (max-width: 767px), (pointer: coarse) {
+  .backdrop-blur-md,
+  .backdrop-blur-xl,
+  .backdrop-blur-2xl,
+  .glass-panel,
+  .contact-surface {
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+  }
+  .grain { display: none; }
+  .star-extra { display: none; }
+  .hero-planet { box-shadow: 0 -12px 50px 0 rgba(255, 106, 19, 0.35); }
+  html { scroll-behavior: auto; }
 }
