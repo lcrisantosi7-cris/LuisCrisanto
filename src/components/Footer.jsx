@@ -3,7 +3,6 @@ import { scrollToTop } from '../lib/lenisStore'
 import { links } from '../data/links'
 import StatusPill from './StatusPill'
 
-const LILIAN_URL = 'https://www.behance.net/gallery/257987643/PORTAFOLIO-2026-DISENO-GRAFICO'
 
 export default function Footer() {
     const { t } = useTranslation()
@@ -53,18 +52,7 @@ export default function Footer() {
                         <span>Luis Crisanto</span>
                     </p>
 
-                    <a
-                        href={LILIAN_URL}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        aria-label={t('footer.creditAria')}
-                        className="flex items-center gap-2 text-sm text-cream-100/80 hover:text-cream-100"
-                    >
-                        <img src="/assets/logos/logo_lilianG.webp" alt="" width="24" height="24" />
-                        <span>
-                            {t('footer.designBy')} Lilian Gutiérrez
-                        </span>
-                    </a>
+
 
                     <small className="text-cream-100/60">{t('footer.rights')}</small>
                 </div>

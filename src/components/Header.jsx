@@ -192,7 +192,7 @@ export default function Header() {
                         aria-label={t('nav.homeAria')}
                         className="flex items-center justify-center gap-2.5 justify-self-center"
                     >
-                        <img src="/assets/logos/logo.svg" alt="" width="32" height="32" className="size-8" />
+                        <img src="/assets/logos/logo.svg" alt="" width="32" height="32" className="size-8 -translate-y-0.5" />
                         <span className="hidden font-display text-lg font-bold tracking-tight min-[400px]:inline">
                             Lux<span className="text-flame-500">.dev</span>
                         </span>
