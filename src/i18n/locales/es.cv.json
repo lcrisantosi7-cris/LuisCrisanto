@@ -1,15 +1,15 @@
 {
     "nav": {
-        "cv": "Descargar CV"
+        "cv": "Ver CV"
     },
     "cv": {
         "eyebrow": "Currículum",
         "title": "Mi CV",
         "description": "Currículum de Luis Crisanto, desarrollador Full Stack. Mira el CV en español y descárgalo en PDF.",
-        "text": "Puedes verlo aquí mismo y descargarlo en PDF. Está disponible en español e inglés.",
+        "text": "Puedes consultarlo aquí mismo y descargar la versión PDF en español o inglés.",
         "download": "Descargar PDF",
-        "open": "Abrir en pestaña",
+        "open": "Ver PDF completo",
         "frameTitle": "Vista previa del CV de Luis Crisanto",
-        "mobileHint": "Toca para ver el CV en el visor de tu dispositivo."
+        "mobileHint": "Abre el PDF para consultarlo desde el visor de tu dispositivo."
     }
 }
