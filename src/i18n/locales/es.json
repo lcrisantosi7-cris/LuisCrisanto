@@ -1,7 +1,7 @@
 {
     "meta": {
-        "title": "Luis Crisanto | Lux.dev",
-        "description": "Luis Crisanto, desarrollador Full Stack (React, Node.js, PHP). Proyectos de software y visión por computadora: RetailVision, AlfaPet y EduCore."
+        "title": "Luis Ángel Crisanto Silupú | Ingeniería de Sistemas y Full Stack",
+        "description": "Portafolio de Luis Ángel Crisanto Silupú, estudiante de Ingeniería de Sistemas en la UCV y desarrollador Full Stack en Perú. Proyectos de software, React, Node.js, Java, PHP, bases de datos y visión por computadora."
     },
     "a11y": {
         "skip": "Saltar al contenido"
@@ -29,7 +29,7 @@
     },
     "hero": {
         "eyebrow": "Full Stack Developer · Perú",
-        "tagline": "Construyo el sistema completo: interfaz, API y datos. Hoy exploro visión por computadora y arquitectura en la nube.",
+        "tagline": "Soy Luis Ángel Crisanto Silupú, estudiante de Ingeniería de Sistemas en la UCV y desarrollador Full Stack. Construyo soluciones web, APIs y sistemas orientados a datos; también exploro visión por computadora y cloud.",
         "ctaProject": "Ver RetailVision",
         "ctaAbout": "Conóceme",
         "scroll": "Explora",
