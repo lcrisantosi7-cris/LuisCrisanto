@@ -4,12 +4,12 @@ import { useTranslation } from 'react-i18next'
 import PageMeta from '../components/PageMeta'
 import LanguageToggle from '../components/LanguageToggle'
 
+// Rutas verificadas contra los archivos existentes en public/cv.
 const FILES = {
-    es: { src: '/cv/cv-luis-crisanto-es.pdf', name: 'Luis-Crisanto-CV-ES.pdf' },
+    es: { src: '/cv/cv-luis-crisanto.pdf', name: 'Luis-Crisanto-CV-ES.pdf' },
     en: { src: '/cv/cv-luis-crisanto-en.pdf', name: 'Luis-Crisanto-CV-EN.pdf' },
 }
 
-// Los visores de PDF dentro de un iframe solo funcionan bien en pantallas grandes
 const DESKTOP = '(min-width: 1024px) and (pointer: fine)'
 const subscribe = (cb) => {
     const mql = window.matchMedia(DESKTOP)
@@ -27,7 +27,6 @@ export default function Cv() {
     const [params] = useSearchParams()
     const desktop = useDesktop()
 
-    // /cv?lang=en fuerza el idioma (lo manda el botón del menú)
     const requested = params.get('lang')
     useEffect(() => {
         if (requested && FILES[requested] && requested !== i18n.resolvedLanguage) {
@@ -64,8 +63,6 @@ export default function Cv() {
                     </a>
                     <a
                         href={file.src}
-                        target="_blank"
-                        rel="noopener noreferrer"
                         className={`${btn} text-cream-100 ring-1 ring-white/25 hover:-translate-y-0.5 hover:bg-white/10`}
                     >
                         {t('cv.open')}
@@ -86,8 +83,6 @@ export default function Cv() {
                         <p className="text-lg text-cream-100/85">{t('cv.mobileHint')}</p>
                         <a
                             href={file.src}
-                            target="_blank"
-                            rel="noopener noreferrer"
                             className={`${btn} mt-6 bg-flame-500 text-navy-950 hover:bg-flame-400`}
                         >
                             {t('cv.open')}
